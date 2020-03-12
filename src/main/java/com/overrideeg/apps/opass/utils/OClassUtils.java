@@ -8,7 +8,7 @@ import java.util.*;
 
 public class OClassUtils {
     public static Class<?> getServiceByName(String name) {
-        List<Class<?>> allClasses = find("com.overrideeg.apps.ocommerce.service");
+        List<Class<?>> allClasses = find("com.overrideeg.apps.opass.service");
         Map<String, Class<?>> classBySimpleName = new HashMap<>();
 
         for (Class<?> c : allClasses) {
@@ -18,7 +18,7 @@ public class OClassUtils {
     }
 
     public static Class getRepByName(String name){
-        List <Class <?>> allClasses = find("com.overrideeg.apps.ocommerce.io.repositories");
+        List <Class <?>> allClasses = find("com.overrideeg.apps.opass.io.repositories");
         Map <String, Class<?>> classBySimpleName = new HashMap <>();
 
         for(Class<?> c : allClasses) {

@@ -17,7 +17,7 @@ public class OTranslate {
     private static String varchar = "varchar(max)";
 
     public static Set<Class<?>> getEntities() {
-        Reflections reflections = new Reflections("com.overrideeg.apps.ocommerce.io.entity");
+        Reflections reflections = new Reflections("com.overrideeg.apps.opass.io.entity");
         return reflections.getTypesAnnotatedWith(javax.persistence.Entity.class);
     }
 //

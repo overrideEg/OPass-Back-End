@@ -17,30 +17,13 @@ public class city extends OEntity {
 
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    private country country;
-    @Transient
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Forign
     private String country_id;
-    @Transient
     @Local
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String name;
     private Double price;
-    @OneToMany(mappedBy = "city", cascade = CascadeType.ALL, orphanRemoval = true)
-    @MapKey(name = "localized.locale")
-    private Map<String, cityLocalized> localizations = new HashMap<>();
-
-    public String getName(String locale) {
-        return localizations.get(locale).getName();
-    }
-
-//    public com.overrideeg.apps.ocommerce.io.entity.Admin.BasicData.Address.country getCountry() {
-//        return country;
-//    }
-//
-//    public void setCountry(com.overrideeg.apps.ocommerce.io.entity.Admin.BasicData.Address.country country) {
-//        this.country = country;
-//    }
 
     public String getCountry_id() {
         return country_id;
@@ -64,13 +47,5 @@ public class city extends OEntity {
 
     public void setPrice(Double price) {
         this.price = price;
-    }
-
-    public Map<String, cityLocalized> getLocalizations() {
-        return localizations;
-    }
-
-    public void setLocalizations(Map<String, cityLocalized> localizations) {
-        this.localizations = localizations;
     }
 }

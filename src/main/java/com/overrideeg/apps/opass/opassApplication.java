@@ -9,13 +9,13 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
 @EnableCaching
-@EntityScan(basePackages = {"com.overrideeg.apps.ocommerce.io.entity"})
+@EntityScan(basePackages = {"com.overrideeg.apps.opass.io.entity"})
 @EnableJpaRepositories(basePackages = {"com.overrideeg.apps.opass.io.repositories"},
         repositoryBaseClass = JpaRepositoryCustomisationsImpl.class)
-public class OcommerceApplication {
+public class opassApplication {
     public static void main(String[] args)
     {
-        SpringApplication.run(OcommerceApplication.class, args);
+        SpringApplication.run(opassApplication.class, args);
     }
 
 }

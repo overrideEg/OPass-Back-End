@@ -9,9 +9,9 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.overrideeg.apps</groupId>
-    <artifactId>ocommerce</artifactId>
+    <artifactId>opass</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>ocommerce</name>
+    <name>opass</name>
     <description>Override E-commerce project</description>
 
     <properties>
