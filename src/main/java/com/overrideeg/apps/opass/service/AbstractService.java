@@ -1,24 +1,21 @@
 package com.overrideeg.apps.opass.service;
 
 
-import com.overrideeg.apps.opass.annotations.Local;
 import com.overrideeg.apps.opass.exceptions.CouldNotDeleteRecordException;
 import com.overrideeg.apps.opass.exceptions.CouldNotUpdateRecordException;
 import com.overrideeg.apps.opass.exceptions.NoRecordFoundException;
-import com.overrideeg.apps.opass.io.entity.System.Localized;
-import com.overrideeg.apps.opass.io.entity.System.OEntity;
+import com.overrideeg.apps.opass.io.entities.system.OEntity;
 import com.overrideeg.apps.opass.io.repositories.customisation.JpaRepositoryCustomisations;
 import com.overrideeg.apps.opass.ui.sys.ErrorMessages;
 import com.overrideeg.apps.opass.ui.sys.RequestOperation;
 import com.overrideeg.apps.opass.ui.sys.ResponseModel;
 import com.overrideeg.apps.opass.ui.sys.ResponseStatus;
-import com.overrideeg.apps.opass.utils.EntityUtils;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.ParameterizedType;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Abstract base class for services that has operations for creating, reading,
@@ -29,12 +26,11 @@ import java.util.*;
  * @author Ivan Krizsan
  */
 @Transactional
-public abstract class AbstractService<E extends OEntity, L> {
+public abstract class AbstractService<E extends OEntity> {
     /* Constant(s): */
 
     /* Instance variable(s): */
     protected JpaRepositoryCustomisations<E> mRepository;
-    private final Class<L> localizedClass;
 
     /**
      * Creates a service instance that will use the supplied repository for entity persistence.
@@ -43,8 +39,6 @@ public abstract class AbstractService<E extends OEntity, L> {
      */
     public AbstractService(final JpaRepositoryCustomisations<E> inRepository) {
         mRepository = inRepository;
-        this.localizedClass = (Class<L>) ((ParameterizedType) this.getClass().getGenericSuperclass())
-                .getActualTypeArguments()[1];
     }
 
 
@@ -56,29 +50,9 @@ public abstract class AbstractService<E extends OEntity, L> {
      * @return Observable that will receive the saved entity, or exception if error occurs.
      */
     public E save(final E inEntity, String lang) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, NoSuchFieldException {
-        if (localizedClass != null) {
-            localize(inEntity,lang);
-        }
         return mRepository.persist(inEntity);
     }
 
-    protected  void localize(E inEntity, String lang) throws NoSuchMethodException, NoSuchFieldException, IllegalAccessException, InvocationTargetException, InstantiationException {
-        List<Field> LocalizedFields = EntityUtils.findAnnotatedFields(inEntity.getClass(), Local.class);
-        //todo add forign
-//            List<Field> ForignFields = EntityUtils.findAnnotatedFields(inEntity.getClass(), Forign.class);
-        // try to put localized fields onto hash map
-        L localizedClass = this.localizedClass.getDeclaredConstructor().newInstance();
-        LocalizedFields.forEach(field -> {
-            EntityUtils.runSetter(field, localizedClass, EntityUtils.runGetter(field, inEntity));
-        });
-        Localized localized = new Localized(lang);
-        EntityUtils.runSetter(localizedClass.getClass().getDeclaredField("localized"), localizedClass, localized);
-        Map<String, L> localizationObject = new HashMap<>();
-        localizationObject.put(lang, localizedClass);
-        Field relationField = EntityUtils.findAnnotatedFields(localizedClass.getClass(), Local.class).get(0);
-        EntityUtils.runSetter(inEntity.getClass().getDeclaredField("localizations"), inEntity, localizationObject);
-        EntityUtils.runSetter(relationField, localizedClass, inEntity);
-    }
 
 
 //    Product p = new Product();

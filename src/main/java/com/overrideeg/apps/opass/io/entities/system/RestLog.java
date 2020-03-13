@@ -1,9 +1,12 @@
-package com.overrideeg.apps.opass.io.entity.System;
+package com.overrideeg.apps.opass.io.entities.system;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Lob;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import java.util.Date;
 
 @Entity

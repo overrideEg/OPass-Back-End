@@ -2,7 +2,7 @@ package com.overrideeg.apps.opass.io.repositories.customisation;
 
 
 import com.overrideeg.apps.opass.exceptions.NoRecordFoundException;
-import com.overrideeg.apps.opass.io.entity.System.OEntity;
+import com.overrideeg.apps.opass.io.entities.system.OEntity;
 import com.overrideeg.apps.opass.system.Caching.OCacheManager;
 import com.overrideeg.apps.opass.ui.sys.ErrorMessages;
 import com.overrideeg.apps.opass.utils.JPAUtils;
