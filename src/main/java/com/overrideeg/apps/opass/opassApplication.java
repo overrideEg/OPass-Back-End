@@ -9,7 +9,9 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
 @EnableCaching
-@EntityScan(basePackages = {"com.overrideeg.apps.opass.io.entity"})
+@EntityScan(basePackages = {
+        "com.overrideeg.apps.opass.io.entities"
+        , "com.overrideeg.apps.opass.io.details"})
 @EnableJpaRepositories(basePackages = {"com.overrideeg.apps.opass.io.repositories"},
         repositoryBaseClass = JpaRepositoryCustomisationsImpl.class)
 public class opassApplication {

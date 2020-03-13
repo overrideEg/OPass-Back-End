@@ -1,7 +1,7 @@
 package com.overrideeg.apps.opass.ui.entrypoint;
 
 
-import com.overrideeg.apps.opass.io.entity.System.OEntity;
+import com.overrideeg.apps.opass.io.entities.system.OEntity;
 import com.overrideeg.apps.opass.service.AbstractService;
 import com.overrideeg.apps.opass.ui.sys.ResponseModel;
 import org.springframework.web.bind.annotation.*;
@@ -23,11 +23,11 @@ import java.util.Optional;
  */
 
 
-public abstract class RestEntryPoint<E extends OEntity,L> {
+public abstract class RestEntryPoint<E extends OEntity> {
     /* Constant(s): */
 
     /* Instance variable(s): */
-    protected AbstractService<E,L> mService;
+    protected AbstractService<E> mService;
     private final Class<E> entityClass;
 
     public RestEntryPoint() {
@@ -76,11 +76,6 @@ public abstract class RestEntryPoint<E extends OEntity,L> {
         return delete;
     }
 
-    // todo check
-    @DeleteMapping
-    public void deleteAllEntities(@Valid @RequestBody List<E> arrayToDelete, HttpServletRequest request) {
-
-    }
 
 
     @PutMapping
@@ -108,11 +103,11 @@ public abstract class RestEntryPoint<E extends OEntity,L> {
      */
     protected abstract E[] entityListToArray(List<E> inEntityList);
 
-    public AbstractService<E,L> getService() {
+    public AbstractService<E> getService() {
         return mService;
     }
 
-    public void setService(final AbstractService<E,L> inService) {
+    public void setService(final AbstractService<E> inService) {
         mService = inService;
     }
 }

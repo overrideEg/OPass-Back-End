@@ -1,24 +1,23 @@
 package com.overrideeg.apps.opass.service.system;
 
 import com.google.gson.Gson;
-import com.overrideeg.apps.opass.io.entity.System.RestLog;
+import com.overrideeg.apps.opass.io.entities.system.RestLog;
 import com.overrideeg.apps.opass.io.repositories.system.RestLogRepo;
 import com.overrideeg.apps.opass.service.AbstractService;
 import com.overrideeg.apps.opass.utils.EntityUtils;
 import org.springframework.stereotype.Service;
 
-import javax.validation.constraints.Null;
 import java.util.Date;
 
 @Service
-public class RestLogService extends AbstractService<RestLog, Null> {
+public class RestLogService extends AbstractService<RestLog> {
 
-public RestLogService(final RestLogRepo inRepository) {
-super(inRepository);
-}
+    public RestLogService(final RestLogRepo inRepository) {
+        super(inRepository);
+    }
 
 
-    public void saveLog(String RequestURL, String remoteAddr, String method,  Object response) {
+    public void saveLog(String RequestURL, String remoteAddr, String method, Object response) {
         try {
             RestLog restLog = new RestLog();
             restLog.setDate(new Date());
