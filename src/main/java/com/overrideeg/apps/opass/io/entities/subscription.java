@@ -27,6 +27,7 @@ public class subscription extends OEntity {
     private Date toDate;
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Double price;
+    private Integer maxNoOfEmployees;
 
     @PrePersist
     public void PrePersist() {
@@ -71,5 +72,13 @@ public class subscription extends OEntity {
 
     public void setPrice(Double price) {
         this.price = price;
+    }
+
+    public Integer getMaxNoOfEmployees() {
+        return maxNoOfEmployees;
+    }
+
+    public void setMaxNoOfEmployees(Integer maxNoOfEmployees) {
+        this.maxNoOfEmployees = maxNoOfEmployees;
     }
 }
