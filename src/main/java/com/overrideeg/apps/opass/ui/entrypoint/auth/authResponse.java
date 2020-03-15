@@ -6,10 +6,9 @@ package com.overrideeg.apps.opass.ui.entrypoint.auth;
 
 import com.overrideeg.apps.opass.io.entities.Users;
 
-import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement
 public class authResponse {
+
     private Users user;
     private String token;
 

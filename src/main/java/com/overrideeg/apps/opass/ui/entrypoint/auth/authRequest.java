@@ -4,9 +4,6 @@
 
 package com.overrideeg.apps.opass.ui.entrypoint.auth;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
-@XmlRootElement
 public class authRequest {
     private String userName;
     private String password;

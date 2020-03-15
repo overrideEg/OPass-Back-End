@@ -6,7 +6,6 @@ package com.overrideeg.apps.opass.service;
 
 import com.overrideeg.apps.opass.exceptions.AuthenticationException;
 import com.overrideeg.apps.opass.io.entities.Users;
-import com.overrideeg.apps.opass.service.entityServices.UserService;
 import com.overrideeg.apps.opass.ui.sys.ErrorMessages;
 import com.overrideeg.apps.opass.utils.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +19,7 @@ import java.util.logging.Logger;
 @Service
 public class authService {
     @Autowired
-    UserService usersService;
+    UsersService usersService;
 
 //    DAO database;
 
@@ -31,11 +30,6 @@ public class authService {
         if (storedUser.getId() == null) {
             throw new AuthenticationException(ErrorMessages.AUTHENTICATION_FAILED.getErrorMessage());
         }
-
-//        if(!storedUser.getEmailVerificationStatus())
-//        {
-//            throw new EmailVerificationException(ErrorMessages.EMAIL_ADDRESS_NOT_VERIFIED.getErrorMessage());
-//        }
 
 
         String encryptedPassword = null;

@@ -9,7 +9,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.overrideeg.apps.opass.io.entities.system.OEntity;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import java.util.Date;
 
 @Entity
@@ -29,10 +32,10 @@ public class subscription extends OEntity {
     private Double price;
     private Integer maxNoOfEmployees;
 
-    @PrePersist
-    public void PrePersist() {
-        // todo add price here assuming to fromdate to date "calc dates 🙄"
-    }
+//    @PrePersist
+//    public void PrePersist() {
+//        // todo add price here assuming to fromdate to date "calc dates 🙄"
+//    }
 
     public com.overrideeg.apps.opass.io.entities.company getCompany() {
         return company;

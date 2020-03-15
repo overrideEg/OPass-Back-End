@@ -2,6 +2,8 @@ package com.overrideeg.apps.opass;
 
 import com.overrideeg.apps.opass.filters.AuthenticationFilter;
 import com.overrideeg.apps.opass.io.repositories.customisation.JpaRepositoryCustomisationsImpl;
+import com.overrideeg.apps.opass.service.UsersService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -20,12 +22,15 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @EnableJpaRepositories(basePackages = {"com.overrideeg.apps.opass.io.repositories"},
         repositoryBaseClass = JpaRepositoryCustomisationsImpl.class)
 public class opassApplication implements WebMvcConfigurer {
+    @Autowired
+    UsersService usersService;
+
     public static void main(String[] args) {
         SpringApplication.run(opassApplication.class, args);
     }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new AuthenticationFilter());
+        registry.addInterceptor(new AuthenticationFilter(this.usersService));
     }
 }

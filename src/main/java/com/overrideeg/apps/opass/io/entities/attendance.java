@@ -6,55 +6,71 @@ package com.overrideeg.apps.opass.io.entities;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.overrideeg.apps.opass.io.details.attDetails;
+import com.overrideeg.apps.opass.enums.attType;
 import com.overrideeg.apps.opass.io.entities.system.OEntity;
 
 import javax.persistence.*;
-import java.time.Month;
 import java.util.Date;
-import java.util.List;
 
 @Entity
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class attendance extends OEntity {
-    @Temporal(TemporalType.TIMESTAMP)
-    @JsonFormat(pattern = "dd/MM/yyyy", shape = JsonFormat.Shape.STRING, timezone = "Africa/Cairo")
-    private Date valueDate;
-    private Month month;
     @ManyToOne
-    private company company;
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private List<attDetails> details;
+    private employee employee;
+    @Temporal(TemporalType.TIMESTAMP)
+    @JsonFormat(pattern = "dd/MM/yyyy hh:mm:ss", shape = JsonFormat.Shape.STRING, timezone = "Africa/Cairo")
+    private Date scanTime;
+    @Enumerated(EnumType.STRING)
+    private attType attType;
+    private Boolean lateEntrance;
+    private Boolean earlyGo;
+    private Boolean overTime;
 
-    public Date getValueDate() {
-        return valueDate;
+    public employee getEmployee() {
+        return employee;
     }
 
-    public void setValueDate(Date valueDate) {
-        this.valueDate = valueDate;
+    public void setEmployee(employee employee) {
+        this.employee = employee;
     }
 
-    public Month getMonth() {
-        return month;
+    public Date getScanTime() {
+        return scanTime;
     }
 
-    public void setMonth(Month month) {
-        this.month = month;
+    public void setScanTime(Date scanTime) {
+        this.scanTime = scanTime;
     }
 
-    public com.overrideeg.apps.opass.io.entities.company getCompany() {
-        return company;
+    public com.overrideeg.apps.opass.enums.attType getAttType() {
+        return attType;
     }
 
-    public void setCompany(com.overrideeg.apps.opass.io.entities.company company) {
-        this.company = company;
+    public void setAttType(com.overrideeg.apps.opass.enums.attType attType) {
+        this.attType = attType;
     }
 
-    public List<attDetails> getDetails() {
-        return details;
+    public Boolean getLateEntrance() {
+        return lateEntrance;
     }
 
-    public void setDetails(List<attDetails> details) {
-        this.details = details;
+    public void setLateEntrance(Boolean lateEntrance) {
+        this.lateEntrance = lateEntrance;
+    }
+
+    public Boolean getEarlyGo() {
+        return earlyGo;
+    }
+
+    public void setEarlyGo(Boolean earlyGo) {
+        this.earlyGo = earlyGo;
+    }
+
+    public Boolean getOverTime() {
+        return overTime;
+    }
+
+    public void setOverTime(Boolean overTime) {
+        this.overTime = overTime;
     }
 }

@@ -15,13 +15,11 @@ import javax.persistence.*;
 @Entity
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Users extends OEntity {
-    @JsonIgnore
     private String userId;
     @Column(nullable = false, unique = true, length = 15)
     private String userName;
     @JsonIgnore
     private String encryptedPassword;
-    @Column(unique = true)
     private String email;
     @JsonIgnore
     private String salt;
@@ -29,12 +27,14 @@ public class Users extends OEntity {
     private String token;
     @Enumerated(EnumType.STRING)
     private userType userType;
+    @ManyToOne
+    private employee employee;
     @Transient
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY, required = true)
     private String password;
-    @Column(unique = true)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String macAddress;
+
 
     public String getUserId() {
         return userId;
@@ -90,6 +90,14 @@ public class Users extends OEntity {
 
     public void setUserType(com.overrideeg.apps.opass.enums.userType userType) {
         this.userType = userType;
+    }
+
+    public com.overrideeg.apps.opass.io.entities.employee getEmployee() {
+        return employee;
+    }
+
+    public void setEmployee(com.overrideeg.apps.opass.io.entities.employee employee) {
+        this.employee = employee;
     }
 
     public String getPassword() {

@@ -19,7 +19,7 @@ public class attendanceRules extends OEntity {
     @OneToOne
     private company company;
     private Integer allowedLateMinutes;
-    private Integer allowedEarlyMinutes;
+    private Integer allowedEarlyLeaveMinutes;
     private Integer maxOverTimeHours;
     @ElementCollection
     private List<DayOfWeek> daysOff;
@@ -40,12 +40,12 @@ public class attendanceRules extends OEntity {
         this.allowedLateMinutes = allowedLateMinutes;
     }
 
-    public Integer getAllowedEarlyMinutes() {
-        return allowedEarlyMinutes;
+    public Integer getAllowedEarlyLeaveMinutes() {
+        return allowedEarlyLeaveMinutes;
     }
 
-    public void setAllowedEarlyMinutes(Integer allowedEarlyMinutes) {
-        this.allowedEarlyMinutes = allowedEarlyMinutes;
+    public void setAllowedEarlyLeaveMinutes(Integer allowedEarlyLeaveMinutes) {
+        this.allowedEarlyLeaveMinutes = allowedEarlyLeaveMinutes;
     }
 
     public Integer getMaxOverTimeHours() {

@@ -6,7 +6,6 @@ package com.overrideeg.apps.opass.io.valueObjects;
 
 import com.overrideeg.apps.opass.io.entities.city;
 
-import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.ManyToOne;
 
@@ -21,7 +20,6 @@ public class contactInfo {
     private String mapLocation;
     private String state;
     private String street;
-    @Column(unique = true)
     private String email;
     private String faxNumber;
     private String telephone1;
