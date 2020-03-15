@@ -27,7 +27,7 @@ public class RestLogService extends AbstractService<RestLog> {
             restLog.setRequestName(method);
             String json = EntityUtils.encode(new Gson().toJson(response));
             restLog.setResponse(json);
-            save(restLog,null);
+            save(restLog);
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -1,7 +1,7 @@
-package com.overrideeg.apps.opass.ui.entrypoint.webapp.system;
+package com.overrideeg.apps.opass.ui.entrypoint.webapp;
 
 import com.overrideeg.apps.opass.io.entities.Users;
-import com.overrideeg.apps.opass.service.entityServices.UserService;
+import com.overrideeg.apps.opass.service.UsersService;
 import com.overrideeg.apps.opass.system.ApiUrls;
 import com.overrideeg.apps.opass.ui.entrypoint.RestEntryPoint;
 import org.springframework.stereotype.Component;
@@ -9,11 +9,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
 
-@Component
-@RequestMapping(ApiUrls.User_EP)
-public class UserEntryPoint extends RestEntryPoint<Users> {
 
-    public UserEntryPoint(final UserService inService) {
+@Component
+@RequestMapping(ApiUrls.Users_EP)
+public class UsersEntryPoint extends RestEntryPoint<Users> {
+
+    public UsersEntryPoint(final UsersService inService) {
         setService(inService);
     }
 

@@ -46,37 +46,18 @@ public abstract class AbstractService<E extends OEntity> {
      * Saves the supplied entity.
      *
      * @param inEntity Entity to save.
-     * @param lang
      * @return Observable that will receive the saved entity, or exception if error occurs.
+     * @p
      */
-    public E save(final E inEntity, String lang) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, NoSuchFieldException {
-        return mRepository.persist(inEntity);
+    public E save(final E inEntity) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, NoSuchFieldException {
+        return mRepository.save(inEntity);
     }
-
-
-
-//    Product p = new Product();
-//p.setPrice(19.99D);
-//
-//    LocalizedProduct lpDe = new LocalizedProduct();
-//lpDe.setId(new LocalizedId("de"));
-//lpDe.setProduct(p);
-//lpDe.setName("Hibernate Tips - Mehr als 70 Lösungen für typische Hibernateprobleme");
-//p.getLocalizations().put("de", lpDe);
-//
-//    LocalizedProduct lpEn = new LocalizedProduct();
-//lpEn.setId(new LocalizedId("en"));
-//lpEn.setProduct(p);
-//lpEn.setName("Hibernate Tips - More than 70 solution to common Hibernate problems");
-//p.getLocalizations().put("en", lpEn);
-//
-//em.persist(p);
 
     public List<E> saveArray(final List<E> inEntity) {
         List<E> entities = new ArrayList<>();
         inEntity.forEach(e -> {
             try {
-                entities.add(save(e, null));
+                entities.add(save(e));
             } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException | NoSuchFieldException ex) {
                 ex.printStackTrace();
             }

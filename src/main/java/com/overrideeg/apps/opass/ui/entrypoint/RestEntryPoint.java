@@ -1,6 +1,7 @@
 package com.overrideeg.apps.opass.ui.entrypoint;
 
 
+import com.overrideeg.apps.opass.annotations.Secured;
 import com.overrideeg.apps.opass.io.entities.system.OEntity;
 import com.overrideeg.apps.opass.service.AbstractService;
 import com.overrideeg.apps.opass.ui.sys.ResponseModel;
@@ -33,15 +34,13 @@ public abstract class RestEntryPoint<E extends OEntity> {
     public RestEntryPoint() {
         this.entityClass = (Class<E>) ((ParameterizedType) this.getClass().getGenericSuperclass())
                 .getActualTypeArguments()[0];
-
     }
 
 
     @PostMapping
     public @ResponseBody
-    E postOne(@Valid @RequestBody E req,
-              @RequestHeader(name = "lang") String lang, HttpServletRequest request) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, NoSuchFieldException {
-        E resp = (E) mService.save(req,lang);
+    E postOne(@Valid @RequestBody E req, HttpServletRequest request) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, NoSuchFieldException {
+        E resp = (E) mService.save(req);
         return resp;
     }
 
@@ -53,6 +52,7 @@ public abstract class RestEntryPoint<E extends OEntity> {
         return resp;
     }
 
+    @Secured
     @GetMapping
     public @ResponseBody
     List<E> getAll(HttpServletRequest request,
