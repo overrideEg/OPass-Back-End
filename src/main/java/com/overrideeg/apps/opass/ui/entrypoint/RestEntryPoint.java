@@ -33,25 +33,24 @@ public abstract class RestEntryPoint<E extends OEntity> {
     public RestEntryPoint() {
         this.entityClass = (Class<E>) ((ParameterizedType) this.getClass().getGenericSuperclass())
                 .getActualTypeArguments()[0];
-
     }
 
 
     @PostMapping
     public @ResponseBody
-    E postOne(@Valid @RequestBody E req,
-              @RequestHeader(name = "lang") String lang, HttpServletRequest request) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, NoSuchFieldException {
-        E resp = (E) mService.save(req,lang);
+    E postOne(@Valid @RequestBody E req, HttpServletRequest request) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, NoSuchFieldException {
+        E resp = (E) mService.save(req);
         return resp;
     }
 
 
     @PostMapping("arr")
     public @ResponseBody
-    List<E> postArray(@Valid @RequestBody List<E> inEntity,@RequestHeader(name = "lang") String lang, HttpServletRequest request) {
+    List<E> postArray(@Valid @RequestBody List<E> inEntity, HttpServletRequest request) {
         List<E> resp = mService.saveArray(inEntity);
         return resp;
     }
+
 
     @GetMapping
     public @ResponseBody
@@ -65,23 +64,23 @@ public abstract class RestEntryPoint<E extends OEntity> {
     }
 
     @GetMapping("/{id}")
-    public Optional<E> getEntityById(@PathVariable(value = "id") Long inEntityId, HttpServletRequest request) {
+    public @ResponseBody
+    Optional<E> getEntityById(@PathVariable(value = "id") Long inEntityId, HttpServletRequest request) {
         Optional<E> response = mService.find(inEntityId);
         return response;
     }
 
     @DeleteMapping("/{id}")
-    public ResponseModel deleteEntityById(@PathVariable(value = "id") Long inEntityId, HttpServletRequest request) {
+    public @ResponseBody
+    ResponseModel deleteEntityById(@PathVariable(value = "id") Long inEntityId, HttpServletRequest request) {
         ResponseModel delete = mService.delete(inEntityId);
         return delete;
     }
 
 
-
     @PutMapping
     public @ResponseBody
     ResponseModel updateEntity(@RequestBody final E inEntity, HttpServletRequest request) throws NoSuchMethodException {
-
         ResponseModel update = mService.update(inEntity);
         return update;
     }

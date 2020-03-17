@@ -10,7 +10,6 @@ import com.overrideeg.apps.opass.ui.sys.ErrorMessages;
 import com.overrideeg.apps.opass.ui.sys.RequestOperation;
 import com.overrideeg.apps.opass.ui.sys.ResponseModel;
 import com.overrideeg.apps.opass.ui.sys.ResponseStatus;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -25,7 +24,7 @@ import java.util.Optional;
  * @param <E> Entity type.
  * @author Ivan Krizsan
  */
-@Transactional
+
 public abstract class AbstractService<E extends OEntity> {
     /* Constant(s): */
 
@@ -46,37 +45,18 @@ public abstract class AbstractService<E extends OEntity> {
      * Saves the supplied entity.
      *
      * @param inEntity Entity to save.
-     * @param lang
      * @return Observable that will receive the saved entity, or exception if error occurs.
+     * @p
      */
-    public E save(final E inEntity, String lang) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, NoSuchFieldException {
-        return mRepository.persist(inEntity);
+    public E save(final E inEntity) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, NoSuchFieldException {
+        return mRepository.save(inEntity);
     }
-
-
-
-//    Product p = new Product();
-//p.setPrice(19.99D);
-//
-//    LocalizedProduct lpDe = new LocalizedProduct();
-//lpDe.setId(new LocalizedId("de"));
-//lpDe.setProduct(p);
-//lpDe.setName("Hibernate Tips - Mehr als 70 Lösungen für typische Hibernateprobleme");
-//p.getLocalizations().put("de", lpDe);
-//
-//    LocalizedProduct lpEn = new LocalizedProduct();
-//lpEn.setId(new LocalizedId("en"));
-//lpEn.setProduct(p);
-//lpEn.setName("Hibernate Tips - More than 70 solution to common Hibernate problems");
-//p.getLocalizations().put("en", lpEn);
-//
-//em.persist(p);
 
     public List<E> saveArray(final List<E> inEntity) {
         List<E> entities = new ArrayList<>();
         inEntity.forEach(e -> {
             try {
-                entities.add(save(e, null));
+                entities.add(save(e));
             } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException | NoSuchFieldException ex) {
                 ex.printStackTrace();
             }
@@ -96,6 +76,7 @@ public abstract class AbstractService<E extends OEntity> {
             E persist = mRepository.persist(inEntity);
             responseModel = new ResponseModel(persist, RequestOperation.UPDATE, ResponseStatus.SUCCESS);
         } catch (Exception e) {
+            e.printStackTrace();
             responseModel = new ResponseModel(inEntity, RequestOperation.UPDATE, ResponseStatus.ERROR);
         }
 
@@ -129,7 +110,6 @@ public abstract class AbstractService<E extends OEntity> {
      * @return Observable that will receive the found entity, or exception if
      * error occurs or no entity is found.
      */
-    @Transactional(readOnly = true)
     public Optional<E> find(Long inEntityId) {
         Optional<E> byId;
         try {
@@ -142,17 +122,14 @@ public abstract class AbstractService<E extends OEntity> {
     }
 
 
-    @Transactional(readOnly = true)
     public E find(String by, Object value) {
         return mRepository.findByField(by, value);
     }
 
-    @Transactional(readOnly = true)
     public E find(List<String> names, List values) {
         return mRepository.findBySomeFields(names, values);
     }
 
-    @Transactional(readOnly = true)
     public List<E> findWhere(List<String> names, List values) {
         return mRepository.findWhere(names, values);
     }
@@ -162,7 +139,6 @@ public abstract class AbstractService<E extends OEntity> {
      *
      * @return Observable that will receive a list of entities, or exception if error occurs.
      */
-    @Transactional(readOnly = true)
     public List<E> findAll(int start, int limit) {
         List<E> theEntitiesList = null;
         try {
@@ -189,6 +165,7 @@ public abstract class AbstractService<E extends OEntity> {
 
             responseModel = new ResponseModel(inId, RequestOperation.DELETE, ResponseStatus.SUCCESS);
         } catch (final Exception e) {
+            e.printStackTrace();
             responseModel = new ResponseModel(inId, RequestOperation.DELETE, ResponseStatus.ERROR);
             throw new CouldNotDeleteRecordException(ErrorMessages.COULD_NOT_CREATE_RECORD.getErrorMessage());
         }

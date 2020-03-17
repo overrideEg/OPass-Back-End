@@ -10,20 +10,21 @@ import java.util.Date;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public abstract class OEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private Date creationDate;
     @Temporal(TemporalType.TIMESTAMP)
     @JsonFormat(pattern = "dd/MM/yyyy hh:mm:ss", shape = JsonFormat.Shape.STRING, timezone = "Africa/Cairo")
     private Date lastUpdateDate;
 
-    @Version
-    private int version;
+//    @Version
+//    private int version;
 
     @PrePersist
     public void PrePersist() {
         creationDate = new Date(System.currentTimeMillis());
     }
+
     @PreUpdate
     public void PreUpdate() {
         lastUpdateDate = new Date(System.currentTimeMillis());
@@ -55,11 +56,11 @@ public abstract class OEntity {
     }
 
 
-    public int getVersion() {
-        return version;
-    }
-
-    public void setVersion(int version) {
-        this.version = version;
-    }
+//    public int getVersion() {
+//        return version;
+//    }
+//
+//    public void setVersion(int version) {
+//        this.version = version;
+//    }
 }

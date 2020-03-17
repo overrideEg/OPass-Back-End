@@ -16,11 +16,11 @@ public class planDetails extends OEntity {
     private currency currency;
     private Double price;
 
-    public com.overrideeg.apps.opass.io.entities.currency getCurrency() {
+    public currency getCurrency() {
         return currency;
     }
 
-    public void setCurrency(com.overrideeg.apps.opass.io.entities.currency currency) {
+    public void setCurrency(currency currency) {
         this.currency = currency;
     }
 

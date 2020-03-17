@@ -2,16 +2,15 @@ package com.overrideeg.apps.opass.io.repositories.customisation;
 
 
 import com.overrideeg.apps.opass.exceptions.NoRecordFoundException;
-import com.overrideeg.apps.opass.io.entities.system.OEntity;
 import com.overrideeg.apps.opass.system.Caching.OCacheManager;
 import com.overrideeg.apps.opass.ui.sys.ErrorMessages;
 import com.overrideeg.apps.opass.utils.JPAUtils;
 import org.springframework.data.jpa.repository.support.JpaEntityInformation;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.data.repository.NoRepositoryBean;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import javax.persistence.FlushModeType;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -22,16 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * This class implements the Spring Data JPA repository customisations.
- * Need to annotate the persist method in this class with the Spring
- * annotation @Transactional since the superclass {code SimpleJpaRepository}
- * is annotated with @Transactional that sets transactions to read-only
- * for all methods.
- *
- * @param <T> Entity type.
- * @author Ivan Krizsan
- */
+
 @NoRepositoryBean
 public class JpaRepositoryCustomisationsImpl<T> extends SimpleJpaRepository<T, Long> implements
         JpaRepositoryCustomisations<T> {
@@ -73,7 +63,6 @@ public class JpaRepositoryCustomisationsImpl<T> extends SimpleJpaRepository<T, L
 
 
     @Override
-    @Transactional
     public List<T> findAll(int start, int limit) {
         List<T> searchResults = null;
         CriteriaBuilder cb = mEntityManager.getCriteriaBuilder();
@@ -106,21 +95,11 @@ public class JpaRepositoryCustomisationsImpl<T> extends SimpleJpaRepository<T, L
     }
 
 
-
-    @Transactional
     @Override
-    public T persist(final T inEntity) {
-        T theSavedEntity = inEntity;
-
-        final Long theEntityId = ((OEntity) theSavedEntity).getId();
-        if ((theEntityId != null) && existsById(theEntityId)) {
-            theSavedEntity = mEntityManager.merge(inEntity);
-        } else {
-            mEntityManager.persist(inEntity);
-        }
-        mEntityManager.flush();
-
-        return theSavedEntity;
+    public T persist(T inEntity) {
+        mEntityManager.setFlushMode(FlushModeType.COMMIT);
+        inEntity = mEntityManager.merge(inEntity);
+        return inEntity;
     }
 
     @Override

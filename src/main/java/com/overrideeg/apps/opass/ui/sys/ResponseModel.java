@@ -5,12 +5,12 @@
  */
 package com.overrideeg.apps.opass.ui.sys;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
  * @author sergeykargopolov
  */
-@XmlRootElement
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ResponseModel<E> {
     private E entity;
     private RequestOperation requestOperation;

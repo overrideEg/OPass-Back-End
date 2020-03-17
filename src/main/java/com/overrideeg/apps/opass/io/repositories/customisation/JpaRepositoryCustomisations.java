@@ -3,7 +3,6 @@ package com.overrideeg.apps.opass.io.repositories.customisation;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.repository.NoRepositoryBean;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.LockModeType;
 import java.util.List;
@@ -18,7 +17,6 @@ import java.util.Optional;
  */
 @NoRepositoryBean
 public interface JpaRepositoryCustomisations<T> extends JpaRepository<T, Long> {
-    @Transactional
     List <T> findAll(int start, int limit);
 
     @Override

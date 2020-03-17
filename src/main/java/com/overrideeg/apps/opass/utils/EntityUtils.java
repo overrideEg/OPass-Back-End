@@ -116,11 +116,14 @@ public class EntityUtils {
     }
 
     ////
-    public static String encode(String s) {
-        byte[] encode = Base64.getEncoder().encode(StringUtils.getBytesUtf8(s));
-        return StringUtils.newStringUtf8(encode);
+    public static String encode(String stringToEncode) {
+        return Base64.getEncoder().encodeToString(StringUtils.getBytesUtf8(stringToEncode));
     }
 
+    public static String decode(String encodedString) {
+        byte[] decodedBytes = Base64.getDecoder().decode(encodedString);
+        return new String(decodedBytes);
+    }
 
     public <SRC, DIST> DIST copy(SRC src, DIST dist) {
         DIST returnValue = null;

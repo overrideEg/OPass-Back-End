@@ -7,6 +7,7 @@ package com.overrideeg.apps.opass.io.entities;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.overrideeg.apps.opass.enums.employeeStatus;
 import com.overrideeg.apps.opass.io.entities.system.OEntity;
 import com.overrideeg.apps.opass.io.valueObjects.contactInfo;
 import com.overrideeg.apps.opass.io.valueObjects.translatedField;
@@ -30,14 +31,13 @@ public class employee extends OEntity {
     @ManyToOne
     @JsonProperty(required = true)
     private branch branch;
-    @Column(unique = true)
     private Integer SSN;
     @Temporal(TemporalType.TIMESTAMP)
     @JsonFormat(pattern = "dd/MM/yyyy", shape = JsonFormat.Shape.STRING, timezone = "Africa/Cairo")
     private Date birthDate;
     @Embedded
     private contactInfo contactInfo;
-    private boolean attendanceException;
+    private Boolean attendanceException;
     @Temporal(TemporalType.TIMESTAMP)
     @JsonFormat(pattern = "dd/MM/yyyy", shape = JsonFormat.Shape.STRING, timezone = "Africa/Cairo")
     private Date contractStartDate;
@@ -49,6 +49,8 @@ public class employee extends OEntity {
     private Date firingDate;
     @OneToOne(fetch = FetchType.EAGER)
     private workShift shift;
+    @Enumerated(EnumType.STRING)
+    private employeeStatus status;
 
     public translatedField getName() {
         return name;
@@ -136,5 +138,13 @@ public class employee extends OEntity {
 
     public void setShift(workShift shift) {
         this.shift = shift;
+    }
+
+    public employeeStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(employeeStatus status) {
+        this.status = status;
     }
 }
