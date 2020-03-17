@@ -13,6 +13,7 @@
     <version>0.0.1-SNAPSHOT</version>
     <name>opass</name>
     <description>Override E-commerce project</description>
+    <packaging>war</packaging>
 
     <properties>
         <java.version>13</java.version>
@@ -82,6 +83,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>
             <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-tomcat</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

@@ -1,7 +1,6 @@
 package com.overrideeg.apps.opass.ui.entrypoint;
 
 
-import com.overrideeg.apps.opass.annotations.Secured;
 import com.overrideeg.apps.opass.io.entities.system.OEntity;
 import com.overrideeg.apps.opass.service.AbstractService;
 import com.overrideeg.apps.opass.ui.sys.ResponseModel;
@@ -52,7 +51,7 @@ public abstract class RestEntryPoint<E extends OEntity> {
         return resp;
     }
 
-    @Secured
+
     @GetMapping
     public @ResponseBody
     List<E> getAll(HttpServletRequest request,
