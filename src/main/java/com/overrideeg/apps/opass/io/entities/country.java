@@ -8,11 +8,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.overrideeg.apps.opass.io.entities.system.OEntity;
 import com.overrideeg.apps.opass.io.valueObjects.translatedField;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Entity
 @AttributeOverrides({
@@ -24,9 +21,6 @@ public class country extends OEntity {
     @Embedded
     @JsonProperty(required = true)
     private translatedField name;
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @Fetch(FetchMode.SUBSELECT)
-    private List<city> cities;
 
     public translatedField getName() {
         return name;
@@ -36,11 +30,4 @@ public class country extends OEntity {
         this.name = name;
     }
 
-    public List<city> getCities() {
-        return cities;
-    }
-
-    public void setCities(List<city> cities) {
-        this.cities = cities;
-    }
 }

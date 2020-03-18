@@ -36,9 +36,11 @@ public class UsersService extends AbstractService<Users> {
         List<String> whereNames = new ArrayList<>(Arrays.asList("userName", "email"));
         List whereValues = new ArrayList(Arrays.asList(user.getUserName(), user.getEmail()));
 
-        Users existingUser = createQuery("select u from Users u where " +
-                "(u.userName=:userName)and(u.email=:email)", whereNames, whereValues).get(0);
-
+        List<Users> query = createQuery("select u from Users u where " +
+                "(u.userName=:userName)and(u.email=:email)", whereNames, whereValues);
+        Users existingUser = new Users();
+        if (query.size() > 0)
+            existingUser = query.get(0);
         if (existingUser.getId() != null) {
             throw new CouldNotCreateRecordException(ErrorMessages.RECORD_ALREADY_EXISTS.name());
         }

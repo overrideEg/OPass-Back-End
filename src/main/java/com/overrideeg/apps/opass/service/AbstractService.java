@@ -56,7 +56,8 @@ public abstract class AbstractService<E extends OEntity> {
         List<E> entities = new ArrayList<>();
         inEntity.forEach(e -> {
             try {
-                entities.add(save(e));
+                E saved = save(e);
+                entities.add(saved);
             } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException | NoSuchFieldException ex) {
                 ex.printStackTrace();
             }

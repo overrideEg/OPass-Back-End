@@ -28,6 +28,8 @@ public class OConnection {
             properties.put("url", config.getProperty("spring.datasource.url"));
             properties.put("user", config.getProperty("spring.datasource.username"));
             properties.put("password", config.getProperty("spring.datasource.password"));
+            properties.put("spring.jpa.properties.hibernate.legacy_limit_handler", true);
+
 
         } catch (IOException ex) {
             ex.printStackTrace();

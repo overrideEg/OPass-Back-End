@@ -4,6 +4,7 @@
 
 package com.overrideeg.apps.opass.io.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.overrideeg.apps.opass.io.entities.system.OEntity;
@@ -21,7 +22,8 @@ public class city extends OEntity {
     @Embedded
     @JsonProperty(required = true)
     private translatedField name;
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private country country;
 
     public translatedField getName() {

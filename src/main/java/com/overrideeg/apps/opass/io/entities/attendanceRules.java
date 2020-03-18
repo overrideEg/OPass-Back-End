@@ -10,7 +10,6 @@ import com.overrideeg.apps.opass.io.entities.system.OEntity;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
-import java.time.DayOfWeek;
 import java.util.List;
 
 @Entity
@@ -22,7 +21,7 @@ public class attendanceRules extends OEntity {
     private Integer allowedEarlyLeaveMinutes;
     private Integer maxOverTimeHours;
     @ElementCollection
-    private List<DayOfWeek> daysOff;
+    private List<Integer> daysOff;
 
     public com.overrideeg.apps.opass.io.entities.company getCompany() {
         return company;
@@ -56,11 +55,11 @@ public class attendanceRules extends OEntity {
         this.maxOverTimeHours = maxOverTimeHours;
     }
 
-    public List<DayOfWeek> getDaysOff() {
+    public List<Integer> getDaysOff() {
         return daysOff;
     }
 
-    public void setDaysOff(List<DayOfWeek> daysOff) {
+    public void setDaysOff(List<Integer> daysOff) {
         this.daysOff = daysOff;
     }
 }
