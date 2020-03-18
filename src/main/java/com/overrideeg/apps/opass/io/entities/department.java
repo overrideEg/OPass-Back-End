@@ -10,7 +10,6 @@ import com.overrideeg.apps.opass.io.entities.system.OEntity;
 import com.overrideeg.apps.opass.io.valueObjects.translatedField;
 
 import javax.persistence.*;
-import java.time.DayOfWeek;
 import java.util.List;
 
 @Entity
@@ -28,7 +27,7 @@ public class department extends OEntity {
     private company company;
     private String phoneNumber;
     @ElementCollection
-    private List<DayOfWeek> daysOff;
+    private List<Integer> daysOff;
 
     public translatedField getName() {
         return name;
@@ -54,11 +53,11 @@ public class department extends OEntity {
         this.phoneNumber = phoneNumber;
     }
 
-    public List<DayOfWeek> getDaysOff() {
+    public List<Integer> getDaysOff() {
         return daysOff;
     }
 
-    public void setDaysOff(List<DayOfWeek> daysOff) {
+    public void setDaysOff(List<Integer> daysOff) {
         this.daysOff = daysOff;
     }
 }

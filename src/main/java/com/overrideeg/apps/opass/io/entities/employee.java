@@ -33,19 +33,19 @@ public class employee extends OEntity {
     private branch branch;
     private Integer SSN;
     @Temporal(TemporalType.TIMESTAMP)
-    @JsonFormat(pattern = "dd/MM/yyyy", shape = JsonFormat.Shape.STRING, timezone = "Africa/Cairo")
+    @JsonFormat(pattern = "dd/MM/yyyy, hh:mm:ss a", shape = JsonFormat.Shape.STRING, timezone = "Africa/Cairo")
     private Date birthDate;
     @Embedded
     private contactInfo contactInfo;
     private Boolean attendanceException;
     @Temporal(TemporalType.TIMESTAMP)
-    @JsonFormat(pattern = "dd/MM/yyyy", shape = JsonFormat.Shape.STRING, timezone = "Africa/Cairo")
+    @JsonFormat(pattern = "dd/MM/yyyy, hh:mm:ss a", shape = JsonFormat.Shape.STRING, timezone = "Africa/Cairo")
     private Date contractStartDate;
     @Temporal(TemporalType.TIMESTAMP)
-    @JsonFormat(pattern = "dd/MM/yyyy", shape = JsonFormat.Shape.STRING, timezone = "Africa/Cairo")
+    @JsonFormat(pattern = "dd/MM/yyyy, hh:mm:ss a", shape = JsonFormat.Shape.STRING, timezone = "Africa/Cairo")
     private Date contractEndDate;
     @Temporal(TemporalType.TIMESTAMP)
-    @JsonFormat(pattern = "dd/MM/yyyy", shape = JsonFormat.Shape.STRING, timezone = "Africa/Cairo")
+    @JsonFormat(pattern = "dd/MM/yyyy, hh:mm:ss a", shape = JsonFormat.Shape.STRING, timezone = "Africa/Cairo")
     private Date firingDate;
     @OneToOne(fetch = FetchType.EAGER)
     private workShift shift;

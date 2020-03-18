@@ -18,7 +18,7 @@ public class attendance extends OEntity {
     @ManyToOne
     private employee employee;
     @Temporal(TemporalType.TIMESTAMP)
-    @JsonFormat(pattern = "dd/MM/yyyy hh:mm:ss", shape = JsonFormat.Shape.STRING, timezone = "Africa/Cairo")
+    @JsonFormat(pattern = "dd/MM/yyyy, hh:mm:ss a", shape = JsonFormat.Shape.STRING, timezone = "Africa/Cairo")
     private Date scanTime;
     @Enumerated(EnumType.STRING)
     private attType attType;

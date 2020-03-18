@@ -22,7 +22,10 @@ import java.util.Optional;
  * @author Ivan Krizsan
  */
 
-
+@CrossOrigin(origins = "*"
+        , methods = {RequestMethod.POST,
+        RequestMethod.DELETE, RequestMethod.GET,
+        RequestMethod.PUT, RequestMethod.OPTIONS, RequestMethod.HEAD}, allowCredentials = "true", allowedHeaders = "*")
 public abstract class RestEntryPoint<E extends OEntity> {
     /* Constant(s): */
 
@@ -34,7 +37,6 @@ public abstract class RestEntryPoint<E extends OEntity> {
         this.entityClass = (Class<E>) ((ParameterizedType) this.getClass().getGenericSuperclass())
                 .getActualTypeArguments()[0];
     }
-
 
     @PostMapping
     public @ResponseBody
