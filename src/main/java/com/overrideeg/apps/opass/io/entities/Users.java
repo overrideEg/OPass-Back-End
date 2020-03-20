@@ -4,9 +4,7 @@
 
 package com.overrideeg.apps.opass.io.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.*;
 import com.overrideeg.apps.opass.enums.userType;
 import com.overrideeg.apps.opass.io.entities.system.OEntity;
 
@@ -28,6 +26,7 @@ public class Users extends OEntity {
     @Enumerated(EnumType.STRING)
     private userType userType;
     @ManyToOne
+    @JsonFormat(lenient = OptBoolean.TRUE)
     private employee employee;
     @Transient
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY, required = true)

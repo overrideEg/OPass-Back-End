@@ -33,6 +33,10 @@ public class UsersService extends AbstractService<Users> {
             throw new MissingRequiredFieldException(ErrorMessages.MISSING_REQUIRED_FIELD.getErrorMessage());
         }
 
+        if (user.getEmployee().getId() == null && user.getEmployee() != null) {
+            user.setEmployee(null);
+        }
+
         List<String> whereNames = new ArrayList<>(Arrays.asList("userName", "email"));
         List whereValues = new ArrayList(Arrays.asList(user.getUserName(), user.getEmail()));
 

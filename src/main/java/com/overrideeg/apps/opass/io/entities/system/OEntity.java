@@ -14,7 +14,7 @@ public abstract class OEntity {
     private Long id;
     private Date creationDate;
     @Temporal(TemporalType.TIMESTAMP)
-    @JsonFormat(pattern = "dd/MM/yyyy hh:mm:ss", shape = JsonFormat.Shape.STRING, timezone = "Africa/Cairo")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, timezone = "Africa/Cairo")
     private Date lastUpdateDate;
 
 //    @Version

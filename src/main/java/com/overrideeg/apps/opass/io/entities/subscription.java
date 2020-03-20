@@ -6,7 +6,7 @@ package com.overrideeg.apps.opass.io.entities;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.OptBoolean;
 import com.overrideeg.apps.opass.io.entities.system.OEntity;
 
 import javax.persistence.Entity;
@@ -23,19 +23,19 @@ public class subscription extends OEntity {
     @ManyToOne
     private subscriptionPlan subscriptionPlan;
     @Temporal(TemporalType.TIMESTAMP)
-    @JsonFormat(pattern = "dd/MM/yyyy, hh:mm:ss a", shape = JsonFormat.Shape.STRING, timezone = "Africa/Cairo")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, lenient = OptBoolean.TRUE, timezone = "Africa/Cairo")
     private Date fromDate;
     @Temporal(TemporalType.TIMESTAMP)
-    @JsonFormat(pattern = "dd/MM/yyyy, hh:mm:ss a", shape = JsonFormat.Shape.STRING, timezone = "Africa/Cairo")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, lenient = OptBoolean.TRUE, timezone = "Africa/Cairo")
     private Date toDate;
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private Double price;
+    private Double subscriptionPrice;
     private Integer maxNoOfEmployees;
 
 //    @PrePersist
 //    public void PrePersist() {
 //        // todo add price here assuming to fromdate to date "calc dates 🙄"
 //    }
+
 
     public com.overrideeg.apps.opass.io.entities.company getCompany() {
         return company;
@@ -45,11 +45,11 @@ public class subscription extends OEntity {
         this.company = company;
     }
 
-    public subscriptionPlan getSubscriptionPlan() {
+    public com.overrideeg.apps.opass.io.entities.subscriptionPlan getSubscriptionPlan() {
         return subscriptionPlan;
     }
 
-    public void setSubscriptionPlan(subscriptionPlan subscriptionPlan) {
+    public void setSubscriptionPlan(com.overrideeg.apps.opass.io.entities.subscriptionPlan subscriptionPlan) {
         this.subscriptionPlan = subscriptionPlan;
     }
 
@@ -69,12 +69,12 @@ public class subscription extends OEntity {
         this.toDate = toDate;
     }
 
-    public Double getPrice() {
-        return price;
+    public Double getSubscriptionPrice() {
+        return subscriptionPrice;
     }
 
-    public void setPrice(Double price) {
-        this.price = price;
+    public void setSubscriptionPrice(Double subscriptionPrice) {
+        this.subscriptionPrice = subscriptionPrice;
     }
 
     public Integer getMaxNoOfEmployees() {
