@@ -8,7 +8,6 @@ import com.overrideeg.apps.opass.exceptions.AuthenticationException;
 import com.overrideeg.apps.opass.io.entities.Users;
 import com.overrideeg.apps.opass.service.UsersService;
 import com.overrideeg.apps.opass.system.ApiUrls;
-import com.overrideeg.apps.opass.system.Connection.OConnection;
 import com.overrideeg.apps.opass.ui.sys.ErrorMessages;
 import com.overrideeg.apps.opass.utils.EntityUtils;
 import org.springframework.http.HttpHeaders;
@@ -66,7 +65,7 @@ public class AuthenticationFilter implements HandlerInterceptor {
 
     private void handleAuthRequest(HttpServletRequest hsr) throws IOException {
         Properties config = new Properties();
-        InputStream prop = OConnection.class.getClassLoader().getResourceAsStream("application.properties");
+        InputStream prop = getClass().getClassLoader().getResourceAsStream("application.properties");
         config.load(prop);
         String clients = config.getProperty("clientsAllowed");
         ArrayList<String> allowed = new ArrayList<>(Arrays.asList(clients.split(",")));
