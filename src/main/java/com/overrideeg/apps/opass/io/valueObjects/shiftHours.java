@@ -5,6 +5,7 @@
 package com.overrideeg.apps.opass.io.valueObjects;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.OptBoolean;
 
 import javax.persistence.Embeddable;
 import javax.persistence.Temporal;
@@ -14,25 +15,25 @@ import java.util.Date;
 @Embeddable
 public class shiftHours {
     @Temporal(TemporalType.TIME)
-    @JsonFormat(pattern = "hh:mm:sss")
-    private Date fromHours;
+    @JsonFormat(pattern = "hh:mm:ss", lenient = OptBoolean.TRUE, shape = JsonFormat.Shape.STRING, timezone = "Africa/Cairo")
+    private Date fromHour;
     @Temporal(TemporalType.TIME)
-    @JsonFormat(pattern = "hh:mm:sss", shape = JsonFormat.Shape.STRING)
-    private Date toHours;
+    @JsonFormat(pattern = "hh:mm:ss", lenient = OptBoolean.TRUE, with = JsonFormat.Feature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, shape = JsonFormat.Shape.STRING, timezone = "Africa/Cairo")
+    private Date toHour;
 
-    public Date getFromHours() {
-        return fromHours;
+    public Date getFromHour() {
+        return fromHour;
     }
 
-    public void setFromHours(Date fromHours) {
-        this.fromHours = fromHours;
+    public void setFromHour(Date fromHour) {
+        this.fromHour = fromHour;
     }
 
-    public Date getToHours() {
-        return toHours;
+    public Date getToHour() {
+        return toHour;
     }
 
-    public void setToHours(Date toHours) {
-        this.toHours = toHours;
+    public void setToHour(Date toHour) {
+        this.toHour = toHour;
     }
 }

@@ -12,6 +12,7 @@ import java.util.List;
 
 @Component
 @RequestMapping(ApiUrls.Users_EP)
+
 public class UsersEntryPoint extends RestEntryPoint<Users> {
 
     public UsersEntryPoint(final UsersService inService) {

@@ -7,6 +7,7 @@ package com.overrideeg.apps.opass.io.entities;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.OptBoolean;
 import com.overrideeg.apps.opass.enums.employeeStatus;
 import com.overrideeg.apps.opass.io.entities.system.OEntity;
 import com.overrideeg.apps.opass.io.valueObjects.contactInfo;
@@ -31,21 +32,21 @@ public class employee extends OEntity {
     @ManyToOne
     @JsonProperty(required = true)
     private branch branch;
-    private Integer SSN;
+    private String SSN;
     @Temporal(TemporalType.TIMESTAMP)
-    @JsonFormat(pattern = "dd/MM/yyyy, hh:mm:ss a", shape = JsonFormat.Shape.STRING, timezone = "Africa/Cairo")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, timezone = "Africa/Cairo")
     private Date birthDate;
     @Embedded
     private contactInfo contactInfo;
     private Boolean attendanceException;
     @Temporal(TemporalType.TIMESTAMP)
-    @JsonFormat(pattern = "dd/MM/yyyy, hh:mm:ss a", shape = JsonFormat.Shape.STRING, timezone = "Africa/Cairo")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, lenient = OptBoolean.TRUE, timezone = "Africa/Cairo")
     private Date contractStartDate;
     @Temporal(TemporalType.TIMESTAMP)
-    @JsonFormat(pattern = "dd/MM/yyyy, hh:mm:ss a", shape = JsonFormat.Shape.STRING, timezone = "Africa/Cairo")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, lenient = OptBoolean.TRUE, timezone = "Africa/Cairo")
     private Date contractEndDate;
     @Temporal(TemporalType.TIMESTAMP)
-    @JsonFormat(pattern = "dd/MM/yyyy, hh:mm:ss a", shape = JsonFormat.Shape.STRING, timezone = "Africa/Cairo")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, lenient = OptBoolean.TRUE, timezone = "Africa/Cairo")
     private Date firingDate;
     @OneToOne(fetch = FetchType.EAGER)
     private workShift shift;
@@ -76,11 +77,11 @@ public class employee extends OEntity {
         this.branch = branch;
     }
 
-    public Integer getSSN() {
+    public String getSSN() {
         return SSN;
     }
 
-    public void setSSN(Integer SSN) {
+    public void setSSN(String SSN) {
         this.SSN = SSN;
     }
 
@@ -100,11 +101,11 @@ public class employee extends OEntity {
         this.contactInfo = contactInfo;
     }
 
-    public boolean isAttendanceException() {
+    public Boolean getAttendanceException() {
         return attendanceException;
     }
 
-    public void setAttendanceException(boolean attendanceException) {
+    public void setAttendanceException(Boolean attendanceException) {
         this.attendanceException = attendanceException;
     }
 
