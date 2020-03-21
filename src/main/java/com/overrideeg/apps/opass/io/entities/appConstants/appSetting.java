@@ -12,7 +12,8 @@ import javax.persistence.*;
 @Entity
 @AttributeOverrides({
         @AttributeOverride(name = "about.ar", column = @Column(name = "about_ar")),
-        @AttributeOverride(name = "about.en", column = @Column(name = "about_en"))
+        @AttributeOverride(name = "about.en", column = @Column(name = "about_en")),
+        @AttributeOverride(name = "about.tr", column = @Column(name = "about_tr")),
 })
 public class appSetting extends OEntity {
     @Embedded

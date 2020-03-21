@@ -13,8 +13,10 @@ import javax.persistence.*;
 @AttributeOverrides({
         @AttributeOverride(name = "question.ar", column = @Column(name = "question_ar")),
         @AttributeOverride(name = "question.en", column = @Column(name = "question_en")),
+        @AttributeOverride(name = "question.tr", column = @Column(name = "question_tr")),
         @AttributeOverride(name = "answer.ar", column = @Column(name = "answer_ar")),
         @AttributeOverride(name = "answer.en", column = @Column(name = "answer_en")),
+        @AttributeOverride(name = "answer.tr", column = @Column(name = "answer_tr")),
 })
 public class faq extends OEntity {
     @Embedded

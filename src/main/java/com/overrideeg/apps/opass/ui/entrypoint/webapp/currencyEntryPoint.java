@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
 
-
 @Component
 @RequestMapping(ApiUrls.currency_EP)
 public class currencyEntryPoint extends RestEntryPoint<currency> {

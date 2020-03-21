@@ -140,6 +140,13 @@
             <artifactId>springdoc-openapi-data-rest</artifactId>
             <version>1.2.32</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.flywaydb/flyway-core -->
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+            <version>6.3.1</version>
+        </dependency>
+
     </dependencies>
 
     <build>

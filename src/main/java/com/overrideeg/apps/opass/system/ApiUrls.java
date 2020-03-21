@@ -41,5 +41,6 @@ public class ApiUrls {
 
     public static final String qrMachine_EP = "qrMachine";
 
+
 }
 

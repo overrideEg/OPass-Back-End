@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
 
-
 @Component
 @RequestMapping(ApiUrls.country_EP)
 public class countryEntryPoint extends RestEntryPoint<country> {

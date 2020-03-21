@@ -4,17 +4,14 @@
 
 package com.overrideeg.apps.opass.io.valueObjects;
 
-import com.overrideeg.apps.opass.io.entities.city;
 
 import javax.persistence.Embeddable;
-import javax.persistence.ManyToOne;
 
 @Embeddable
 public class contactInfo {
     private String address1;
     private String address2;
-    @ManyToOne
-    private city city;
+    private String city;
     private String region;
     private String area;
     private String mapLocation;
@@ -43,13 +40,7 @@ public class contactInfo {
         this.address2 = address2;
     }
 
-    public com.overrideeg.apps.opass.io.entities.city getCity() {
-        return city;
-    }
 
-    public void setCity(com.overrideeg.apps.opass.io.entities.city city) {
-        this.city = city;
-    }
 
     public String getRegion() {
         return region;
@@ -101,6 +92,14 @@ public class contactInfo {
 
     public String getFaxNumber() {
         return faxNumber;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
     }
 
     public void setFaxNumber(String faxNumber) {

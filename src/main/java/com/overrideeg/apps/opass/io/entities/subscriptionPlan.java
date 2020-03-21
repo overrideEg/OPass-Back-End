@@ -6,7 +6,6 @@ package com.overrideeg.apps.opass.io.entities;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.overrideeg.apps.opass.io.details.planDetails;
 import com.overrideeg.apps.opass.io.entities.system.OEntity;
 import com.overrideeg.apps.opass.io.valueObjects.translatedField;
 import org.hibernate.annotations.Fetch;
@@ -18,7 +17,8 @@ import java.util.List;
 @Entity
 @AttributeOverrides({
         @AttributeOverride(name = "name.ar", column = @Column(name = "name_ar")),
-        @AttributeOverride(name = "name.en", column = @Column(name = "name_en"))
+        @AttributeOverride(name = "name.en", column = @Column(name = "name_en")),
+        @AttributeOverride(name = "name.tr", column = @Column(name = "name_tr")),
 })
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class subscriptionPlan extends OEntity {
@@ -28,7 +28,7 @@ public class subscriptionPlan extends OEntity {
     private Integer durationDays;
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @Fetch(FetchMode.SUBSELECT)
-    private List<planDetails> planDetails;
+    private List<com.overrideeg.apps.opass.io.entities.details.planDetails> planDetails;
     private Integer fromNoOfEmployees;
     private Integer toNoOfEmployees;
 
@@ -48,11 +48,11 @@ public class subscriptionPlan extends OEntity {
         this.durationDays = durationDays;
     }
 
-    public List<com.overrideeg.apps.opass.io.details.planDetails> getPlanDetails() {
+    public List<com.overrideeg.apps.opass.io.entities.details.planDetails> getPlanDetails() {
         return planDetails;
     }
 
-    public void setPlanDetails(List<com.overrideeg.apps.opass.io.details.planDetails> planDetails) {
+    public void setPlanDetails(List<com.overrideeg.apps.opass.io.entities.details.planDetails> planDetails) {
         this.planDetails = planDetails;
     }
 
