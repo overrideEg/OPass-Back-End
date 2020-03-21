@@ -19,7 +19,8 @@ import java.util.Date;
 @Entity
 @AttributeOverrides({
         @AttributeOverride(name = "name.ar", column = @Column(name = "name_ar")),
-        @AttributeOverride(name = "name.en", column = @Column(name = "name_en"))
+        @AttributeOverride(name = "name.en", column = @Column(name = "name_en")),
+        @AttributeOverride(name = "name.tr", column = @Column(name = "name_tr")),
 })
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class employee extends OEntity {

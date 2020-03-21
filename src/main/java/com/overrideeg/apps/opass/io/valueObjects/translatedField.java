@@ -6,6 +6,8 @@ import javax.persistence.Embeddable;
 public class translatedField {
     private String ar;
     private String en;
+    private String tr;
+
 
     public String getAr() {
         return ar;
@@ -21,5 +23,13 @@ public class translatedField {
 
     public void setEn(String en) {
         this.en = en;
+    }
+
+    public String getTr() {
+        return tr;
+    }
+
+    public void setTr(String tr) {
+        this.tr = tr;
     }
 }

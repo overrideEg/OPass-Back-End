@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
 
-
 @Component
 @RequestMapping(ApiUrls.subscription_EP)
 public class subscriptionEntryPoint extends RestEntryPoint<subscription> {

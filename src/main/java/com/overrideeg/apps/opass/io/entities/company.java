@@ -11,8 +11,10 @@ import javax.persistence.*;
 @AttributeOverrides({
         @AttributeOverride(name = "name.ar", column = @Column(name = "name_ar")),
         @AttributeOverride(name = "name.en", column = @Column(name = "name_en")),
+        @AttributeOverride(name = "name.tr", column = @Column(name = "name_tr")),
         @AttributeOverride(name = "description.ar", column = @Column(name = "description_ar")),
         @AttributeOverride(name = "description.en", column = @Column(name = "description_en")),
+        @AttributeOverride(name = "description.tr", column = @Column(name = "description_tr")),
 })
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class company extends OEntity {
@@ -26,6 +28,9 @@ public class company extends OEntity {
     private String phoneNumber;
     @ManyToOne
     private country country;
+    private String database_name;
+    private Boolean enabled;
+
 
     public translatedField getName() {
         return name;
@@ -65,5 +70,21 @@ public class company extends OEntity {
 
     public void setCountry(com.overrideeg.apps.opass.io.entities.country country) {
         this.country = country;
+    }
+
+    public String getDatabase_name() {
+        return database_name;
+    }
+
+    public void setDatabase_name(String database_name) {
+        this.database_name = database_name;
+    }
+
+    public Boolean getEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
     }
 }

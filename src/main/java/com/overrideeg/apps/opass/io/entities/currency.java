@@ -15,8 +15,10 @@ import javax.persistence.*;
 @AttributeOverrides({
         @AttributeOverride(name = "name.ar", column = @Column(name = "name_ar")),
         @AttributeOverride(name = "name.en", column = @Column(name = "name_en")),
+        @AttributeOverride(name = "name.tr", column = @Column(name = "name_tr")),
         @AttributeOverride(name = "fractionName.ar", column = @Column(name = "fractionName_ar")),
         @AttributeOverride(name = "fractionName.en", column = @Column(name = "fractionName_en")),
+        @AttributeOverride(name = "fractionName.tr", column = @Column(name = "fractionName_tr")),
 })
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class currency extends OEntity {

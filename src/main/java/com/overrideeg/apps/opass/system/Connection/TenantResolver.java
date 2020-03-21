@@ -31,7 +31,7 @@ public class TenantResolver {
         if (tenantId == null)
             return null;
         try {
-            return jdbcTemplate.queryForObject("SELECT database_name FROM tenant WHERE tenant_id = ?", String.class, tenantId);
+            return jdbcTemplate.queryForObject("SELECT database_name FROM company WHERE id = ?", String.class, tenantId);
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
@@ -43,7 +43,9 @@ public class TenantResolver {
 
         try {
             return jdbcTemplate.queryForObject(
-                    "SELECT t.database_name FROM user_tenant ut INNER JOIN tenant t on t.id = ut.tenant_id WHERE ut.user_name =  ?",
+                    "SELECT c.database_name FROM Users u \n" +
+                            "INNER JOIN company c on c.id = u.company_id\n" +
+                            " WHERE u.user_name  =  ?",
                     String.class, username);
         } catch (EmptyResultDataAccessException e) {
             return null;
@@ -56,7 +58,7 @@ public class TenantResolver {
             return null;
         try {
             return jdbcTemplate.queryForObject(
-                    "SELECT t.tenant_id FROM user_tenant ut INNER JOIN tenant t on t.id = ut.tenant_id WHERE ut.user_name =  ?", Long.class,
+                    "SELECT c.id FROM Users u INNER JOIN company c on c.id = u.company_id WHERE u.user_name =  ?", Long.class,
                     username);
 
         } catch (EmptyResultDataAccessException e) {

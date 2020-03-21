@@ -4,8 +4,9 @@
 
 package com.overrideeg.apps.opass.io.entities;
 
-import com.fasterxml.jackson.annotation.*;
-import com.overrideeg.apps.opass.enums.userType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.overrideeg.apps.opass.io.entities.system.OEntity;
 
 import javax.persistence.*;
@@ -24,16 +25,16 @@ public class Users extends OEntity {
     @JsonIgnore
     private String token;
     @Enumerated(EnumType.STRING)
-    private userType userType;
+    private com.overrideeg.apps.opass.enums.userType userType;
     @ManyToOne
-    @JsonFormat(lenient = OptBoolean.TRUE)
-    private employee employee;
+    private com.overrideeg.apps.opass.io.entities.company company;
     @Transient
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY, required = true)
     private String password;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String macAddress;
-
+    @ManyToOne
+    private employee employee;
 
     public String getUserId() {
         return userId;
@@ -91,12 +92,12 @@ public class Users extends OEntity {
         this.userType = userType;
     }
 
-    public com.overrideeg.apps.opass.io.entities.employee getEmployee() {
-        return employee;
+    public com.overrideeg.apps.opass.io.entities.company getCompany() {
+        return company;
     }
 
-    public void setEmployee(com.overrideeg.apps.opass.io.entities.employee employee) {
-        this.employee = employee;
+    public void setCompany(com.overrideeg.apps.opass.io.entities.company company) {
+        this.company = company;
     }
 
     public String getPassword() {
@@ -113,5 +114,13 @@ public class Users extends OEntity {
 
     public void setMacAddress(String macAddress) {
         this.macAddress = macAddress;
+    }
+
+    public com.overrideeg.apps.opass.io.entities.employee getEmployee() {
+        return employee;
+    }
+
+    public void setEmployee(com.overrideeg.apps.opass.io.entities.employee employee) {
+        this.employee = employee;
     }
 }

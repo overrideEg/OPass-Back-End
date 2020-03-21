@@ -13,8 +13,10 @@ import javax.persistence.*;
 @AttributeOverrides({
         @AttributeOverride(name = "title.ar", column = @Column(name = "title_ar")),
         @AttributeOverride(name = "title.en", column = @Column(name = "title_en")),
+        @AttributeOverride(name = "title.tr", column = @Column(name = "title_tr")),
         @AttributeOverride(name = "body.ar", column = @Column(name = "body_ar")),
         @AttributeOverride(name = "body.en", column = @Column(name = "body_en")),
+        @AttributeOverride(name = "body.tr", column = @Column(name = "body_tr")),
 })
 public class termsAndConditions extends OEntity {
     @Embedded

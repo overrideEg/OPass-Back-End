@@ -8,7 +8,6 @@ import javax.persistence.*;
 
 
 @Entity
-@Table(name = "tenant_specific_data")
 public class TenantSpecificData {
 
     @Id
