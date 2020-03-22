@@ -7,8 +7,6 @@ import com.overrideeg.apps.opass.ui.entrypoint.RestEntryPoint;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.List;
-
 
 @Component
 @RequestMapping(ApiUrls.department_EP)
@@ -18,9 +16,5 @@ public class departmentEntryPoint extends RestEntryPoint<department> {
         setService(inService);
     }
 
-    @Override
-    protected department[] entityListToArray(List<department> inEntityList) {
-        return inEntityList.toArray(new department[inEntityList.size()]);
-    }
 
 }

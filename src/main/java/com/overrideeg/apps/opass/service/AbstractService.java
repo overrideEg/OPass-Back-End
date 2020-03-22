@@ -6,6 +6,7 @@ import com.overrideeg.apps.opass.exceptions.CouldNotUpdateRecordException;
 import com.overrideeg.apps.opass.exceptions.NoRecordFoundException;
 import com.overrideeg.apps.opass.io.entities.system.OEntity;
 import com.overrideeg.apps.opass.io.repositories.customisation.JpaRepositoryCustomisations;
+import com.overrideeg.apps.opass.system.Connection.TenantContext;
 import com.overrideeg.apps.opass.ui.sys.ErrorMessages;
 import com.overrideeg.apps.opass.ui.sys.RequestOperation;
 import com.overrideeg.apps.opass.ui.sys.ResponseModel;
@@ -198,4 +199,9 @@ public abstract class AbstractService<E extends OEntity> {
     }
 
 
+    public E save(E inEntity, Long companyId) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, NoSuchFieldException {
+        TenantContext.setCurrentTenant(companyId);
+        return save(inEntity);
+
+    }
 }

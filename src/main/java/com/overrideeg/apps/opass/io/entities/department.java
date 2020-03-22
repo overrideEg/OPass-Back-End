@@ -23,7 +23,6 @@ public class department extends OEntity {
     @Embedded
     @JsonProperty(required = true)
     private translatedField name;
-
     private String phoneNumber;
     @ElementCollection
     private List<Integer> daysOff;

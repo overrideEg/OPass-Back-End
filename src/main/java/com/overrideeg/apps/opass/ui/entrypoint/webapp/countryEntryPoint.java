@@ -7,8 +7,6 @@ import com.overrideeg.apps.opass.ui.entrypoint.RestEntryPoint;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.List;
-
 @Component
 @RequestMapping(ApiUrls.country_EP)
 public class countryEntryPoint extends RestEntryPoint<country> {
@@ -17,9 +15,5 @@ public class countryEntryPoint extends RestEntryPoint<country> {
         setService(inService);
     }
 
-    @Override
-    protected country[] entityListToArray(List<country> inEntityList) {
-        return inEntityList.toArray(new country[inEntityList.size()]);
-    }
 
 }

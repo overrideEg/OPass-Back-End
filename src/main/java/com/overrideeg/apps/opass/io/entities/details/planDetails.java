@@ -4,6 +4,7 @@
 
 package com.overrideeg.apps.opass.io.entities.details;
 
+import com.overrideeg.apps.opass.io.entities.currency;
 import com.overrideeg.apps.opass.io.entities.system.OEntity;
 
 import javax.persistence.Entity;
@@ -15,11 +16,11 @@ public class planDetails extends OEntity {
     private com.overrideeg.apps.opass.io.entities.currency currency;
     private Double price;
 
-    public com.overrideeg.apps.opass.io.entities.currency getCurrency() {
+    public currency getCurrency() {
         return currency;
     }
 
-    public void setCurrency(com.overrideeg.apps.opass.io.entities.currency currency) {
+    public void setCurrency(currency currency) {
         this.currency = currency;
     }
 

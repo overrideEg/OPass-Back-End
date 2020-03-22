@@ -32,15 +32,15 @@ public class ApiUrls {
 
     public static final String Users_EP = "User";
 
+
+    public static final String qrMachine_EP = "qrMachine";
+
+
     public static final String appSetting_EP = "appSetting";
 
     public static final String faq_EP = "faq";
 
     public static final String termsAndConditions_EP = "termsAndConditions";
-
-
-    public static final String qrMachine_EP = "qrMachine";
-
 
 }
 

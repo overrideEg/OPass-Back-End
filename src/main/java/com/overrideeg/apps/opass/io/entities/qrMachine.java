@@ -5,41 +5,48 @@
 package com.overrideeg.apps.opass.io.entities;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.overrideeg.apps.opass.io.entities.system.OEntity;
 
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.*;
 import java.util.Date;
 
 @Entity
 public class qrMachine extends OEntity {
     @ManyToOne
+    @JsonProperty(required = true)
     private branch branch;
     @ManyToOne
+    @JsonProperty(required = true)
     private department department;
     private Boolean isStatic;
     @Temporal(TemporalType.TIMESTAMP)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, timezone = "Africa/Cairo")
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    @JsonProperty(required = true)
     private Date issueDate;
     @Temporal(TemporalType.TIMESTAMP)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, timezone = "Africa/Cairo")
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    @JsonProperty(required = true)
     private Date expireDate;
+    @Column(unique = true)
     private String macAddress;
-    public com.overrideeg.apps.opass.io.entities.branch getBranch() {
+    @JsonProperty(required = true)
+    private Long changeDuration;
+
+
+    public branch getBranch() {
         return branch;
     }
 
-    public void setBranch(com.overrideeg.apps.opass.io.entities.branch branch) {
+    public void setBranch(branch branch) {
         this.branch = branch;
     }
 
-    public com.overrideeg.apps.opass.io.entities.department getDepartment() {
+    public department getDepartment() {
         return department;
     }
 
-    public void setDepartment(com.overrideeg.apps.opass.io.entities.department department) {
+    public void setDepartment(department department) {
         this.department = department;
     }
 
@@ -73,5 +80,13 @@ public class qrMachine extends OEntity {
 
     public void setMacAddress(String macAddress) {
         this.macAddress = macAddress;
+    }
+
+    public Long getChangeDuration() {
+        return changeDuration;
+    }
+
+    public void setChangeDuration(Long changeDuration) {
+        this.changeDuration = changeDuration;
     }
 }

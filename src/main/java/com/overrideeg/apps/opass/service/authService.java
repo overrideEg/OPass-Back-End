@@ -80,16 +80,20 @@ public class authService {
     }
 
     private void updateUserProfile(Users userProfile) {
-
         try {
-            this.usersService.update(userProfile);
+            /* not tested */
+            Users users = this.usersService.find(userProfile.getId()).get();
+            if (users.getMacAddress() != null && users.getMacAddress() != userProfile.getMacAddress())
+                throw new AuthenticationException(ErrorMessages.MAC_ADDRESS_ILLEGAL.getErrorMessage());
+            else
+                this.usersService.update(userProfile);
 
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
         }
     }
 
-    public void resetSecurityCridentials(String password, Users userProfile) {
+    public void resetSecurityCridentials(String password, Users userProfile, String macAddress) {
         // Gerenerate a new salt
         EntityUtils userUtils = new EntityUtils();
         String salt = userUtils.getSalt(30);
@@ -98,6 +102,7 @@ public class authService {
         String securePassword = userUtils.generateSecurePassword(password, salt);
         userProfile.setSalt(salt);
         userProfile.setEncryptedPassword(securePassword);
+        userProfile.setMacAddress(macAddress);
 
         // Update user profile
         updateUserProfile(userProfile);

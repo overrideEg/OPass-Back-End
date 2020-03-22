@@ -7,8 +7,6 @@ import com.overrideeg.apps.opass.ui.entrypoint.RestEntryPoint;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.List;
-
 @Component
 @RequestMapping(ApiUrls.qrMachine_EP)
 public class qrMachineEntryPoint extends RestEntryPoint<qrMachine> {
@@ -17,9 +15,5 @@ public class qrMachineEntryPoint extends RestEntryPoint<qrMachine> {
         setService(inService);
     }
 
-    @Override
-    protected qrMachine[] entityListToArray(List<qrMachine> inEntityList) {
-        return inEntityList.toArray(new qrMachine[inEntityList.size()]);
-    }
 
 }

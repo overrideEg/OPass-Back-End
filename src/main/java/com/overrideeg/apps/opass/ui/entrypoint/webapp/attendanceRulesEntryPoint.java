@@ -7,8 +7,6 @@ import com.overrideeg.apps.opass.ui.entrypoint.RestEntryPoint;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.List;
-
 
 @Component
 @RequestMapping(ApiUrls.attendanceRules_EP)
@@ -18,9 +16,5 @@ public class attendanceRulesEntryPoint extends RestEntryPoint<attendanceRules> {
         setService(inService);
     }
 
-    @Override
-    protected attendanceRules[] entityListToArray(List<attendanceRules> inEntityList) {
-        return inEntityList.toArray(new attendanceRules[inEntityList.size()]);
-    }
 
 }

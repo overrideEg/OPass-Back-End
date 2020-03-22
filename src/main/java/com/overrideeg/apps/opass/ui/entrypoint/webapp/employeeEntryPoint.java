@@ -7,7 +7,9 @@ import com.overrideeg.apps.opass.ui.entrypoint.RestEntryPoint;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.List;
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+import java.lang.reflect.InvocationTargetException;
 
 
 @Component
@@ -19,8 +21,7 @@ public class employeeEntryPoint extends RestEntryPoint<employee> {
     }
 
     @Override
-    protected employee[] entityListToArray(List<employee> inEntityList) {
-        return inEntityList.toArray(new employee[inEntityList.size()]);
+    public employee postOne(@Valid employee req, Long tenantId, HttpServletRequest request) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, NoSuchFieldException {
+        return mService.save(req, tenantId);
     }
-
 }

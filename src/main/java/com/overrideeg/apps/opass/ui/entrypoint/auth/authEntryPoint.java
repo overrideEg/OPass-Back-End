@@ -33,7 +33,7 @@ public class authEntryPoint {
         Users authenticatedUser = authenticationService.authenticate(loginCredentials.getUserName(), loginCredentials.getPassword());
 
         // Reset Access Token
-        authenticationService.resetSecurityCridentials(loginCredentials.getPassword(), authenticatedUser);
+        authenticationService.resetSecurityCridentials(loginCredentials.getPassword(), authenticatedUser, loginCredentials.getMacAddress());
 
         String accessToken = authenticationService.issueAccessToken(authenticatedUser);
 

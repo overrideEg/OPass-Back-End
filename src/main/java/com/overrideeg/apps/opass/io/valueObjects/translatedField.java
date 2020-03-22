@@ -2,6 +2,11 @@ package com.overrideeg.apps.opass.io.valueObjects;
 
 import javax.persistence.Embeddable;
 
+/**
+ * translate embeddable object
+ * here 3 languages and can add more
+ * arabic , english and turkish
+ */
 @Embeddable
 public class translatedField {
     private String ar;

@@ -19,6 +19,7 @@ public class Users extends OEntity {
     private String userName;
     @JsonIgnore
     private String encryptedPassword;
+    @Column(unique = true)
     private String email;
     @JsonIgnore
     private String salt;
@@ -31,10 +32,10 @@ public class Users extends OEntity {
     @Transient
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY, required = true)
     private String password;
+    @Column(unique = true)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String macAddress;
-    @ManyToOne
-    private employee employee;
+
 
     public String getUserId() {
         return userId;
@@ -92,11 +93,11 @@ public class Users extends OEntity {
         this.userType = userType;
     }
 
-    public com.overrideeg.apps.opass.io.entities.company getCompany() {
+    public company getCompany() {
         return company;
     }
 
-    public void setCompany(com.overrideeg.apps.opass.io.entities.company company) {
+    public void setCompany(company company) {
         this.company = company;
     }
 
@@ -116,11 +117,5 @@ public class Users extends OEntity {
         this.macAddress = macAddress;
     }
 
-    public com.overrideeg.apps.opass.io.entities.employee getEmployee() {
-        return employee;
-    }
 
-    public void setEmployee(com.overrideeg.apps.opass.io.entities.employee employee) {
-        this.employee = employee;
-    }
 }
