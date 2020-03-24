@@ -7,8 +7,6 @@ import com.overrideeg.apps.opass.ui.entrypoint.RestEntryPoint;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.List;
-
 
 @Component
 @RequestMapping(ApiUrls.workShift_EP)
@@ -16,11 +14,6 @@ public class workShiftEntryPoint extends RestEntryPoint<workShift> {
 
     public workShiftEntryPoint(final workShiftService inService) {
         setService(inService);
-    }
-
-    @Override
-    protected workShift[] entityListToArray(List<workShift> inEntityList) {
-        return inEntityList.toArray(new workShift[inEntityList.size()]);
     }
 
 }

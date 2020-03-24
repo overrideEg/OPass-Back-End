@@ -5,22 +5,29 @@
 package com.overrideeg.apps.opass.io.valueObjects;
 
 
+import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import javax.persistence.ManyToOne;
 
 @Embeddable
 public class contactInfo {
     private String address1;
     private String address2;
-    private String city;
+    @ManyToOne
+    private com.overrideeg.apps.opass.io.entities.country country;
+    @ManyToOne
+    private com.overrideeg.apps.opass.io.entities.city city;
     private String region;
     private String area;
     private String mapLocation;
     private String state;
     private String street;
+    @Column(insertable = true, unique = true)
     private String email;
     private String faxNumber;
     private String telephone1;
     private String telephone2;
+    @Column(insertable = true, unique = true)
     private String mobile;
     private String website;
 
@@ -40,7 +47,21 @@ public class contactInfo {
         this.address2 = address2;
     }
 
+    public com.overrideeg.apps.opass.io.entities.country getCountry() {
+        return country;
+    }
 
+    public void setCountry(com.overrideeg.apps.opass.io.entities.country country) {
+        this.country = country;
+    }
+
+    public com.overrideeg.apps.opass.io.entities.city getCity() {
+        return city;
+    }
+
+    public void setCity(com.overrideeg.apps.opass.io.entities.city city) {
+        this.city = city;
+    }
 
     public String getRegion() {
         return region;
@@ -92,14 +113,6 @@ public class contactInfo {
 
     public String getFaxNumber() {
         return faxNumber;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
     }
 
     public void setFaxNumber(String faxNumber) {

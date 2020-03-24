@@ -7,8 +7,6 @@ import com.overrideeg.apps.opass.ui.entrypoint.RestEntryPoint;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.List;
-
 @Component
 @RequestMapping(ApiUrls.company_EP)
 public class companyEntryPoint extends RestEntryPoint<company> {
@@ -17,9 +15,5 @@ public class companyEntryPoint extends RestEntryPoint<company> {
         setService(inService);
     }
 
-    @Override
-    protected company[] entityListToArray(List<company> inEntityList) {
-        return inEntityList.toArray(new company[inEntityList.size()]);
-    }
 
 }

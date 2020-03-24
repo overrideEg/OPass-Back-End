@@ -7,8 +7,6 @@ import com.overrideeg.apps.opass.ui.entrypoint.RestEntryPoint;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.List;
-
 @Component
 @RequestMapping(ApiUrls.currency_EP)
 public class currencyEntryPoint extends RestEntryPoint<currency> {
@@ -17,9 +15,5 @@ public class currencyEntryPoint extends RestEntryPoint<currency> {
         setService(inService);
     }
 
-    @Override
-    protected currency[] entityListToArray(List<currency> inEntityList) {
-        return inEntityList.toArray(new currency[inEntityList.size()]);
-    }
 
 }

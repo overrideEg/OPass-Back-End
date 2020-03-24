@@ -6,6 +6,9 @@ package com.overrideeg.apps.opass.service;
 
 import com.overrideeg.apps.opass.exceptions.AuthenticationException;
 import com.overrideeg.apps.opass.io.entities.Users;
+import com.overrideeg.apps.opass.io.entities.employee;
+import com.overrideeg.apps.opass.system.Connection.TenantContext;
+import com.overrideeg.apps.opass.ui.entrypoint.auth.authResponse;
 import com.overrideeg.apps.opass.ui.sys.ErrorMessages;
 import com.overrideeg.apps.opass.utils.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +23,8 @@ import java.util.logging.Logger;
 public class authService {
     @Autowired
     UsersService usersService;
+    @Autowired
+    employeeService employeeService;
 
 //    DAO database;
 
@@ -80,17 +85,22 @@ public class authService {
     }
 
     private void updateUserProfile(Users userProfile) {
-
         try {
-            this.usersService.update(userProfile);
+            /* not tested */
+            Users users = this.usersService.find(userProfile.getId()).get();
+            if (users.getMacAddress() != null && !users.getMacAddress().equals(userProfile.getMacAddress())) {
+                throw new AuthenticationException(ErrorMessages.MAC_ADDRESS_ILLEGAL.getErrorMessage());
+            } else {
+                this.usersService.update(userProfile);
+            }
 
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
         }
     }
 
-    public void resetSecurityCridentials(String password, Users userProfile) {
-        // Gerenerate a new salt
+    public void resetSecurityCridentials(String password, Users userProfile, String macAddress) {
+        // Generate a new salt
         EntityUtils userUtils = new EntityUtils();
         String salt = userUtils.getSalt(30);
 
@@ -98,10 +108,23 @@ public class authService {
         String securePassword = userUtils.generateSecurePassword(password, salt);
         userProfile.setSalt(salt);
         userProfile.setEncryptedPassword(securePassword);
+        userProfile.setMacAddress(macAddress);
 
         // Update user profile
         updateUserProfile(userProfile);
 
     }
 
+    public authResponse findCompanyAndBranch(Users authenticatedUser, authResponse loginCredentials) {
+        try {
+            Long companyId = authenticatedUser.getCompany_id();
+            TenantContext.setCurrentTenant(companyId);
+            employee employee = employeeService.find("createdUserId", authenticatedUser.getId());
+            loginCredentials.setBranch(employee.getBranch());
+            loginCredentials.setDepartment(employee.getDepartment());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return loginCredentials;
+    }
 }

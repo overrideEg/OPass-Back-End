@@ -1,32 +1,5 @@
-create table app_setting
-(
-    id               bigint not null auto_increment,
-    creation_date    datetime,
-    last_update_date datetime,
-    about_ar         varchar(255),
-    about_en         varchar(255),
-    about_tr         varchar(255),
-    address          varchar(255),
-    email            varchar(255),
-    latitude         double precision,
-    longitude        double precision,
-    website          varchar(255),
-    primary key (id)
-) engine = MyISAM;
-create table attendance
-(
-    id               bigint not null auto_increment,
-    creation_date    datetime,
-    last_update_date datetime,
-    att_type         varchar(255),
-    early_go         bit,
-    late_entrance    bit,
-    over_time        bit,
-    scan_date        datetime,
-    scan_time        datetime,
-    employee_id      bigint,
-    primary key (id)
-) engine = MyISAM;
+create table app_setting (id bigint not null auto_increment, creation_date datetime, last_update_date datetime, about_ar varchar(255), about_en varchar(255), about_tr varchar(255), address varchar(255), email varchar(255), latitude double precision, longitude double precision, website varchar(255), primary key (id)) ;
+create table attendance (id bigint not null auto_increment, creation_date datetime, last_update_date datetime, att_type varchar(255), early_go bit, late_entrance bit, over_time bit, scan_date datetime, scan_time datetime, employee_id bigint, primary key (id)) ;
 create table attendance_rules
 (
     id                          bigint not null auto_increment,
@@ -36,12 +9,12 @@ create table attendance_rules
     allowed_late_minutes        integer,
     max_over_time_hours         integer,
     primary key (id)
-) engine = MyISAM;
+);
 create table attendance_rules_days_off
 (
     attendance_rules_id bigint not null,
     days_off            integer
-) engine = MyISAM;
+);
 create table branch
 (
     id               bigint not null auto_increment,
@@ -52,12 +25,12 @@ create table branch
     name_tr          varchar(255),
     phone_number     varchar(255),
     primary key (id)
-) engine = MyISAM;
+);
 create table branch_days_off
 (
     branch_id bigint not null,
     days_off  integer
-) engine = MyISAM;
+);
 create table city
 (
     id               bigint not null auto_increment,
@@ -65,10 +38,10 @@ create table city
     last_update_date datetime,
     name_ar          varchar(255),
     name_en          varchar(255),
-    tr               varchar(255),
+    name_tr          varchar(255),
     country_id       bigint,
     primary key (id)
-) engine = MyISAM;
+);
 create table company
 (
     id               bigint not null auto_increment,
@@ -86,7 +59,7 @@ create table company
     website          varchar(255),
     country_id       bigint,
     primary key (id)
-) engine = MyISAM;
+);
 create table country
 (
     id               bigint not null auto_increment,
@@ -96,7 +69,7 @@ create table country
     name_en          varchar(255),
     name_tr          varchar(255),
     primary key (id)
-) engine = MyISAM;
+);
 create table currency
 (
     id               bigint not null auto_increment,
@@ -111,7 +84,7 @@ create table currency
     name_en          varchar(255),
     name_tr          varchar(255),
     primary key (id)
-) engine = MyISAM;
+);
 create table department
 (
     id               bigint not null auto_increment,
@@ -122,24 +95,22 @@ create table department
     name_tr          varchar(255),
     phone_number     varchar(255),
     primary key (id)
-) engine = MyISAM;
+);
 create table department_days_off
 (
     department_id bigint not null,
     days_off      integer
-) engine = MyISAM;
+);
 create table employee
 (
     id                   bigint not null auto_increment,
     creation_date        datetime,
     last_update_date     datetime,
-    ssn                  varchar(255),
     attendance_exception bit,
     birth_date           datetime,
     address1             varchar(255),
     address2             varchar(255),
     area                 varchar(255),
-    city                 varchar(255),
     email                varchar(255),
     fax_number           varchar(255),
     map_location         varchar(255),
@@ -152,16 +123,20 @@ create table employee
     website              varchar(255),
     contract_end_date    datetime,
     contract_start_date  datetime,
+    created_user_id      bigint,
     firing_date          datetime,
     name_ar              varchar(255),
     name_en              varchar(255),
     name_tr              varchar(255),
+    ssn                  varchar(255),
     status               varchar(255),
     branch_id            bigint,
+    city_id              bigint,
+    country_id           bigint,
     department_id        bigint,
     shift_id             bigint,
     primary key (id)
-) engine = MyISAM;
+);
 create table faq
 (
     id               bigint not null auto_increment,
@@ -174,7 +149,7 @@ create table faq
     question_en      varchar(255),
     question_tr      varchar(255),
     primary key (id)
-) engine = MyISAM;
+);
 create table plan_details
 (
     id               bigint not null auto_increment,
@@ -183,12 +158,13 @@ create table plan_details
     price            double precision,
     currency_id      bigint,
     primary key (id)
-) engine = MyISAM;
+);
 create table qr_machine
 (
     id               bigint not null auto_increment,
     creation_date    datetime,
     last_update_date datetime,
+    change_duration  bigint,
     expire_date      datetime,
     is_static        bit,
     issue_date       datetime,
@@ -196,7 +172,7 @@ create table qr_machine
     branch_id        bigint,
     department_id    bigint,
     primary key (id)
-) engine = MyISAM;
+);
 create table rest_log
 (
     id               bigint not null auto_increment,
@@ -209,9 +185,8 @@ create table rest_log
     request_headers  varchar(255),
     request_method   varchar(255),
     request_name     varchar(255),
-    response         longtext,
     primary key (id)
-) engine = MyISAM;
+);
 create table subscription
 (
     id                   bigint not null auto_increment,
@@ -224,7 +199,7 @@ create table subscription
     company_id           bigint,
     subscription_plan_id bigint,
     primary key (id)
-) engine = MyISAM;
+);
 create table subscription_plan
 (
     id                   bigint not null auto_increment,
@@ -237,20 +212,12 @@ create table subscription_plan
     name_tr              varchar(255),
     to_no_of_employees   integer,
     primary key (id)
-) engine = MyISAM;
+);
 create table subscription_plan_plan_details
 (
     subscription_plan_id bigint not null,
     plan_details_id      bigint not null
-) engine = MyISAM;
-create table tenant_specific_data
-(
-    id                bigint not null auto_increment,
-    current_tenant_id bigint,
-    sample_data       varchar(255),
-    username          varchar(255),
-    primary key (id)
-) engine = MyISAM;
+);
 create table terms_and_conditions
 (
     id               bigint not null auto_increment,
@@ -263,12 +230,13 @@ create table terms_and_conditions
     title_en         varchar(255),
     title_tr         varchar(255),
     primary key (id)
-) engine = MyISAM;
+);
 create table users
 (
     id                 bigint      not null auto_increment,
     creation_date      datetime,
     last_update_date   datetime,
+    company_id         bigint,
     email              varchar(255),
     encrypted_password varchar(255),
     mac_address        varchar(255),
@@ -277,10 +245,8 @@ create table users
     user_id            varchar(255),
     user_name          varchar(15) not null,
     user_type          varchar(255),
-    company_id         bigint,
-    employee_id        bigint,
     primary key (id)
-) engine = MyISAM;
+);
 create table work_shift
 (
     id               bigint not null auto_increment,
@@ -292,9 +258,21 @@ create table work_shift
     from_hour        time,
     to_hour          time,
     primary key (id)
-) engine = MyISAM;
+);
+alter table employee
+    add constraint UK_fopic1oh5oln2khj8eat6ino0 unique (email);
+alter table employee
+    add constraint UK_4ts03wxs8exmr93khm543lt4x unique (mobile);
+alter table employee
+    add constraint UK_f35rkopwr25n69dtp946lt3rh unique (ssn);
+alter table qr_machine
+    add constraint UK_6jigeaaed0soa2suvrph78och unique (mac_address);
 alter table subscription_plan_plan_details
     add constraint UK_aoier6jccoccpmludc02a0pvd unique (plan_details_id);
+alter table users
+    add constraint UK_6dotkott2kjsp8vw4d0m25fb7 unique (email);
+alter table users
+    add constraint UK_20nqacqigaop7erdjuc7qsfua unique (mac_address);
 alter table users
     add constraint UK_k8d0f2n7n88w1a16yhua64onx unique (user_name);
 alter table attendance
@@ -312,24 +290,15 @@ alter table department_days_off
 alter table employee
     add constraint FKcvhlsx8tao1rxt7mpxrot61jt foreign key (branch_id) references branch (id);
 alter table employee
-    add constraint FKbejtwvg9bxus2mffsm3swj3u9 foreign key (department_id) references department (id);
+    add constraint FK289qfli0oe8ae3qcuafi4q3tf foreign key (city_id) references city (id);
 alter table employee
-    add constraint FKnbecwuhlp678hhlx8ygjyryd4 foreign key (shift_id) references work_shift (id);
-alter table plan_details
-    add constraint FKe0agn054hd4djs4glcyq5xvdg foreign key (currency_id) references currency (id);
-alter table qr_machine
-    add constraint FK60mj082ixc5qju9y7i9qixla6 foreign key (branch_id) references branch (id);
-alter table qr_machine
-    add constraint FKhta5dwyoquq9kygdv4nol5o6s foreign key (department_id) references department (id);
-alter table subscription
-    add constraint FK45i0k0ls0erwl77ei45ds25t8 foreign key (company_id) references company (id);
-alter table subscription
-    add constraint FKhn8hnxbdoi29nb4m7ojkocqfm foreign key (subscription_plan_id) references subscription_plan (id);
-alter table subscription_plan_plan_details
-    add constraint FKrsy21ydncno4c82k7uqc6tlgi foreign key (plan_details_id) references plan_details (id);
-alter table subscription_plan_plan_details
-    add constraint FKdx2qg3vw83ytg4vigpvb5bdsw foreign key (subscription_plan_id) references subscription_plan (id);
-alter table users
-    add constraint FKbwv4uspmyi7xqjwcrgxow361t foreign key (company_id) references company (id);
-alter table users
-    add constraint FKfndbe67uw6silwqnlyudtwqmo foreign key (employee_id) references employee (id);
+    add constraint FKivtkrlfso4toqek7i2rul2ggy foreign key (country_id) references country (id);
+alter table employee add constraint FKbejtwvg9bxus2mffsm3swj3u9 foreign key (department_id) references department (id);
+alter table employee add constraint FKnbecwuhlp678hhlx8ygjyryd4 foreign key (shift_id) references work_shift (id);
+alter table plan_details add constraint FKe0agn054hd4djs4glcyq5xvdg foreign key (currency_id) references currency (id);
+alter table qr_machine add constraint FK60mj082ixc5qju9y7i9qixla6 foreign key (branch_id) references branch (id);
+alter table qr_machine add constraint FKhta5dwyoquq9kygdv4nol5o6s foreign key (department_id) references department (id);
+alter table subscription add constraint FK45i0k0ls0erwl77ei45ds25t8 foreign key (company_id) references company (id);
+alter table subscription add constraint FKhn8hnxbdoi29nb4m7ojkocqfm foreign key (subscription_plan_id) references subscription_plan (id);
+alter table subscription_plan_plan_details add constraint FKrsy21ydncno4c82k7uqc6tlgi foreign key (plan_details_id) references plan_details (id);
+alter table subscription_plan_plan_details add constraint FKdx2qg3vw83ytg4vigpvb5bdsw foreign key (subscription_plan_id) references subscription_plan (id);

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import javax.persistence.Entity;
-import javax.persistence.Lob;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import java.util.Date;
@@ -18,10 +17,8 @@ public class RestLog extends OEntity {
     private String fromIpAddress;
     private String requestBody;
     private String requestHeaders;
-    @Lob
-    private String response;
     @Temporal(TemporalType.TIMESTAMP)
-    @JsonFormat(pattern = "dd/MM/yyyy hh:mm:sss", shape = JsonFormat.Shape.STRING, timezone = "Africa/Cairo")
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Date date;
 
     public String getName() {
@@ -80,11 +77,5 @@ public class RestLog extends OEntity {
         this.date = date;
     }
 
-    public String getResponse() {
-        return response;
-    }
 
-    public void setResponse(String response) {
-        this.response = response;
-    }
 }

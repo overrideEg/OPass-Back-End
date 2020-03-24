@@ -7,8 +7,6 @@ import com.overrideeg.apps.opass.ui.entrypoint.RestEntryPoint;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.List;
-
 
 @Component
 @RequestMapping(ApiUrls.branch_EP)
@@ -18,9 +16,5 @@ public class branchEntryPoint extends RestEntryPoint<branch> {
         setService(inService);
     }
 
-    @Override
-    protected branch[] entityListToArray(List<branch> inEntityList) {
-        return inEntityList.toArray(new branch[inEntityList.size()]);
-    }
 
 }

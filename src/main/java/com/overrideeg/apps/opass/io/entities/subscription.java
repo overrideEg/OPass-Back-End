@@ -6,7 +6,7 @@ package com.overrideeg.apps.opass.io.entities;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.OptBoolean;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.overrideeg.apps.opass.io.entities.system.OEntity;
 
 import javax.persistence.Entity;
@@ -19,16 +19,21 @@ import java.util.Date;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class subscription extends OEntity {
     @ManyToOne
+    @JsonProperty(required = true)
     private company company;
     @ManyToOne
+    @JsonProperty(required = true)
     private subscriptionPlan subscriptionPlan;
     @Temporal(TemporalType.TIMESTAMP)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, lenient = OptBoolean.TRUE, timezone = "Africa/Cairo")
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    @JsonProperty(required = true)
     private Date fromDate;
+    @JsonProperty(required = true)
     @Temporal(TemporalType.TIMESTAMP)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, lenient = OptBoolean.TRUE, timezone = "Africa/Cairo")
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Date toDate;
     private Double subscriptionPrice;
+    @JsonProperty(required = true)
     private Integer maxNoOfEmployees;
 
 //    @PrePersist

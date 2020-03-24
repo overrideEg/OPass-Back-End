@@ -38,10 +38,11 @@ public class AuthenticationFilter implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest hsr,
                              HttpServletResponse hsr1, Object handler) throws Exception {
+
         StringBuilder requestURL = new StringBuilder(hsr.getRequestURL().toString());
         String shortURL = requestURL.substring(requestURL.lastIndexOf("/") + 1);
         if (shortURL.equals(ApiUrls.Auth_ep)) {
-            handleAuthRequest(hsr);
+            handleAuthRequest(hsr, hsr1);
         } else if (!shortURL.equals("api-docs") || !shortURL.equals("v3/api-docs")) {
         } else {
             String authorizationHeader = hsr.getHeader(HttpHeaders.AUTHORIZATION);
@@ -61,34 +62,44 @@ public class AuthenticationFilter implements HandlerInterceptor {
         }
 
         return true;
+
     }
 
-    private void handleAuthRequest(HttpServletRequest hsr) throws IOException {
-        Properties config = new Properties();
-        InputStream prop = getClass().getClassLoader().getResourceAsStream("application.properties");
-        config.load(prop);
-        String clients = config.getProperty("clientsAllowed");
-        ArrayList<String> allowed = new ArrayList<>(Arrays.asList(clients.split(",")));
-        Boolean auth = false;
-        for (String text : allowed) {
-            String encodedAllowed = EntityUtils.encode(text);
-            String authorizationHeader = hsr.getHeader(HttpHeaders.AUTHORIZATION);
-            String token = authorizationHeader.substring("Bearer".length()).trim();
+    private Boolean handleAuthRequest(HttpServletRequest hsr, HttpServletResponse response) throws IOException {
+        if (hsr.getMethod().equals("POST")) {
+            Properties config = new Properties();
+            InputStream prop = getClass().getClassLoader().getResourceAsStream("application.properties");
+            config.load(prop);
+            String clients = config.getProperty("clientsAllowed");
+            ArrayList<String> allowed = new ArrayList<>(Arrays.asList(clients.split(",")));
+            Boolean auth = false;
+            for (String text : allowed) {
+                String encodedAllowed = EntityUtils.encode(text);
+                String authorizationHeader = hsr.getHeader(HttpHeaders.AUTHORIZATION);
 
-            if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer")) {
+                if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer")) {
+                    throw new AuthenticationException(ErrorMessages.AUTHENTICATION_FAILED.getErrorMessage());
+                }
+                String token = authorizationHeader.substring("Bearer".length()).trim();
+                if (token.equals(encodedAllowed)) {
+                    auth = true;
+                    break;
+                }
+            }
+
+            if (!auth) {
                 throw new AuthenticationException(ErrorMessages.AUTHENTICATION_FAILED.getErrorMessage());
             }
-            if (token.equals(encodedAllowed)) {
-                auth = true;
-                break;
-            }
+        } else {
+            response.setHeader("Access-Control-Allow-Origin", "*");
+            response.setHeader("Access-Control-Allow-Methods", "POST");
+            response.setHeader("Access-Control-Allow-Headers", "*");
+
+            response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+            return true;
         }
 
-        if (!auth) {
-            throw new AuthenticationException(ErrorMessages.AUTHENTICATION_FAILED.getErrorMessage());
-        }
-
-
+        return true;
     }
 
     //    @Override

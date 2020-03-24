@@ -198,4 +198,8 @@ public abstract class AbstractService<E extends OEntity> {
     }
 
 
+    public E save(E inEntity, Long companyId) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, NoSuchFieldException {
+        return save(inEntity);
+
+    }
 }

@@ -3,6 +3,7 @@ package com.overrideeg.apps.opass.ui.entrypoint;
 
 import com.overrideeg.apps.opass.io.entities.system.OEntity;
 import com.overrideeg.apps.opass.service.AbstractService;
+import com.overrideeg.apps.opass.service.system.RestLogService;
 import com.overrideeg.apps.opass.system.Connection.TenantContext;
 import com.overrideeg.apps.opass.system.Connection.TenantResolver;
 import com.overrideeg.apps.opass.ui.sys.ResponseModel;
@@ -28,12 +29,16 @@ import java.util.Optional;
 @CrossOrigin(origins = "*"
         , methods = {RequestMethod.POST,
         RequestMethod.DELETE, RequestMethod.GET,
-        RequestMethod.PUT, RequestMethod.OPTIONS, RequestMethod.HEAD}, allowCredentials = "true", allowedHeaders = "*")
+        RequestMethod.PUT, RequestMethod.OPTIONS, RequestMethod.HEAD},
+        allowCredentials = "true", allowedHeaders = "*")
+@RestController
 public abstract class RestEntryPoint<E extends OEntity> {
     /* Constant(s): */
 
     @Autowired
     private TenantResolver tenantResolver;
+    @Autowired
+    RestLogService restLogService;
     /* Instance variable(s): */
     protected AbstractService<E> mService;
     private final Class<E> entityClass;
@@ -46,25 +51,27 @@ public abstract class RestEntryPoint<E extends OEntity> {
     @PostMapping
     public @ResponseBody
     E postOne(@Valid @RequestBody E req, @RequestHeader Long tenantId, HttpServletRequest request) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, NoSuchFieldException {
-        resolveTenant(tenantId);
+        resolveTenant(tenantId, request);
         E resp = (E) mService.save(req);
         return resp;
     }
 
-    private void resolveTenant(Long tenantId) {
+    private void resolveTenant(Long tenantId, HttpServletRequest request) {
         if (tenantId == 0) {
             TenantContext.setCurrentTenant(null);
         }
         if (tenantId != 0) {
             TenantContext.setCurrentTenant(tenantId);
         }
+        restLogService.saveLog(request.getRequestURI(), request.getRemoteAddr(), request.getMethod());
+
     }
 
 
     @PostMapping("arr")
     public @ResponseBody
     List<E> postArray(@Valid @RequestBody List<E> inEntity, @RequestHeader Long tenantId, HttpServletRequest request) {
-        resolveTenant(tenantId);
+        resolveTenant(tenantId, request);
         List<E> resp = mService.saveArray(inEntity);
         return resp;
     }
@@ -75,7 +82,7 @@ public abstract class RestEntryPoint<E extends OEntity> {
     List<E> getAll(HttpServletRequest request, @RequestHeader Long tenantId,
                    @RequestParam(name = "start", required = false) Integer start,
                    @RequestParam(name = "limit", required = false) Integer limit) {
-        resolveTenant(tenantId);
+        resolveTenant(tenantId, request);
 
         if (start == null) start = 0;
         if (limit == null) limit = 25;
@@ -86,7 +93,7 @@ public abstract class RestEntryPoint<E extends OEntity> {
     @GetMapping("/{id}")
     public @ResponseBody
     Optional<E> getEntityById(@PathVariable(value = "id") Long inEntityId, @RequestHeader Long tenantId, HttpServletRequest request) {
-        resolveTenant(tenantId);
+        resolveTenant(tenantId, request);
         Optional<E> response = mService.find(inEntityId);
         return response;
     }
@@ -94,7 +101,7 @@ public abstract class RestEntryPoint<E extends OEntity> {
     @DeleteMapping("/{id}")
     public @ResponseBody
     ResponseModel deleteEntityById(@PathVariable(value = "id") Long inEntityId, @RequestHeader Long tenantId, HttpServletRequest request) {
-        resolveTenant(tenantId);
+        resolveTenant(tenantId, request);
         ResponseModel delete = mService.delete(inEntityId);
         return delete;
     }
@@ -103,7 +110,7 @@ public abstract class RestEntryPoint<E extends OEntity> {
     @PutMapping
     public @ResponseBody
     ResponseModel updateEntity(@RequestBody final E inEntity, @RequestHeader Long tenantId, HttpServletRequest request) throws NoSuchMethodException {
-        resolveTenant(tenantId);
+        resolveTenant(tenantId, request);
         ResponseModel update = mService.update(inEntity);
         return update;
     }
@@ -112,19 +119,11 @@ public abstract class RestEntryPoint<E extends OEntity> {
     @PutMapping("arr")
     public @ResponseBody
     List<ResponseModel> updateArray(@Valid @RequestBody List<E> inEntity, @RequestHeader Long tenantId, HttpServletRequest request) throws NoSuchMethodException {
-        resolveTenant(tenantId);
+        resolveTenant(tenantId, request);
         List<ResponseModel> update = mService.update(inEntity);
         return update;
     }
 
-
-    /**
-     * Creates an array containing the entities in the supplied list.
-     *
-     * @param inEntityList List of entities.
-     * @return Array containing the entities from the list.
-     */
-    protected abstract E[] entityListToArray(List<E> inEntityList);
 
     public AbstractService<E> getService() {
         return mService;

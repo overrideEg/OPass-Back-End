@@ -1,17 +1,17 @@
 package com.overrideeg.apps.opass.ui.entrypoint.webapp;
 
-import com.overrideeg.apps.opass.io.entities.subscription;
-import com.overrideeg.apps.opass.service.subscriptionService;
+import com.overrideeg.apps.opass.io.entities.appConstants.faq;
+import com.overrideeg.apps.opass.service.faqService;
 import com.overrideeg.apps.opass.system.ApiUrls;
 import com.overrideeg.apps.opass.ui.entrypoint.RestEntryPoint;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Component
-@RequestMapping(ApiUrls.subscription_EP)
-public class subscriptionEntryPoint extends RestEntryPoint<subscription> {
+@RequestMapping(ApiUrls.faq_EP)
+public class faqEntryPoint extends RestEntryPoint<faq> {
 
-    public subscriptionEntryPoint(final subscriptionService inService) {
+    public faqEntryPoint(final faqService inService) {
         setService(inService);
     }
 

@@ -2,35 +2,17 @@
  * Copyright (c) 2020. overrideeg.ocm.
  */
 
-package com.overrideeg.apps.opass.ui.entrypoint.auth;
+package com.overrideeg.apps.opass.ui.entrypoint.generator;
 
-import com.overrideeg.apps.opass.io.entities.Users;
 import com.overrideeg.apps.opass.io.entities.branch;
 import com.overrideeg.apps.opass.io.entities.department;
+import com.overrideeg.apps.opass.io.entities.qrMachine;
 
-
-public class authResponse {
-
-    private String token;
-    private Users user;
+public class generatorRequest {
     private branch branch;
     private department department;
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    public Users getUser() {
-        return user;
-    }
-
-    public void setUser(Users user) {
-        this.user = user;
-    }
+    private qrMachine qrMachine;
+    private String macAddress;
 
     public com.overrideeg.apps.opass.io.entities.branch getBranch() {
         return branch;
@@ -46,5 +28,21 @@ public class authResponse {
 
     public void setDepartment(com.overrideeg.apps.opass.io.entities.department department) {
         this.department = department;
+    }
+
+    public com.overrideeg.apps.opass.io.entities.qrMachine getQrMachine() {
+        return qrMachine;
+    }
+
+    public void setQrMachine(com.overrideeg.apps.opass.io.entities.qrMachine qrMachine) {
+        this.qrMachine = qrMachine;
+    }
+
+    public String getMacAddress() {
+        return macAddress;
+    }
+
+    public void setMacAddress(String macAddress) {
+        this.macAddress = macAddress;
     }
 }

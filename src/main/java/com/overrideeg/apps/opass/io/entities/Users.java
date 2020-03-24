@@ -19,6 +19,7 @@ public class Users extends OEntity {
     private String userName;
     @JsonIgnore
     private String encryptedPassword;
+    @Column(unique = true)
     private String email;
     @JsonIgnore
     private String salt;
@@ -26,15 +27,15 @@ public class Users extends OEntity {
     private String token;
     @Enumerated(EnumType.STRING)
     private com.overrideeg.apps.opass.enums.userType userType;
-    @ManyToOne
-    private com.overrideeg.apps.opass.io.entities.company company;
+    private Long company_id;
+    @Transient
+    private company company;
     @Transient
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY, required = true)
     private String password;
+    @Column(unique = true)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String macAddress;
-    @ManyToOne
-    private employee employee;
 
     public String getUserId() {
         return userId;
@@ -92,12 +93,12 @@ public class Users extends OEntity {
         this.userType = userType;
     }
 
-    public com.overrideeg.apps.opass.io.entities.company getCompany() {
-        return company;
+    public Long getCompany_id() {
+        return company_id;
     }
 
-    public void setCompany(com.overrideeg.apps.opass.io.entities.company company) {
-        this.company = company;
+    public void setCompany_id(Long company_id) {
+        this.company_id = company_id;
     }
 
     public String getPassword() {
@@ -116,11 +117,11 @@ public class Users extends OEntity {
         this.macAddress = macAddress;
     }
 
-    public com.overrideeg.apps.opass.io.entities.employee getEmployee() {
-        return employee;
+    public com.overrideeg.apps.opass.io.entities.company getCompany() {
+        return company;
     }
 
-    public void setEmployee(com.overrideeg.apps.opass.io.entities.employee employee) {
-        this.employee = employee;
+    public void setCompany(com.overrideeg.apps.opass.io.entities.company company) {
+        this.company = company;
     }
 }
