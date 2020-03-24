@@ -13,6 +13,16 @@ public class translatedField {
     private String en;
     private String tr;
 
+    public translatedField(String ar,
+                           String en,
+                           String tr) {
+        this.ar = ar;
+        this.en = en;
+        this.tr = tr;
+    }
+
+    public translatedField() {
+    }
 
     public String getAr() {
         return ar;

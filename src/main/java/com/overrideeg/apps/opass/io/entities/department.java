@@ -8,6 +8,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.overrideeg.apps.opass.io.entities.system.OEntity;
 import com.overrideeg.apps.opass.io.valueObjects.translatedField;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.util.List;
@@ -24,7 +26,8 @@ public class department extends OEntity {
     @JsonProperty(required = true)
     private translatedField name;
     private String phoneNumber;
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Fetch(FetchMode.SUBSELECT)
     private List<Integer> daysOff;
 
     public translatedField getName() {

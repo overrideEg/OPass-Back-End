@@ -6,9 +6,12 @@ package com.overrideeg.apps.opass.io.entities;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.overrideeg.apps.opass.io.entities.system.OEntity;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import java.util.List;
 
 @Entity
@@ -18,7 +21,8 @@ public class attendanceRules extends OEntity {
     private Integer allowedLateMinutes;
     private Integer allowedEarlyLeaveMinutes;
     private Integer maxOverTimeHours;
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Fetch(FetchMode.SUBSELECT)
     private List<Integer> daysOff;
 
 

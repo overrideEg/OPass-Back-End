@@ -33,7 +33,8 @@ public class employee extends OEntity {
     @JsonProperty(required = true)
     private branch branch;
     @Column(unique = true)
-    private String SSN;
+    @JsonProperty(required = true, access = JsonProperty.Access.READ_WRITE)
+    private String ssn;
     @Temporal(TemporalType.TIMESTAMP)
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Date birthDate;
@@ -81,12 +82,12 @@ public class employee extends OEntity {
         this.branch = branch;
     }
 
-    public String getSSN() {
-        return SSN;
+    public String getSsn() {
+        return ssn;
     }
 
-    public void setSSN(String SSN) {
-        this.SSN = SSN;
+    public void setSsn(String ssn) {
+        this.ssn = ssn;
     }
 
     public Date getBirthDate() {

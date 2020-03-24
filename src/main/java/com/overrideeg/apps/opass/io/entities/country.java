@@ -23,6 +23,13 @@ public class country extends OEntity {
     @JsonProperty(required = true)
     private translatedField name;
 
+    public country(Long country_id) {
+        this.setId(country_id);
+    }
+
+    public country() {
+    }
+
     public translatedField getName() {
         return name;
     }

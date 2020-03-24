@@ -15,12 +15,13 @@ import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
 
+
 public class TenantAwareDataSource extends AbstractRoutingDataSource {
 
     @Autowired
     @Qualifier("masterDataSource")
     public DataSource masterDataSource;
-    private Map<Object, DataSource> resolvedDataSources = new HashMap<>();
+    public Map<Object, DataSource> resolvedDataSources = new HashMap<>();
     @Autowired
     @Qualifier("masterConfig")
     private HikariConfig hikariConfig;
@@ -37,6 +38,7 @@ public class TenantAwareDataSource extends AbstractRoutingDataSource {
         super.setTargetDataSources(new HashMap<>());
         super.afterPropertiesSet();
     }
+
 
     @Override
     protected Object determineCurrentLookupKey() {
@@ -55,8 +57,12 @@ public class TenantAwareDataSource extends AbstractRoutingDataSource {
             tenantDatabaseMigrationService.flywayMigrate(tenantDataSource);
             resolvedDataSources.put(tenantId, tenantDataSource);
         }
-
         return tenantDataSource;
+    }
+
+    @Override
+    public void setTargetDataSources(Map<Object, Object> targetDataSources) {
+        super.setTargetDataSources(targetDataSources);
     }
 
     private DataSource createDataSourceForTenantId(Long tenantId) {

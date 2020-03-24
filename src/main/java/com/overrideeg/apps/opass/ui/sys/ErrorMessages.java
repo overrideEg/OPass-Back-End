@@ -33,10 +33,8 @@ public enum ErrorMessages {
     MAC_ADDRESS_ILLEGAL("Mac Address Not Registered"),
     Time_EXCEDDED(" Time is Exceeded"),
     DATE_WRONG_EXCEPTION("Date Period Is Wrong"),
-    DatabaseError("Error Occurred IN Database Connection"),
-    Quantity_Error("Error in Quantity"),
-    Quantity_Is_Greater_than_In_Warehouse("Quantity In Document Is Greater Than its in warehouse"),
-    Quantity_Must_Be_Greater_Than_Zero("Quantity Must Be Greater Than Zero");
+    DEPARTMENT_is_invalid("Department IS Invalid for Selected Machine"),
+    Branch_is_invalid("Branch IS Invalid for Selected Machine");
 
 
     private String errorMessage;

@@ -3,9 +3,11 @@ package com.overrideeg.apps.opass.service;
 import com.overrideeg.apps.opass.enums.userType;
 import com.overrideeg.apps.opass.exceptions.CouldNotCreateRecordException;
 import com.overrideeg.apps.opass.io.entities.Users;
+import com.overrideeg.apps.opass.io.entities.company;
 import com.overrideeg.apps.opass.io.entities.employee;
 import com.overrideeg.apps.opass.io.repositories.employeeRepo;
 import com.overrideeg.apps.opass.system.Connection.TenantContext;
+import com.overrideeg.apps.opass.system.Connection.TenantResolver;
 import com.overrideeg.apps.opass.ui.sys.ErrorMessages;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,8 @@ public class employeeService extends AbstractService<employee> {
     UsersService usersService;
     @Autowired
     companyService companyService;
+    @Autowired
+    TenantResolver tenantResolver;
 
     public employeeService(final employeeRepo inRepository) {
         super(inRepository);
@@ -27,16 +31,16 @@ public class employeeService extends AbstractService<employee> {
 
     @Override
     public employee save(employee inEntity, Long companyId) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, NoSuchFieldException {
+        TenantContext.setCurrentTenant(companyId);
         Users createdUser = null;
         try {
             // create user for new employee in master database
             createdUser = createUserForEmployee(inEntity, companyId);
         } catch (Exception e) {
+            e.printStackTrace();
             throw new CouldNotCreateRecordException(ErrorMessages.COULD_NOT_CREATE_RECORD.getErrorMessage());
         }
 
-        //return to tenant database
-        TenantContext.setCurrentTenant(companyId);
         // set created user
         inEntity.setCreatedUserId(createdUser.getId());
         // return back saved employee
@@ -57,12 +61,12 @@ public class employeeService extends AbstractService<employee> {
      * @throws IllegalAccessException
      */
     private Users createUserForEmployee(employee inEntity, Long companyId) throws InvocationTargetException, NoSuchMethodException, NoSuchFieldException, InstantiationException, IllegalAccessException {
-        TenantContext.setCurrentTenant(null);
         Users users = new Users();
-        users.setUserName(inEntity.getContactInfo().getMobile());
-        users.setPassword(inEntity.getSSN());
+        users.setUserName(companyId + "." + inEntity.getContactInfo().getMobile());
+        users.setPassword(inEntity.getSsn());
         users.setEmail(inEntity.getContactInfo().getEmail());
-        users.setCompany(companyService.find(companyId).get());
+        company companyForTenantId = tenantResolver.findCompanyForTenantId(companyId);
+        users.setCompany_id(companyForTenantId.getId());
         users.setUserType(userType.user);
         return usersService.save(users);
     }

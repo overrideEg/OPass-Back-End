@@ -29,7 +29,9 @@ import java.util.Optional;
 @CrossOrigin(origins = "*"
         , methods = {RequestMethod.POST,
         RequestMethod.DELETE, RequestMethod.GET,
-        RequestMethod.PUT, RequestMethod.OPTIONS, RequestMethod.HEAD}, allowCredentials = "true", allowedHeaders = "*")
+        RequestMethod.PUT, RequestMethod.OPTIONS, RequestMethod.HEAD},
+        allowCredentials = "true", allowedHeaders = "*")
+@RestController
 public abstract class RestEntryPoint<E extends OEntity> {
     /* Constant(s): */
 

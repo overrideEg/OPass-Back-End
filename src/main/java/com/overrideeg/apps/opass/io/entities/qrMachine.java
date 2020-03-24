@@ -5,14 +5,24 @@
 package com.overrideeg.apps.opass.io.entities;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.overrideeg.apps.opass.io.entities.system.OEntity;
+import com.overrideeg.apps.opass.io.valueObjects.translatedField;
 
 import javax.persistence.*;
 import java.util.Date;
 
 @Entity
+@AttributeOverrides({
+        @AttributeOverride(name = "name.ar", column = @Column(name = "name_ar")),
+        @AttributeOverride(name = "name.en", column = @Column(name = "name_en")),
+        @AttributeOverride(name = "name.tr", column = @Column(name = "name_tr")),
+})
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class qrMachine extends OEntity {
+    @Embedded
+    private translatedField name;
     @ManyToOne
     @JsonProperty(required = true)
     private branch branch;
@@ -22,17 +32,22 @@ public class qrMachine extends OEntity {
     private Boolean isStatic;
     @Temporal(TemporalType.TIMESTAMP)
     @JsonFormat(shape = JsonFormat.Shape.STRING)
-    @JsonProperty(required = true)
     private Date issueDate;
     @Temporal(TemporalType.TIMESTAMP)
     @JsonFormat(shape = JsonFormat.Shape.STRING)
-    @JsonProperty(required = true)
     private Date expireDate;
     @Column(unique = true)
     private String macAddress;
     @JsonProperty(required = true)
     private Long changeDuration;
 
+    public translatedField getName() {
+        return name;
+    }
+
+    public void setName(translatedField name) {
+        this.name = name;
+    }
 
     public branch getBranch() {
         return branch;

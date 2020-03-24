@@ -4,6 +4,9 @@
 
 package com.overrideeg.apps.opass.system.Connection;
 
+import org.springframework.stereotype.Service;
+
+@Service
 public class TenantContext {
 
     private static ThreadLocal<Long> currentTenant = new ThreadLocal<>();
@@ -15,4 +18,5 @@ public class TenantContext {
     public static void setCurrentTenant(Long tenantId) {
         currentTenant.set(tenantId);
     }
+
 }
