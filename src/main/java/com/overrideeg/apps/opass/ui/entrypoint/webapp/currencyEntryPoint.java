@@ -4,10 +4,10 @@ import com.overrideeg.apps.opass.io.entities.currency;
 import com.overrideeg.apps.opass.service.currencyService;
 import com.overrideeg.apps.opass.system.ApiUrls;
 import com.overrideeg.apps.opass.ui.entrypoint.RestEntryPoint;
-import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-@Component
+@RestController
 @RequestMapping(ApiUrls.currency_EP)
 public class currencyEntryPoint extends RestEntryPoint<currency> {
 

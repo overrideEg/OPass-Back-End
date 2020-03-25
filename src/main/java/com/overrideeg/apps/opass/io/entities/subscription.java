@@ -32,9 +32,7 @@ public class subscription extends OEntity {
     @Temporal(TemporalType.TIMESTAMP)
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Date toDate;
-    private Double subscriptionPrice;
-    @JsonProperty(required = true)
-    private Integer maxNoOfEmployees;
+
 
     @Override
     public boolean isValid() {
@@ -78,19 +76,5 @@ public class subscription extends OEntity {
         this.toDate = toDate;
     }
 
-    public Double getSubscriptionPrice() {
-        return subscriptionPrice;
-    }
 
-    public void setSubscriptionPrice(Double subscriptionPrice) {
-        this.subscriptionPrice = subscriptionPrice;
-    }
-
-    public Integer getMaxNoOfEmployees() {
-        return maxNoOfEmployees;
-    }
-
-    public void setMaxNoOfEmployees(Integer maxNoOfEmployees) {
-        this.maxNoOfEmployees = maxNoOfEmployees;
-    }
 }
