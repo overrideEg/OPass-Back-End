@@ -5,6 +5,7 @@ import com.overrideeg.apps.opass.io.entities.reports.reportDetention;
 import com.overrideeg.apps.opass.io.repositories.reportDetentionRepo;
 import com.overrideeg.apps.opass.service.files.FileStorageService;
 import com.overrideeg.apps.opass.system.Connection.TenantResolver;
+import com.overrideeg.apps.opass.ui.sys.ResponseModel;
 import com.overrideeg.apps.opass.utils.FileStorageProperties;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -19,10 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,8 +40,7 @@ public class reportDetentionService extends AbstractService<reportDetention> {
     TenantResolver tenantResolver;
     @Autowired
     private FileStorageService fileStorageService;
-    @Autowired
-    private DataSource dataSource;
+
 
     public reportDetentionService(final reportDetentionRepo inRepository) {
         super(inRepository);
@@ -66,12 +64,6 @@ public class reportDetentionService extends AbstractService<reportDetention> {
             throw new FileStorageException(e.getMessage());
         }
 
-
-        String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/downloadFile/")
-                .path(fileName)
-                .toUriString();
-
         String fileNameJasper = new StringBuilder(file.getOriginalFilename().substring(0, file.getOriginalFilename().length() - 5)).append("jasper").toString();
         reportDetention.setFilePath(jasperPath);
         reportDetention.setSize(file.getSize());
@@ -80,7 +72,37 @@ public class reportDetentionService extends AbstractService<reportDetention> {
         return mRepository.save(reportDetention);
     }
 
-    //
+
+    public ResponseModel update(MultipartFile file, reportDetention reportDetention, Long reportId) throws NoSuchMethodException {
+        String fileName = null;
+        String jasperPath;
+        try {
+            fileName = fileStorageService.storeFile(file);
+            Resource resource = fileStorageService.loadFileAsResource(fileName);
+            String reportPath = new StringBuilder().append(FileStorageProperties.getUploadDir()).append("/").append(fileName).toString();
+            jasperPath = new StringBuilder(reportPath.substring(0, reportPath.length() - 5)).append("jasper").toString();
+
+            JasperCompileManager.compileReportToFile(
+                    resource.getFile().getPath(), // the path to the jrxml file to compile
+                    jasperPath); // the path and name we want to save the compiled file to
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new FileStorageException(e.getMessage());
+        }
+
+        reportDetention storedReport = find(reportId).get();
+
+        String fileNameJasper = new StringBuilder(file.getOriginalFilename().substring(0, file.getOriginalFilename().length() - 5)).append("jasper").toString();
+        storedReport.setFilePath(jasperPath);
+        storedReport.setSize(file.getSize());
+        storedReport.setFileName(file.getOriginalFilename());
+        storedReport.setJasperFileName(fileNameJasper);
+        storedReport.setName(reportDetention.getName());
+        return update(storedReport);
+    }
+
+
     public HttpServletResponse generateReport(HttpServletResponse response, Long reportId, Long companyId, Map parameters) throws Exception {
         StringBuilder reportPath = new StringBuilder();
         String uploadDir = FileStorageProperties.getUploadDir();
