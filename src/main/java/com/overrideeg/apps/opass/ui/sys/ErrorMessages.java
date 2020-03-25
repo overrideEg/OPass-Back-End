@@ -34,7 +34,8 @@ public enum ErrorMessages {
     Time_EXCEDDED(" Time is Exceeded"),
     DATE_WRONG_EXCEPTION("Date Period Is Wrong"),
     DEPARTMENT_is_invalid("Department IS Invalid for Selected Machine"),
-    Branch_is_invalid("Branch IS Invalid for Selected Machine");
+    Branch_is_invalid("Branch IS Invalid for Selected Machine"),
+    REPORT_TYPE_INVALID("Report Type Is Invalid");
 
 
     private String errorMessage;

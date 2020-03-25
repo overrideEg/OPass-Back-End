@@ -26,6 +26,11 @@ public class workShift extends OEntity {
     @Embedded
     private shiftHours shiftHours;
 
+    @Override
+    public boolean isValid() {
+        return super.isValid();
+    }
+
     public translatedField getName() {
         return name;
     }

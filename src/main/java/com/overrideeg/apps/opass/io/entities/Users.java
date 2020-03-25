@@ -37,6 +37,11 @@ public class Users extends OEntity {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String macAddress;
 
+    @Override
+    public boolean isValid() {
+        return super.isValid();
+    }
+
     public String getUserId() {
         return userId;
     }

@@ -15,6 +15,7 @@ public class authResponse {
     private Users user;
     private branch branch;
     private department department;
+    private Long company_id;
 
     public String getToken() {
         return token;
@@ -46,5 +47,13 @@ public class authResponse {
 
     public void setDepartment(com.overrideeg.apps.opass.io.entities.department department) {
         this.department = department;
+    }
+
+    public Long getCompany_id() {
+        return company_id;
+    }
+
+    public void setCompany_id(Long company_id) {
+        this.company_id = company_id;
     }
 }

@@ -24,6 +24,11 @@ public class appSetting extends OEntity {
     private Double latitude;
     private Double longitude;
 
+    @Override
+    public boolean isValid() {
+        return super.isValid();
+    }
+
     public translatedField getAbout() {
         return about;
     }

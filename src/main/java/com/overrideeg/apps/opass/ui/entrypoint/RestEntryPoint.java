@@ -7,11 +7,13 @@ import com.overrideeg.apps.opass.service.system.RestLogService;
 import com.overrideeg.apps.opass.system.Connection.TenantContext;
 import com.overrideeg.apps.opass.system.Connection.TenantResolver;
 import com.overrideeg.apps.opass.ui.sys.ResponseModel;
+import com.overrideeg.apps.opass.utils.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
@@ -50,10 +52,45 @@ public abstract class RestEntryPoint<E extends OEntity> {
 
     @PostMapping
     public @ResponseBody
-    E postOne(@Valid @RequestBody E req, @RequestHeader Long tenantId, HttpServletRequest request) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, NoSuchFieldException {
+    E postOne(@RequestBody E req, @RequestHeader Long tenantId, HttpServletRequest request) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, NoSuchFieldException {
+        validateFields(req);
         resolveTenant(tenantId, request);
         E resp = (E) mService.save(req);
         return resp;
+    }
+
+    private void validateFields(E req) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        for (Field field : req.getClass().getDeclaredFields()) {
+            Class<?> aClass = field.getType();
+            String name = aClass.getSimpleName();
+            switch (name) {
+                case "String":
+                case "Long":
+                case "long":
+                case "Boolean":
+                case "boolean":
+                case "translatedField":
+                case "Date":
+                case "List":
+                case "Double":
+                case "attType":
+                case "employeeStatus":
+                case "Integer":
+                case "int":
+                case "userType":
+                case "shiftHours":
+                    continue;
+                default:
+                    Object result = EntityUtils.runGetter(field, req);
+                    if (result != null) {
+                        Boolean valid = (Boolean) aClass.getDeclaredMethod("isValid").invoke(result);
+                        if (!valid) {
+                            EntityUtils.runSetter(field, req, null);
+                        }
+                    }
+
+            }
+        }
     }
 
     private void resolveTenant(Long tenantId, HttpServletRequest request) {
@@ -71,6 +108,17 @@ public abstract class RestEntryPoint<E extends OEntity> {
     @PostMapping("arr")
     public @ResponseBody
     List<E> postArray(@Valid @RequestBody List<E> inEntity, @RequestHeader Long tenantId, HttpServletRequest request) {
+        inEntity.forEach(req -> {
+            try {
+                validateFields(req);
+            } catch (NoSuchMethodException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        });
         resolveTenant(tenantId, request);
         List<E> resp = mService.saveArray(inEntity);
         return resp;
@@ -109,7 +157,8 @@ public abstract class RestEntryPoint<E extends OEntity> {
 
     @PutMapping
     public @ResponseBody
-    ResponseModel updateEntity(@RequestBody final E inEntity, @RequestHeader Long tenantId, HttpServletRequest request) throws NoSuchMethodException {
+    ResponseModel updateEntity(@RequestBody final E inEntity, @RequestHeader Long tenantId, HttpServletRequest request) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        validateFields(inEntity);
         resolveTenant(tenantId, request);
         ResponseModel update = mService.update(inEntity);
         return update;
@@ -119,6 +168,18 @@ public abstract class RestEntryPoint<E extends OEntity> {
     @PutMapping("arr")
     public @ResponseBody
     List<ResponseModel> updateArray(@Valid @RequestBody List<E> inEntity, @RequestHeader Long tenantId, HttpServletRequest request) throws NoSuchMethodException {
+        inEntity.forEach(req -> {
+            try {
+                validateFields(req);
+            } catch (NoSuchMethodException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+
+        });
         resolveTenant(tenantId, request);
         List<ResponseModel> update = mService.update(inEntity);
         return update;

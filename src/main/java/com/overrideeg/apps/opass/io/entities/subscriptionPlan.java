@@ -32,6 +32,11 @@ public class subscriptionPlan extends OEntity {
     private Integer fromNoOfEmployees;
     private Integer toNoOfEmployees;
 
+    @Override
+    public boolean isValid() {
+        return super.isValid();
+    }
+
     public translatedField getName() {
         return name;
     }

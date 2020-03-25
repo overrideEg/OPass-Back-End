@@ -1,10 +1,8 @@
 package com.overrideeg.apps.opass.io.repositories.customisation;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.repository.NoRepositoryBean;
 
-import javax.persistence.LockModeType;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,7 +31,6 @@ public interface JpaRepositoryCustomisations<T> extends JpaRepository<T, Long> {
      */
 
 
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
     T persist(T inEntity) throws NoSuchMethodException;
 
     T findByField(String name, Object value);

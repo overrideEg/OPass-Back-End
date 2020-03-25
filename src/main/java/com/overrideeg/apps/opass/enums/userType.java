@@ -5,5 +5,5 @@
 package com.overrideeg.apps.opass.enums;
 
 public enum userType {
-    systemAdmin, companyAdmin, user
+    systemAdmin, companyAdmin, user, companyOwner
 }

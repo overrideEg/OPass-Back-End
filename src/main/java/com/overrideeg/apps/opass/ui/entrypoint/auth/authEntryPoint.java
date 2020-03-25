@@ -4,6 +4,7 @@
 
 package com.overrideeg.apps.opass.ui.entrypoint.auth;
 
+import com.overrideeg.apps.opass.exceptions.AuthenticationException;
 import com.overrideeg.apps.opass.io.entities.Users;
 import com.overrideeg.apps.opass.service.authService;
 import com.overrideeg.apps.opass.system.ApiUrls;
@@ -29,11 +30,20 @@ public class authEntryPoint {
     @PostMapping
     public @ResponseBody
     authResponse userLogin(@RequestBody authRequest loginCredentials) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException, NoSuchFieldException {
+        Long companyId;
+        try {
+            int i = loginCredentials.getUserName().indexOf(".");
+            companyId = Long.parseLong(loginCredentials.getUserName().substring(0, i));
+        } catch (Exception e) {
+            throw new AuthenticationException(e.getMessage());
+        }
 
-        int i = loginCredentials.getUserName().indexOf(".");
-        Long companyId = Long.parseLong(loginCredentials.getUserName().substring(0, i));
-
-        TenantContext.setCurrentTenant(companyId);
+        if (companyId == 0) {
+            TenantContext.setCurrentTenant(null);
+        }
+        if (companyId != 0) {
+            TenantContext.setCurrentTenant(companyId);
+        }
 
         authResponse returnValue = new authResponse();
 
@@ -49,7 +59,7 @@ public class authEntryPoint {
         returnValue.setToken(accessToken);
         returnValue.setDepartment(companyAndBranch.getDepartment());
         returnValue.setBranch(companyAndBranch.getBranch());
-
+        returnValue.setCompany_id(companyId);
         return returnValue;
     }
 }
