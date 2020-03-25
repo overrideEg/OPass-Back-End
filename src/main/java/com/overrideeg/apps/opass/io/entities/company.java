@@ -31,6 +31,10 @@ public class company extends OEntity {
     private String database_name;
     private Boolean enabled;
 
+    @Override
+    public boolean isValid() {
+        return super.isValid();
+    }
 
     public translatedField getName() {
         return name;

@@ -10,6 +10,7 @@ import com.overrideeg.apps.opass.ui.sys.ErrorMessages;
 import com.overrideeg.apps.opass.ui.sys.RequestOperation;
 import com.overrideeg.apps.opass.ui.sys.ResponseModel;
 import com.overrideeg.apps.opass.ui.sys.ResponseStatus;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -71,6 +72,7 @@ public abstract class AbstractService<E extends OEntity> {
      * @param inEntity Entity to update.
      * @return Observable that will receive the updated entity, or exception if error occurs.
      */
+    @Transactional(readOnly = false)
     public ResponseModel update(final E inEntity) throws NoSuchMethodException {
         ResponseModel responseModel = null;
         try {

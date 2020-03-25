@@ -10,7 +10,6 @@ import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.data.repository.NoRepositoryBean;
 
 import javax.persistence.EntityManager;
-import javax.persistence.FlushModeType;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -97,7 +96,6 @@ public class JpaRepositoryCustomisationsImpl<T> extends SimpleJpaRepository<T, L
 
     @Override
     public T persist(T inEntity) {
-        mEntityManager.setFlushMode(FlushModeType.COMMIT);
         inEntity = mEntityManager.merge(inEntity);
         return inEntity;
     }

@@ -24,6 +24,11 @@ public class termsAndConditions extends OEntity {
     @Embedded
     private translatedField body;
 
+    @Override
+    public boolean isValid() {
+        return super.isValid();
+    }
+
     public translatedField getTitle() {
         return title;
     }

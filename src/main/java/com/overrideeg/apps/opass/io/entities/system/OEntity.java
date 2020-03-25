@@ -30,6 +30,9 @@ public abstract class OEntity {
         lastUpdateDate = new Date(System.currentTimeMillis());
     }
 
+    public boolean isValid() {
+        return getId() != null;
+    }
 
     public Long getId() {
         return id;

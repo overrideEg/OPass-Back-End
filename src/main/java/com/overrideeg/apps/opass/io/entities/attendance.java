@@ -30,6 +30,11 @@ public class attendance extends OEntity {
     private Boolean earlyGo;
     private Boolean overTime;
 
+    @Override
+    public boolean isValid() {
+        return super.isValid();
+    }
+
     public com.overrideeg.apps.opass.io.entities.employee getEmployee() {
         return employee;
     }

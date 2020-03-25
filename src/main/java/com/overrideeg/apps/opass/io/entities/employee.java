@@ -4,6 +4,7 @@
 
 package com.overrideeg.apps.opass.io.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -11,9 +12,12 @@ import com.overrideeg.apps.opass.enums.employeeStatus;
 import com.overrideeg.apps.opass.io.entities.system.OEntity;
 import com.overrideeg.apps.opass.io.valueObjects.contactInfo;
 import com.overrideeg.apps.opass.io.valueObjects.translatedField;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @AttributeOverrides({
@@ -50,13 +54,25 @@ public class employee extends OEntity {
     @Temporal(TemporalType.TIMESTAMP)
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Date firingDate;
-    @OneToOne(fetch = FetchType.EAGER)
-    @JsonProperty(required = true)
-    private workShift shift;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "employee_shifts",
+            joinColumns = @JoinColumn(name = "employee_id"),
+            inverseJoinColumns = @JoinColumn(name = "shift_id"))
+    @JsonBackReference
+    @Fetch(FetchMode.SUBSELECT)
+    private List<workShift> shifts;
     @Enumerated(EnumType.STRING)
     private employeeStatus status;
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long createdUserId;
+    @Enumerated(EnumType.STRING)
+    private com.overrideeg.apps.opass.enums.userType userType;
+
+    @Override
+    public boolean isValid() {
+        return super.isValid();
+    }
 
     public translatedField getName() {
         return name;
@@ -66,19 +82,19 @@ public class employee extends OEntity {
         this.name = name;
     }
 
-    public department getDepartment() {
+    public com.overrideeg.apps.opass.io.entities.department getDepartment() {
         return department;
     }
 
-    public void setDepartment(department department) {
+    public void setDepartment(com.overrideeg.apps.opass.io.entities.department department) {
         this.department = department;
     }
 
-    public branch getBranch() {
+    public com.overrideeg.apps.opass.io.entities.branch getBranch() {
         return branch;
     }
 
-    public void setBranch(branch branch) {
+    public void setBranch(com.overrideeg.apps.opass.io.entities.branch branch) {
         this.branch = branch;
     }
 
@@ -98,11 +114,11 @@ public class employee extends OEntity {
         this.birthDate = birthDate;
     }
 
-    public contactInfo getContactInfo() {
+    public com.overrideeg.apps.opass.io.valueObjects.contactInfo getContactInfo() {
         return contactInfo;
     }
 
-    public void setContactInfo(contactInfo contactInfo) {
+    public void setContactInfo(com.overrideeg.apps.opass.io.valueObjects.contactInfo contactInfo) {
         this.contactInfo = contactInfo;
     }
 
@@ -138,12 +154,12 @@ public class employee extends OEntity {
         this.firingDate = firingDate;
     }
 
-    public workShift getShift() {
-        return shift;
+    public List<workShift> getShifts() {
+        return shifts;
     }
 
-    public void setShift(workShift shift) {
-        this.shift = shift;
+    public void setShifts(List<workShift> shifts) {
+        this.shifts = shifts;
     }
 
     public employeeStatus getStatus() {
@@ -160,5 +176,13 @@ public class employee extends OEntity {
 
     public void setCreatedUserId(Long createdUserId) {
         this.createdUserId = createdUserId;
+    }
+
+    public com.overrideeg.apps.opass.enums.userType getUserType() {
+        return userType;
+    }
+
+    public void setUserType(com.overrideeg.apps.opass.enums.userType userType) {
+        this.userType = userType;
     }
 }

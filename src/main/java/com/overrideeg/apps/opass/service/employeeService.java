@@ -1,6 +1,5 @@
 package com.overrideeg.apps.opass.service;
 
-import com.overrideeg.apps.opass.enums.userType;
 import com.overrideeg.apps.opass.exceptions.CouldNotCreateRecordException;
 import com.overrideeg.apps.opass.io.entities.Users;
 import com.overrideeg.apps.opass.io.entities.company;
@@ -8,7 +7,6 @@ import com.overrideeg.apps.opass.io.entities.employee;
 import com.overrideeg.apps.opass.io.repositories.employeeRepo;
 import com.overrideeg.apps.opass.system.Connection.TenantContext;
 import com.overrideeg.apps.opass.system.Connection.TenantResolver;
-import com.overrideeg.apps.opass.ui.sys.ErrorMessages;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,13 +36,24 @@ public class employeeService extends AbstractService<employee> {
             createdUser = createUserForEmployee(inEntity, companyId);
         } catch (Exception e) {
             e.printStackTrace();
-            throw new CouldNotCreateRecordException(ErrorMessages.COULD_NOT_CREATE_RECORD.getErrorMessage());
+            if (createdUser.getId() != null)
+                usersService.delete(createdUser.getId());
+            throw new CouldNotCreateRecordException(e.getMessage());
         }
 
         // set created user
         inEntity.setCreatedUserId(createdUser.getId());
         // return back saved employee
-        return super.save(inEntity);
+        employee saved = null;
+        try {
+            saved = super.save(inEntity);
+        } catch (Exception e) {
+            e.printStackTrace();
+            usersService.delete(createdUser.getId());
+            throw new CouldNotCreateRecordException(e.getMessage());
+
+        }
+        return saved;
     }
 
 
@@ -67,7 +76,7 @@ public class employeeService extends AbstractService<employee> {
         users.setEmail(inEntity.getContactInfo().getEmail());
         company companyForTenantId = tenantResolver.findCompanyForTenantId(companyId);
         users.setCompany_id(companyForTenantId.getId());
-        users.setUserType(userType.user);
+        users.setUserType(inEntity.getUserType());
         return usersService.save(users);
     }
 }

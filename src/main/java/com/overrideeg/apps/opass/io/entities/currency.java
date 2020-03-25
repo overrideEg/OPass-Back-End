@@ -31,6 +31,11 @@ public class currency extends OEntity {
     private String icon;
     private Boolean defaultCurrency;
 
+    @Override
+    public boolean isValid() {
+        return super.isValid();
+    }
+
     public translatedField getName() {
         return name;
     }

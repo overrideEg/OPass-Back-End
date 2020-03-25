@@ -27,6 +27,11 @@ public class city extends OEntity {
 //    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private country country;
 
+    @Override
+    public boolean isValid() {
+        return super.isValid();
+    }
+
     public translatedField getName() {
         return name;
     }

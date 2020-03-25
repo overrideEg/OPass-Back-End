@@ -24,6 +24,11 @@ public class faq extends OEntity {
     @Embedded
     private translatedField answer;
 
+    @Override
+    public boolean isValid() {
+        return super.isValid();
+    }
+
     public translatedField getQuestion() {
         return question;
     }

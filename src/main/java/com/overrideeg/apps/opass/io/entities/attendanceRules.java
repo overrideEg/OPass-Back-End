@@ -25,6 +25,10 @@ public class attendanceRules extends OEntity {
     @Fetch(FetchMode.SUBSELECT)
     private List<Integer> daysOff;
 
+    @Override
+    public boolean isValid() {
+        return super.isValid();
+    }
 
     public Integer getAllowedLateMinutes() {
         return allowedLateMinutes;

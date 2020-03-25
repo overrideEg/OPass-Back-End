@@ -36,6 +36,10 @@ public class subscription extends OEntity {
     @JsonProperty(required = true)
     private Integer maxNoOfEmployees;
 
+    @Override
+    public boolean isValid() {
+        return super.isValid();
+    }
 //    @PrePersist
 //    public void PrePersist() {
 //        // todo add price here assuming to fromdate to date "calc dates 🙄"

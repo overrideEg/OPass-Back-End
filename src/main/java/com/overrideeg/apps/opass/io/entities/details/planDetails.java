@@ -16,6 +16,11 @@ public class planDetails extends OEntity {
     private com.overrideeg.apps.opass.io.entities.currency currency;
     private Double price;
 
+    @Override
+    public boolean isValid() {
+        return super.isValid();
+    }
+
     public currency getCurrency() {
         return currency;
     }

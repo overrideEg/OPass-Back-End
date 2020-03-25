@@ -21,6 +21,11 @@ public class RestLog extends OEntity {
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Date date;
 
+    @Override
+    public boolean isValid() {
+        return super.isValid();
+    }
+
     public String getName() {
         return name;
     }
