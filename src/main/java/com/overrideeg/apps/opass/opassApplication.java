@@ -41,16 +41,14 @@ public class opassApplication extends SpringBootServletInitializer implements We
     }
 
     @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new AuthenticationFilter(this.usersService));
-    }
-
-
-    @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
         return application.sources(opassApplication.class);
     }
 
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(new AuthenticationFilter(this.usersService));
+    }
 
     @Override
     public void onStartup(ServletContext servletContext) throws ServletException {

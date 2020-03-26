@@ -12,11 +12,10 @@
     <artifactId>opass</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>opass</name>
-    <description>Override E-commerce project</description>
+    <description>Override OPass project</description>
     <packaging>war</packaging>
-
     <properties>
-        <java.version>13</java.version>
+        <start-class>com.overrideeg.apps.opass.opassApplication</start-class>
     </properties>
 
     <dependencies>
@@ -39,6 +38,10 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web-services</artifactId>
         </dependency>
         <dependency>
@@ -48,10 +51,6 @@
         <dependency>
             <groupId>org.springframework.session</groupId>
             <artifactId>spring-session-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

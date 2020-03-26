@@ -36,6 +36,7 @@ public class Users extends OEntity {
     @Column(unique = true)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String macAddress;
+    private String image;
 
     @Override
     public boolean isValid() {
@@ -128,5 +129,13 @@ public class Users extends OEntity {
 
     public void setCompany(com.overrideeg.apps.opass.io.entities.company company) {
         this.company = company;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 }
