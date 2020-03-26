@@ -59,7 +59,7 @@ public abstract class RestEntryPoint<E extends OEntity> {
         return resp;
     }
 
-    private void validateFields(E req) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    public void validateFields(E req) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         for (Field field : req.getClass().getDeclaredFields()) {
             Class<?> aClass = field.getType();
             String name = aClass.getSimpleName();
@@ -93,7 +93,7 @@ public abstract class RestEntryPoint<E extends OEntity> {
         }
     }
 
-    private void resolveTenant(Long tenantId, HttpServletRequest request) {
+    public void resolveTenant(Long tenantId, HttpServletRequest request) {
         if (tenantId == 0) {
             TenantContext.setCurrentTenant(null);
         }

@@ -8,6 +8,7 @@ import com.overrideeg.apps.opass.exceptions.AuthenticationException;
 import com.overrideeg.apps.opass.io.entities.Users;
 import com.overrideeg.apps.opass.service.UsersService;
 import com.overrideeg.apps.opass.system.ApiUrls;
+import com.overrideeg.apps.opass.system.Connection.TenantContext;
 import com.overrideeg.apps.opass.ui.sys.ErrorMessages;
 import com.overrideeg.apps.opass.utils.EntityUtils;
 import org.springframework.http.HttpHeaders;
@@ -43,25 +44,39 @@ public class AuthenticationFilter implements HandlerInterceptor {
         String shortURL = requestURL.substring(requestURL.lastIndexOf("/") + 1);
         if (shortURL.equals(ApiUrls.Auth_ep)) {
             handleAuthRequest(hsr, hsr1);
-        } else if (!shortURL.equals("api-docs") || !shortURL.equals("v3/api-docs")) {
         } else {
-            String authorizationHeader = hsr.getHeader(HttpHeaders.AUTHORIZATION);
-            if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer")) {
-                throw new AuthenticationException("Authorization header must be provided");
-            }
+            String method = hsr.getMethod();
+            if (!method.equalsIgnoreCase("OPTIONS")) {
+                String authorizationHeader = hsr.getHeaders("Authorization").nextElement();
+                if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer")) {
+                    throw new AuthenticationException("Authorization header must be provided");
+                }
 
-            // Extract the token
-            String token = authorizationHeader.substring("Bearer".length()).trim();
+                // Extract the token
+                String token = authorizationHeader.substring("Bearer".length()).trim();
 
-            // Extract user id
-            String userId = hsr.getHeader("userId");
+                // Extract user id
+                String userId = hsr.getHeader("userId");
 
-            if (!userId.equals("U3VwZXIgVXNlciBBZG1pbg==")) {
-                validateToken(token, userId);
+                if (!token.equals("U3VwZXIgVXNlciBBZG1pbg==")) {
+                    long tenantId = Long.parseLong(hsr.getHeader("tenantId"));
+                    resolveTenant(tenantId);
+                    validateToken(token, userId);
+                }
             }
         }
 
         return true;
+
+    }
+
+    private void resolveTenant(Long tenantId) {
+        if (tenantId == 0) {
+            TenantContext.setCurrentTenant(null);
+        }
+        if (tenantId != 0) {
+            TenantContext.setCurrentTenant(tenantId);
+        }
 
     }
 
@@ -117,6 +132,9 @@ public class AuthenticationFilter implements HandlerInterceptor {
 
         // Get user profile details
         Users userProfile = userService.find("userId", userId);
+
+        if (userProfile.getId() == null)
+            throw new AuthenticationException(ErrorMessages.AUTHENTICATION_FAILED.getErrorMessage());
 
         // Asseble Access token using two parts. One from DB and one from http request.
         String completeToken = userProfile.getToken() + token;
