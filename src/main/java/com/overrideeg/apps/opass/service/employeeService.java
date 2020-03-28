@@ -47,6 +47,8 @@ public class employeeService extends AbstractService<employee> {
         employee saved = null;
         try {
             saved = super.save(inEntity);
+            createdUser.setEmployee(saved);
+            usersService.update(createdUser);
         } catch (Exception e) {
             e.printStackTrace();
             usersService.delete(createdUser.getId());

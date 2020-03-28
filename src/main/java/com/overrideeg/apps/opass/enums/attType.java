@@ -5,5 +5,5 @@
 package com.overrideeg.apps.opass.enums;
 
 public enum attType {
-    IN, OUT
+    IN, OUT, LOG
 }

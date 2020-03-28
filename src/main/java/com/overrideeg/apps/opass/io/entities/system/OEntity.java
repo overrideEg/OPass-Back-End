@@ -1,6 +1,7 @@
 package com.overrideeg.apps.opass.io.entities.system;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import javax.persistence.*;
@@ -12,9 +13,11 @@ public abstract class OEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @JsonIgnore
     private Date creationDate;
     @Temporal(TemporalType.TIMESTAMP)
     @JsonFormat(shape = JsonFormat.Shape.STRING, timezone = "Africa/Cairo")
+    @JsonIgnore
     private Date lastUpdateDate;
 
 //    @Version
@@ -30,6 +33,7 @@ public abstract class OEntity {
         lastUpdateDate = new Date(System.currentTimeMillis());
     }
 
+    @JsonIgnore
     public boolean isValid() {
         return getId() != null;
     }

@@ -9,6 +9,7 @@ import com.overrideeg.apps.opass.exceptions.MissingRequiredFieldException;
 import com.overrideeg.apps.opass.io.entities.Users;
 import com.overrideeg.apps.opass.io.repositories.UsersRepo;
 import com.overrideeg.apps.opass.ui.sys.ErrorMessages;
+import com.overrideeg.apps.opass.ui.sys.ResponseModel;
 import com.overrideeg.apps.opass.utils.EntityUtils;
 import org.springframework.stereotype.Service;
 
@@ -65,5 +66,14 @@ public class UsersService extends AbstractService<Users> {
         Users returnValue = super.save(user);
 
         return returnValue;
+    }
+
+    @Override
+    public ResponseModel update(Users inEntity) throws NoSuchMethodException {
+        Users user = find(inEntity.getId()).get();
+        inEntity.setEncryptedPassword(user.getEncryptedPassword());
+        inEntity.setSalt(user.getSalt());
+        inEntity.setToken(user.getToken());
+        return super.update(inEntity);
     }
 }

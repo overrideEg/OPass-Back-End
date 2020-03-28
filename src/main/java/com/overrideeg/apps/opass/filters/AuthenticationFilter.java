@@ -44,6 +44,8 @@ public class AuthenticationFilter implements HandlerInterceptor {
         String shortURL = requestURL.substring(requestURL.lastIndexOf("/") + 1);
         if (shortURL.equals(ApiUrls.Auth_ep)) {
             handleAuthRequest(hsr, hsr1);
+        } else if (shortURL.equals("error") || shortURL.equals(ApiUrls.reader_ep)) {
+            System.out.println(shortURL);
         } else {
             String method = hsr.getMethod();
             if (!method.equalsIgnoreCase("OPTIONS")) {
@@ -59,8 +61,11 @@ public class AuthenticationFilter implements HandlerInterceptor {
                 String userId = hsr.getHeader("userId");
 
                 if (!token.equals("U3VwZXIgVXNlciBBZG1pbg==")) {
-                    long tenantId = Long.parseLong(hsr.getHeader("tenantId"));
-                    resolveTenant(tenantId);
+                    String tenantId1 = hsr.getHeader("tenantId");
+                    if (tenantId1 != null) {
+                        long tenantId = Long.parseLong(tenantId1);
+                        resolveTenant(tenantId);
+                    }
                     validateToken(token, userId);
                 }
             }

@@ -28,13 +28,12 @@ public class Users extends OEntity {
     @Enumerated(EnumType.STRING)
     private com.overrideeg.apps.opass.enums.userType userType;
     private Long company_id;
-    @Transient
-    private company company;
+    @ManyToOne(fetch = FetchType.EAGER)
+    private employee employee;
     @Transient
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY, required = true)
     private String password;
     @Column(unique = true)
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String macAddress;
     private String image;
 
@@ -123,12 +122,12 @@ public class Users extends OEntity {
         this.macAddress = macAddress;
     }
 
-    public com.overrideeg.apps.opass.io.entities.company getCompany() {
-        return company;
+    public com.overrideeg.apps.opass.io.entities.employee getEmployee() {
+        return employee;
     }
 
-    public void setCompany(com.overrideeg.apps.opass.io.entities.company company) {
-        this.company = company;
+    public void setEmployee(com.overrideeg.apps.opass.io.entities.employee employee) {
+        this.employee = employee;
     }
 
     public String getImage() {
