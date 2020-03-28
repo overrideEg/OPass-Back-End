@@ -1,4 +1,5 @@
-create table if not exists app_setting
+;
+create table app_setting
 (
     id               bigint not null auto_increment,
     creation_date    datetime(6),
@@ -14,7 +15,7 @@ create table if not exists app_setting
     primary key (id)
 ) engine = InnoDB
 ;
-create table if not exists attendance
+create table attendance
 (
     id               bigint not null auto_increment,
     creation_date    datetime(6),
@@ -29,7 +30,7 @@ create table if not exists attendance
     primary key (id)
 ) engine = InnoDB
 ;
-create table if not exists attendance_rules
+create table attendance_rules
 (
     id                          bigint not null auto_increment,
     creation_date               datetime(6),
@@ -40,13 +41,13 @@ create table if not exists attendance_rules
     primary key (id)
 ) engine = InnoDB
 ;
-create table if not exists attendance_rules_days_off
+create table attendance_rules_days_off
 (
     attendance_rules_id bigint not null,
     days_off            integer
 ) engine = InnoDB
 ;
-create table if not exists branch
+create table branch
 (
     id               bigint not null auto_increment,
     creation_date    datetime(6),
@@ -58,13 +59,13 @@ create table if not exists branch
     primary key (id)
 ) engine = InnoDB
 ;
-create table if not exists branch_days_off
+create table branch_days_off
 (
     branch_id bigint not null,
     days_off  integer
 ) engine = InnoDB
 ;
-create table if not exists city
+create table city
 (
     id               bigint not null auto_increment,
     creation_date    datetime(6),
@@ -76,7 +77,7 @@ create table if not exists city
     primary key (id)
 ) engine = InnoDB
 ;
-create table if not exists company
+create table company
 (
     id               bigint not null auto_increment,
     creation_date    datetime(6),
@@ -95,7 +96,7 @@ create table if not exists company
     primary key (id)
 ) engine = InnoDB
 ;
-create table if not exists country
+create table country
 (
     id               bigint not null auto_increment,
     creation_date    datetime(6),
@@ -106,7 +107,7 @@ create table if not exists country
     primary key (id)
 ) engine = InnoDB
 ;
-create table if not exists currency
+create table currency
 (
     id               bigint not null auto_increment,
     creation_date    datetime(6),
@@ -122,7 +123,7 @@ create table if not exists currency
     primary key (id)
 ) engine = InnoDB
 ;
-create table if not exists department
+create table department
 (
     id               bigint not null auto_increment,
     creation_date    datetime(6),
@@ -134,13 +135,13 @@ create table if not exists department
     primary key (id)
 ) engine = InnoDB
 ;
-create table if not exists department_days_off
+create table department_days_off
 (
     department_id bigint not null,
     days_off      integer
 ) engine = InnoDB
 ;
-create table if not exists employee
+create table employee
 (
     id                   bigint not null auto_increment,
     creation_date        datetime(6),
@@ -177,13 +178,13 @@ create table if not exists employee
     primary key (id)
 ) engine = InnoDB
 ;
-create table if not exists employee_shifts
+create table employee_shifts
 (
     employee_id bigint not null,
     shift_id    bigint not null
 ) engine = InnoDB
 ;
-create table if not exists faq
+create table faq
 (
     id               bigint not null auto_increment,
     creation_date    datetime(6),
@@ -197,7 +198,7 @@ create table if not exists faq
     primary key (id)
 ) engine = InnoDB
 ;
-create table if not exists plan_details
+create table plan_details
 (
     id               bigint not null auto_increment,
     creation_date    datetime(6),
@@ -207,7 +208,7 @@ create table if not exists plan_details
     primary key (id)
 ) engine = InnoDB
 ;
-create table if not exists qr_machine
+create table qr_machine
 (
     id               bigint not null auto_increment,
     creation_date    datetime(6),
@@ -223,7 +224,7 @@ create table if not exists qr_machine
     primary key (id)
 ) engine = InnoDB
 ;
-create table if not exists report_detention
+create table report_detention
 (
     id               bigint not null auto_increment,
     creation_date    datetime(6),
@@ -238,7 +239,7 @@ create table if not exists report_detention
     primary key (id)
 ) engine = InnoDB
 ;
-create table if not exists report_detention_params
+create table report_detention_params
 (
     report_detention_id bigint       not null,
     parameter_type      varchar(255),
@@ -246,7 +247,7 @@ create table if not exists report_detention_params
     primary key (report_detention_id, parameter_name)
 ) engine = InnoDB
 ;
-create table if not exists rest_log
+create table rest_log
 (
     id               bigint not null auto_increment,
     creation_date    datetime(6),
@@ -261,7 +262,7 @@ create table if not exists rest_log
     primary key (id)
 ) engine = InnoDB
 ;
-create table if not exists subscription
+create table subscription
 (
     id                   bigint not null auto_increment,
     creation_date        datetime(6),
@@ -273,7 +274,7 @@ create table if not exists subscription
     primary key (id)
 ) engine = InnoDB
 ;
-create table if not exists subscription_plan
+create table subscription_plan
 (
     id                   bigint not null auto_increment,
     creation_date        datetime(6),
@@ -287,13 +288,13 @@ create table if not exists subscription_plan
     primary key (id)
 ) engine = InnoDB
 ;
-create table if not exists subscription_plan_plan_details
+create table subscription_plan_plan_details
 (
     subscription_plan_id bigint not null,
     plan_details_id      bigint not null
 ) engine = InnoDB
 ;
-create table if not exists terms_and_conditions
+create table terms_and_conditions
 (
     id               bigint not null auto_increment,
     creation_date    datetime(6),
@@ -307,7 +308,7 @@ create table if not exists terms_and_conditions
     primary key (id)
 ) engine = InnoDB
 ;
-create table if not exists users
+create table users
 (
     id                 bigint      not null auto_increment,
     creation_date      datetime(6),
@@ -322,10 +323,11 @@ create table if not exists users
     user_id            varchar(255),
     user_name          varchar(15) not null,
     user_type          varchar(255),
+    employee_id        bigint,
     primary key (id)
 ) engine = InnoDB
 ;
-create table if not exists work_shift
+create table work_shift
 (
     id               bigint not null auto_increment,
     creation_date    datetime(6),
@@ -421,3 +423,6 @@ alter table subscription_plan_plan_details
 ;
 alter table subscription_plan_plan_details
     add constraint FKdx2qg3vw83ytg4vigpvb5bdsw foreign key (subscription_plan_id) references subscription_plan (id)
+;
+alter table users
+    add constraint FKfndbe67uw6silwqnlyudtwqmo foreign key (employee_id) references employee (id)

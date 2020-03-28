@@ -9,10 +9,9 @@ import com.overrideeg.apps.opass.io.entities.Users;
 import com.overrideeg.apps.opass.service.authService;
 import com.overrideeg.apps.opass.system.ApiUrls;
 import com.overrideeg.apps.opass.system.Connection.TenantContext;
+import com.overrideeg.apps.opass.system.Connection.TenantResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.lang.reflect.InvocationTargetException;
 
 
 @CrossOrigin(origins = "*"
@@ -26,10 +25,12 @@ public class authEntryPoint {
 
     @Autowired
     authService authenticationService;
+    @Autowired
+    TenantResolver resolver;
 
     @PostMapping
     public @ResponseBody
-    authResponse userLogin(@RequestBody authRequest loginCredentials) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException, NoSuchFieldException {
+    authResponse userLogin(@RequestBody authRequest loginCredentials) throws AuthenticationException {
         Long companyId;
         try {
             int i = loginCredentials.getUserName().indexOf(".");
@@ -49,17 +50,18 @@ public class authEntryPoint {
 
         Users authenticatedUser = authenticationService.authenticate(loginCredentials.getUserName(), loginCredentials.getPassword());
 
+        authenticationService.checkMacAddress(authenticatedUser, loginCredentials);
         // Reset Access Token
         authenticationService.resetSecurityCridentials(loginCredentials.getPassword(), authenticatedUser, loginCredentials.getMacAddress());
 
-        authResponse companyAndBranch = authenticationService.findCompanyAndBranch(authenticatedUser, returnValue);
         String accessToken = authenticationService.issueAccessToken(authenticatedUser);
 
         returnValue.setUser(authenticatedUser);
         returnValue.setToken(accessToken);
-        returnValue.setDepartment(companyAndBranch.getDepartment());
-        returnValue.setBranch(companyAndBranch.getBranch());
-        returnValue.setCompany_id(companyId);
+
+        if (companyId != null && companyId != 0)
+            returnValue.setCompany(resolver.findCompanyForTenantId(companyId));
         return returnValue;
     }
+
 }

@@ -5,6 +5,7 @@ public class ApiUrls {
     public static final String RestLog_EP = "RestLog";
     public static final String Auth_ep = "Auth";
     public static final String Qr_Generator_ep = "QR_Generator";
+    public static final String reader_ep = "reader";
 
 
     public static final String city_EP = "city";
