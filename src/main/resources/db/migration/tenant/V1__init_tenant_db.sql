@@ -1,4 +1,3 @@
-;
 create table app_setting
 (
     id               bigint not null auto_increment,
@@ -20,17 +19,16 @@ create table attendance
     id               bigint not null auto_increment,
     creation_date    datetime(6),
     last_update_date datetime(6),
+    att_status       varchar(255),
     att_type         varchar(255),
-    early_go         bit,
-    late_entrance    bit,
-    over_time        bit,
     scan_date        datetime(6),
     scan_time        datetime(6),
     employee_id      bigint,
+    work_shift_id    bigint,
     primary key (id)
 ) engine = InnoDB
 ;
-create table attendance_rules
+create table branch
 (
     id                          bigint not null auto_increment,
     creation_date               datetime(6),
@@ -38,24 +36,10 @@ create table attendance_rules
     allowed_early_leave_minutes integer,
     allowed_late_minutes        integer,
     max_over_time_hours         integer,
-    primary key (id)
-) engine = InnoDB
-;
-create table attendance_rules_days_off
-(
-    attendance_rules_id bigint not null,
-    days_off            integer
-) engine = InnoDB
-;
-create table branch
-(
-    id               bigint not null auto_increment,
-    creation_date    datetime(6),
-    last_update_date datetime(6),
-    name_ar          varchar(255),
-    name_en          varchar(255),
-    name_tr          varchar(255),
-    phone_number     varchar(255),
+    name_ar                     varchar(255),
+    name_en                     varchar(255),
+    name_tr                     varchar(255),
+    phone_number                varchar(255),
     primary key (id)
 ) engine = InnoDB
 ;
@@ -125,13 +109,16 @@ create table currency
 ;
 create table department
 (
-    id               bigint not null auto_increment,
-    creation_date    datetime(6),
-    last_update_date datetime(6),
-    name_ar          varchar(255),
-    name_en          varchar(255),
-    name_tr          varchar(255),
-    phone_number     varchar(255),
+    id                          bigint not null auto_increment,
+    creation_date               datetime(6),
+    last_update_date            datetime(6),
+    allowed_early_leave_minutes integer,
+    allowed_late_minutes        integer,
+    max_over_time_hours         integer,
+    name_ar                     varchar(255),
+    name_en                     varchar(255),
+    name_tr                     varchar(255),
+    phone_number                varchar(255),
     primary key (id)
 ) engine = InnoDB
 ;
@@ -224,27 +211,39 @@ create table qr_machine
     primary key (id)
 ) engine = InnoDB
 ;
-create table report_detention
+create table report_category
 (
     id               bigint not null auto_increment,
     creation_date    datetime(6),
     last_update_date datetime(6),
-    file_name        varchar(255),
-    file_path        varchar(255),
-    jasper_file_name varchar(255),
     name_ar          varchar(255),
     name_en          varchar(255),
     name_tr          varchar(255),
-    size             bigint,
     primary key (id)
 ) engine = InnoDB
 ;
-create table report_detention_params
+create table report_definition
 (
-    report_detention_id bigint       not null,
-    parameter_type      varchar(255),
-    parameter_name      varchar(255) not null,
-    primary key (report_detention_id, parameter_name)
+    id                 bigint not null auto_increment,
+    creation_date      datetime(6),
+    last_update_date   datetime(6),
+    file_name          varchar(255),
+    file_path          varchar(255),
+    jasper_file_name   varchar(255),
+    name_ar            varchar(255),
+    name_en            varchar(255),
+    name_tr            varchar(255),
+    size               bigint,
+    report_category_id bigint,
+    primary key (id)
+) engine = InnoDB
+;
+create table report_definition_params
+(
+    report_definition_id bigint       not null,
+    parameter_type       varchar(255),
+    parameter_name       varchar(255) not null,
+    primary key (report_definition_id, parameter_name)
 ) engine = InnoDB
 ;
 create table rest_log
@@ -367,8 +366,8 @@ alter table users
 alter table attendance
     add constraint FKr7q0h8jfngkyybll6o9r3h9ua foreign key (employee_id) references employee (id)
 ;
-alter table attendance_rules_days_off
-    add constraint FKogw9dtahceqlqpd9qsriodxbv foreign key (attendance_rules_id) references attendance_rules (id)
+alter table attendance
+    add constraint FKfj4bkjnxb247ghct6vvlfwnis foreign key (work_shift_id) references work_shift (id)
 ;
 alter table branch_days_off
     add constraint FKow2rw55b13362icw869litx9d foreign key (branch_id) references branch (id)
@@ -409,8 +408,11 @@ alter table qr_machine
 alter table qr_machine
     add constraint FKhta5dwyoquq9kygdv4nol5o6s foreign key (department_id) references department (id)
 ;
-alter table report_detention_params
-    add constraint FKix6901vwufram1cy1eqfmiebx foreign key (report_detention_id) references report_detention (id)
+alter table report_definition
+    add constraint FKko7od89jyvjjd9hb8qwsjf44 foreign key (report_category_id) references report_category (id)
+;
+alter table report_definition_params
+    add constraint FKenm5vd32id4ft0jan8ft3cm81 foreign key (report_definition_id) references report_definition (id)
 ;
 alter table subscription
     add constraint FK45i0k0ls0erwl77ei45ds25t8 foreign key (company_id) references company (id)

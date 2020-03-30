@@ -20,8 +20,6 @@ public class readerService {
     @Autowired
     attendanceService attendanceService;
     @Autowired
-    attendanceRulesService rulesService;
-    @Autowired
     qrMachineService qrMachineService;
 
     public attendance validate(readerRequest request) {
