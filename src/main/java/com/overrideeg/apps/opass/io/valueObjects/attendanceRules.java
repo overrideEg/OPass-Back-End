@@ -2,21 +2,19 @@
  * Copyright (c) 2020. overrideeg.ocm.
  */
 
-package com.overrideeg.apps.opass.io.entities;
+package com.overrideeg.apps.opass.io.valueObjects;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.overrideeg.apps.opass.io.entities.system.OEntity;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
+import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import java.util.List;
 
-@Entity
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class attendanceRules extends OEntity {
+
+@Embeddable
+public class attendanceRules {
 
     private Integer allowedLateMinutes;
     private Integer allowedEarlyLeaveMinutes;
@@ -25,10 +23,6 @@ public class attendanceRules extends OEntity {
     @Fetch(FetchMode.SUBSELECT)
     private List<Integer> daysOff;
 
-    @Override
-    public boolean isValid() {
-        return super.isValid();
-    }
 
     public Integer getAllowedLateMinutes() {
         return allowedLateMinutes;

@@ -1,6 +1,6 @@
 package com.overrideeg.apps.opass.ui.entrypoint.webapp;
 
-import com.overrideeg.apps.opass.io.entities.attendanceRules;
+import com.overrideeg.apps.opass.io.valueObjects.attendanceRules;
 import com.overrideeg.apps.opass.service.attendanceRulesService;
 import com.overrideeg.apps.opass.system.ApiUrls;
 import com.overrideeg.apps.opass.ui.entrypoint.RestEntryPoint;

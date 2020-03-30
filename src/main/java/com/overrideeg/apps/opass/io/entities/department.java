@@ -8,11 +8,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.overrideeg.apps.opass.io.entities.system.OEntity;
 import com.overrideeg.apps.opass.io.valueObjects.translatedField;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Entity
 @AttributeOverrides({
@@ -26,9 +23,8 @@ public class department extends OEntity {
     @JsonProperty(required = true)
     private translatedField name;
     private String phoneNumber;
-    @ElementCollection(fetch = FetchType.EAGER)
-    @Fetch(FetchMode.SUBSELECT)
-    private List<Integer> daysOff;
+    @Embedded
+    private com.overrideeg.apps.opass.io.valueObjects.attendanceRules attendanceRules;
 
     @Override
     public boolean isValid() {
@@ -43,8 +39,6 @@ public class department extends OEntity {
         this.name = name;
     }
 
-
-
     public String getPhoneNumber() {
         return phoneNumber;
     }
@@ -53,11 +47,11 @@ public class department extends OEntity {
         this.phoneNumber = phoneNumber;
     }
 
-    public List<Integer> getDaysOff() {
-        return daysOff;
+    public com.overrideeg.apps.opass.io.valueObjects.attendanceRules getAttendanceRules() {
+        return attendanceRules;
     }
 
-    public void setDaysOff(List<Integer> daysOff) {
-        this.daysOff = daysOff;
+    public void setAttendanceRules(com.overrideeg.apps.opass.io.valueObjects.attendanceRules attendanceRules) {
+        this.attendanceRules = attendanceRules;
     }
 }
