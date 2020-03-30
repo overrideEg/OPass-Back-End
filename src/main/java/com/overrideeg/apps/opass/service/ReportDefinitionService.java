@@ -44,6 +44,8 @@ public class ReportDefinitionService extends AbstractService<reportDefinition> {
     public reportDefinition save(MultipartFile file, reportDefinition reportDefinition) {
         String fileName = null;
         String jasperPath;
+        Map<String, String> dbPararms = new HashMap<>();
+
         try {
             fileName = fileStorageService.storeFile(file);
             Resource resource = fileStorageService.loadFileAsResource(fileName);
@@ -56,7 +58,6 @@ public class ReportDefinitionService extends AbstractService<reportDefinition> {
             JasperReport jasperReport = (JasperReport) JRLoader.loadObject(fileStorageService.loadFileAsResource(jasperPath).getFile());
             JRParameter[] jsParams = jasperReport.getParameters();
 
-            Map<String, String> dbPararms = new HashMap<>();
             for (JRParameter param : jsParams) {
                 if (!param.isSystemDefined() && param.isForPrompting()) {
                     String paramName = param.getName();
@@ -72,6 +73,7 @@ public class ReportDefinitionService extends AbstractService<reportDefinition> {
         String fileNameJasper = new StringBuilder(file.getOriginalFilename().substring(0, file.getOriginalFilename().length() - 5)).append("jasper").toString();
         reportDefinition.setFilePath(jasperPath);
         reportDefinition.setSize(file.getSize());
+        reportDefinition.setParams(dbPararms);
         reportDefinition.setFileName(file.getOriginalFilename());
         reportDefinition.setJasperFileName(fileNameJasper);
         return mRepository.save(reportDefinition);

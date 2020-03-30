@@ -7,6 +7,7 @@ package com.overrideeg.apps.opass.io.entities;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.OptBoolean;
+import com.overrideeg.apps.opass.enums.attStatus;
 import com.overrideeg.apps.opass.enums.attType;
 import com.overrideeg.apps.opass.io.entities.system.OEntity;
 
@@ -18,6 +19,8 @@ import java.util.Date;
 public class attendance extends OEntity {
     @ManyToOne
     private employee employee;
+    @ManyToOne
+    private workShift workShift;
     @Temporal(TemporalType.TIMESTAMP)
     @JsonFormat(shape = JsonFormat.Shape.STRING, lenient = OptBoolean.TRUE)
     private Date scanDate;
@@ -26,9 +29,8 @@ public class attendance extends OEntity {
     private Date scanTime;
     @Enumerated(EnumType.STRING)
     private attType attType;
-    private Boolean lateEntrance;
-    private Boolean earlyGo;
-    private Boolean overTime;
+    @Enumerated(EnumType.STRING)
+    private attStatus attStatus;
 
     @Override
     public boolean isValid() {
@@ -41,6 +43,14 @@ public class attendance extends OEntity {
 
     public void setEmployee(com.overrideeg.apps.opass.io.entities.employee employee) {
         this.employee = employee;
+    }
+
+    public com.overrideeg.apps.opass.io.entities.workShift getWorkShift() {
+        return workShift;
+    }
+
+    public void setWorkShift(com.overrideeg.apps.opass.io.entities.workShift workShift) {
+        this.workShift = workShift;
     }
 
     public Date getScanDate() {
@@ -67,27 +77,11 @@ public class attendance extends OEntity {
         this.attType = attType;
     }
 
-    public Boolean getLateEntrance() {
-        return lateEntrance;
+    public com.overrideeg.apps.opass.enums.attStatus getAttStatus() {
+        return attStatus;
     }
 
-    public void setLateEntrance(Boolean lateEntrance) {
-        this.lateEntrance = lateEntrance;
-    }
-
-    public Boolean getEarlyGo() {
-        return earlyGo;
-    }
-
-    public void setEarlyGo(Boolean earlyGo) {
-        this.earlyGo = earlyGo;
-    }
-
-    public Boolean getOverTime() {
-        return overTime;
-    }
-
-    public void setOverTime(Boolean overTime) {
-        this.overTime = overTime;
+    public void setAttStatus(com.overrideeg.apps.opass.enums.attStatus attStatus) {
+        this.attStatus = attStatus;
     }
 }
