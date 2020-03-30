@@ -79,6 +79,7 @@ public abstract class RestEntryPoint<E extends OEntity> {
                 case "int":
                 case "userType":
                 case "shiftHours":
+                case "attendanceRules":
                     continue;
                 default:
                     Object result = EntityUtils.runGetter(field, req);
