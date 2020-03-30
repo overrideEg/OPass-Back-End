@@ -1,18 +1,16 @@
 package com.overrideeg.apps.opass.service;
 
 import com.overrideeg.apps.opass.exceptions.FileStorageException;
-import com.overrideeg.apps.opass.io.entities.reports.reportDetention;
-import com.overrideeg.apps.opass.io.repositories.reportDetentionRepo;
+import com.overrideeg.apps.opass.io.entities.reports.reportDefinition;
+import com.overrideeg.apps.opass.io.repositories.ReportDefinitionRepo;
 import com.overrideeg.apps.opass.service.files.FileStorageService;
 import com.overrideeg.apps.opass.system.Connection.TenantResolver;
 import com.overrideeg.apps.opass.ui.sys.ResponseModel;
 import com.overrideeg.apps.opass.utils.FileStorageProperties;
-import net.sf.jasperreports.engine.JasperCompileManager;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.export.HtmlExporter;
+import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleHtmlExporterOutput;
@@ -28,13 +26,10 @@ import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 @Service
-public class reportDetentionService extends AbstractService<reportDetention> {
+public class ReportDefinitionService extends AbstractService<reportDefinition> {
 
     @Autowired
     TenantResolver tenantResolver;
@@ -42,11 +37,11 @@ public class reportDetentionService extends AbstractService<reportDetention> {
     private FileStorageService fileStorageService;
 
 
-    public reportDetentionService(final reportDetentionRepo inRepository) {
+    public ReportDefinitionService(final ReportDefinitionRepo inRepository) {
         super(inRepository);
     }
 
-    public reportDetention save(MultipartFile file, reportDetention reportDetention) {
+    public reportDefinition save(MultipartFile file, reportDefinition reportDefinition) {
         String fileName = null;
         String jasperPath;
         try {
@@ -58,22 +53,32 @@ public class reportDetentionService extends AbstractService<reportDetention> {
             JasperCompileManager.compileReportToFile(
                     resource.getFile().getPath(), // the path to the jrxml file to compile
                     jasperPath); // the path and name we want to save the compiled file to
+            JasperReport jasperReport = (JasperReport) JRLoader.loadObject(fileStorageService.loadFileAsResource(jasperPath).getFile());
+            JRParameter[] jsParams = jasperReport.getParameters();
 
+            Map<String, String> dbPararms = new HashMap<>();
+            for (JRParameter param : jsParams) {
+                if (!param.isSystemDefined() && param.isForPrompting()) {
+                    String paramName = param.getName();
+                    String paramType = param.getValueClassName();
+                    dbPararms.put(paramName, paramType);
+                }
+            }
         } catch (Exception e) {
             e.printStackTrace();
             throw new FileStorageException(e.getMessage());
         }
 
         String fileNameJasper = new StringBuilder(file.getOriginalFilename().substring(0, file.getOriginalFilename().length() - 5)).append("jasper").toString();
-        reportDetention.setFilePath(jasperPath);
-        reportDetention.setSize(file.getSize());
-        reportDetention.setFileName(file.getOriginalFilename());
-        reportDetention.setJasperFileName(fileNameJasper);
-        return mRepository.save(reportDetention);
+        reportDefinition.setFilePath(jasperPath);
+        reportDefinition.setSize(file.getSize());
+        reportDefinition.setFileName(file.getOriginalFilename());
+        reportDefinition.setJasperFileName(fileNameJasper);
+        return mRepository.save(reportDefinition);
     }
 
 
-    public ResponseModel update(MultipartFile file, reportDetention reportDetention, Long reportId) throws NoSuchMethodException {
+    public ResponseModel update(MultipartFile file, reportDefinition reportDefinition, Long reportId) throws NoSuchMethodException {
         String fileName = null;
         String jasperPath;
         try {
@@ -82,23 +87,22 @@ public class reportDetentionService extends AbstractService<reportDetention> {
             String reportPath = new StringBuilder().append(FileStorageProperties.getUploadDir()).append("/").append(fileName).toString();
             jasperPath = new StringBuilder(reportPath.substring(0, reportPath.length() - 5)).append("jasper").toString();
 
-            JasperCompileManager.compileReportToFile(
-                    resource.getFile().getPath(), // the path to the jrxml file to compile
-                    jasperPath); // the path and name we want to save the compiled file to
+            JasperCompileManager.compileReportToFile(resource.getFile().getPath(), jasperPath);
+
 
         } catch (Exception e) {
             e.printStackTrace();
             throw new FileStorageException(e.getMessage());
         }
 
-        reportDetention storedReport = find(reportId).get();
+        reportDefinition storedReport = find(reportId).get();
 
         String fileNameJasper = new StringBuilder(file.getOriginalFilename().substring(0, file.getOriginalFilename().length() - 5)).append("jasper").toString();
         storedReport.setFilePath(jasperPath);
         storedReport.setSize(file.getSize());
         storedReport.setFileName(file.getOriginalFilename());
         storedReport.setJasperFileName(fileNameJasper);
-        storedReport.setName(reportDetention.getName());
+        storedReport.setName(reportDefinition.getName());
         return update(storedReport);
     }
 
@@ -107,15 +111,15 @@ public class reportDetentionService extends AbstractService<reportDetention> {
         StringBuilder reportPath = new StringBuilder();
         String uploadDir = FileStorageProperties.getUploadDir();
         reportPath.append(uploadDir).append("/");
-        reportDetention reportDetention = null;
+        reportDefinition reportDefinition = null;
         try {
-            reportDetention = mRepository.findById(reportId).get();
+            reportDefinition = mRepository.findById(reportId).get();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        reportPath.append(reportDetention.getFileName());
+        reportPath.append(reportDefinition.getFileName());
 
-        Resource resource = fileStorageService.loadFileAsResource(reportDetention.getFileName());
+        Resource resource = fileStorageService.loadFileAsResource(reportDefinition.getFileName());
 
         System.out.println(reportPath.toString());
 
@@ -135,12 +139,13 @@ public class reportDetentionService extends AbstractService<reportDetention> {
 
         JasperPrint jasPrint = JasperFillManager.fillReport(jasReport, parameters, getConnection(companyId));
 
-//
         jasperPrintList.add(jasPrint);
         HtmlExporter exporter = new HtmlExporter();
         exporter.setExporterInput(SimpleExporterInput.getInstance(jasperPrintList));
         exporter.setExporterOutput(new SimpleHtmlExporterOutput(response.getWriter()));
         exporter.exportReport();
+        response.setStatus(HttpServletResponse.SC_OK);
+
         return response;
     }
 
@@ -153,6 +158,8 @@ public class reportDetentionService extends AbstractService<reportDetention> {
         String host = config.getProperty("database.host");
         String port = config.getProperty("database.port");
         String databaseName = this.tenantResolver.findDataBaseNameByTenantId(companyId);
+        if (databaseName == null)
+            databaseName = config.getProperty("database.name");
         String username = config.getProperty("database.username");
         String password = config.getProperty("database.password");
         String url = "jdbc:mysql://" + host + ":" + port + "/" + databaseName + "";

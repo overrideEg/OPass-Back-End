@@ -44,7 +44,9 @@ public class ApiUrls {
 
     public static final String termsAndConditions_EP = "termsAndConditions";
 
-    public static final String reportDetention_EP = "reportDetention";
+    public static final String reportDefinition_EP = "reportDefinition";
+
+    public static final String reportCategory_EP = "reportCategory";
 
 }
 

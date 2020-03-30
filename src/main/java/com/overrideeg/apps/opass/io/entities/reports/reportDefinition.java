@@ -20,7 +20,7 @@ import java.util.Map;
         @AttributeOverride(name = "name.en", column = @Column(name = "name_en")),
         @AttributeOverride(name = "name.tr", column = @Column(name = "name_tr")),
 })
-public class reportDetention extends OEntity {
+public class reportDefinition extends OEntity {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private String filePath;
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
@@ -30,6 +30,8 @@ public class reportDetention extends OEntity {
     private String fileName;
     @JsonIgnore
     private String jasperFileName;
+    @ManyToOne(fetch = FetchType.EAGER)
+    private reportCategory reportCategory;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @MapKeyColumn(name = "parameter_name")
@@ -83,5 +85,13 @@ public class reportDetention extends OEntity {
 
     public void setParams(Map<String, String> params) {
         this.params = params;
+    }
+
+    public com.overrideeg.apps.opass.io.entities.reports.reportCategory getReportCategory() {
+        return reportCategory;
+    }
+
+    public void setReportCategory(com.overrideeg.apps.opass.io.entities.reports.reportCategory reportCategory) {
+        this.reportCategory = reportCategory;
     }
 }
