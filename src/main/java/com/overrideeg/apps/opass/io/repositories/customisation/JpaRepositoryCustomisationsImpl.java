@@ -96,8 +96,7 @@ public class JpaRepositoryCustomisationsImpl<T> extends SimpleJpaRepository<T, L
 
     @Override
     public T persist(T inEntity) {
-        inEntity = mEntityManager.merge(inEntity);
-        return inEntity;
+        return super.save(inEntity);
     }
 
     @Override

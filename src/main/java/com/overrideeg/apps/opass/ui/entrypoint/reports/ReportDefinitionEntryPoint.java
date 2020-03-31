@@ -74,14 +74,14 @@ public class ReportDefinitionEntryPoint {
 
     @PostMapping(value = "/{reportId}", produces = "text/html")
     public @ResponseBody
-    HttpServletResponse runReport(@PathVariable(value = "reportId") Long reportId, @RequestHeader String tenantId, HttpServletResponse response, @RequestBody reportParams params) throws Exception {
-        HttpServletResponse res = reportDefinitionService.generateReport(response, reportId, Long.parseLong(tenantId), params.getParams());
+    HttpServletResponse runReport(@PathVariable(value = "reportId") Long reportId, @RequestHeader Long tenantId, HttpServletResponse response, @RequestBody reportParams params) throws Exception {
+        HttpServletResponse res = reportDefinitionService.generateReport(response, reportId, tenantId, params.getParams());
         return res;
     }
 
     @GetMapping("/getReport/{reportId}")
     public @ResponseBody
-    reportDefinition runReport(@PathVariable(value = "reportId") Long reportId, @RequestHeader Long tenantId, HttpServletRequest request) {
+    reportDefinition getReport(@PathVariable(value = "reportId") Long reportId, @RequestHeader Long tenantId, HttpServletRequest request) {
         resolveTenant(tenantId, request);
         return reportDefinitionService.find(reportId).get();
     }
