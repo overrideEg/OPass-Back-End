@@ -65,9 +65,7 @@ public class ReportDefinitionEntryPoint {
     }
 
     private void resolveTenant(Long tenantId, HttpServletRequest request) {
-
         TenantContext.setCurrentTenant(null);
-
         restLogService.saveLog(request.getRequestURI(), request.getRemoteAddr(), request.getMethod());
     }
 
