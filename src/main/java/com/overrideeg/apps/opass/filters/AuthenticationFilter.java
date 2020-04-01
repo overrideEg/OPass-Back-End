@@ -42,6 +42,9 @@ public class AuthenticationFilter implements HandlerInterceptor {
 
         String contextPath = hsr.getServletPath().substring(1);
         if (ApiUrls.Users_EP.equals(contextPath) && hsr.getMethod().equalsIgnoreCase("POST")) {
+
+            return true;
+        } else if ((ApiUrls.termsAndConditions_EP.equals(contextPath) || ApiUrls.faq_EP.equals(contextPath) || ApiUrls.appSetting_EP.equals(contextPath)) && (hsr.getMethod().equalsIgnoreCase("GET") || hsr.getMethod().equalsIgnoreCase("OPTIONS"))) {
             return true;
         } else if ("error".equals(contextPath) || ApiUrls.reader_ep.equals(contextPath) || contextPath.startsWith(ApiUrls.reportDefinition_EP)) {
             return true;
