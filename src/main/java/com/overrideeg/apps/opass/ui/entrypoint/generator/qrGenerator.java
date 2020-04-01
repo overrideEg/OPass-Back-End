@@ -4,6 +4,7 @@
 
 package com.overrideeg.apps.opass.ui.entrypoint.generator;
 
+import com.overrideeg.apps.opass.annotations.Secured;
 import com.overrideeg.apps.opass.io.entities.qrMachine;
 import com.overrideeg.apps.opass.service.generatorService;
 import com.overrideeg.apps.opass.system.ApiUrls;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
         allowCredentials = "true", allowedHeaders = "*")
 @RestController
 @RequestMapping(ApiUrls.Qr_Generator_ep)
+@Secured(methodsToSecure = {RequestMethod.DELETE, RequestMethod.POST, RequestMethod.PUT, RequestMethod.GET})
 public class qrGenerator {
     @Autowired
     generatorService generatorService;

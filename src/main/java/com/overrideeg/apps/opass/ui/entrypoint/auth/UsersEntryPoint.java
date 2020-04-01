@@ -4,6 +4,7 @@
 
 package com.overrideeg.apps.opass.ui.entrypoint.auth;
 
+import com.overrideeg.apps.opass.annotations.Secured;
 import com.overrideeg.apps.opass.io.entities.Users;
 import com.overrideeg.apps.opass.service.UsersService;
 import com.overrideeg.apps.opass.system.ApiUrls;
@@ -17,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping(ApiUrls.Users_EP)
+@Secured(methodsToSecure = {RequestMethod.DELETE, RequestMethod.PUT, RequestMethod.GET})
 public class UsersEntryPoint extends RestEntryPoint<Users> {
 
     @Autowired

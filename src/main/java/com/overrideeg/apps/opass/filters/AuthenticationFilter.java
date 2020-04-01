@@ -4,15 +4,19 @@
 
 package com.overrideeg.apps.opass.filters;
 
+import com.overrideeg.apps.opass.annotations.Secured;
 import com.overrideeg.apps.opass.exceptions.AuthenticationException;
 import com.overrideeg.apps.opass.io.entities.Users;
 import com.overrideeg.apps.opass.service.UsersService;
 import com.overrideeg.apps.opass.system.ApiUrls;
 import com.overrideeg.apps.opass.system.Connection.TenantContext;
 import com.overrideeg.apps.opass.ui.sys.ErrorMessages;
+import com.overrideeg.apps.opass.utils.AuthenticationUtils;
 import com.overrideeg.apps.opass.utils.EntityUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
@@ -41,19 +45,32 @@ public class AuthenticationFilter implements HandlerInterceptor {
                              HttpServletResponse hsr1, Object handler) throws Exception {
 
         String contextPath = hsr.getServletPath().substring(1);
-        if (ApiUrls.Users_EP.equals(contextPath) && hsr.getMethod().equalsIgnoreCase("POST")) {
-
-            return true;
-        } else if ((ApiUrls.termsAndConditions_EP.equals(contextPath) || ApiUrls.faq_EP.equals(contextPath) || ApiUrls.appSetting_EP.equals(contextPath)) && (hsr.getMethod().equalsIgnoreCase("GET") || hsr.getMethod().equalsIgnoreCase("OPTIONS"))) {
-            return true;
-        } else if ("error".equals(contextPath) || ApiUrls.reader_ep.equals(contextPath) || contextPath.startsWith(ApiUrls.reportDefinition_EP)) {
-            return true;
-        } else if (ApiUrls.Auth_ep.equals(contextPath)) {
+        if (contextPath.equals(ApiUrls.Auth_ep)) {
             handleAuthRequest(hsr, hsr1);
+        } else if ("error".equals(contextPath)) {
+            return true;
         } else {
-            if (!hsr.getMethod().equalsIgnoreCase("OPTIONS")) {
-                return handleFilter(hsr);
+            Class<?> classToAuth = AuthenticationUtils.getSecuredEntryPoints().stream().filter(aClass -> {
+                RequestMapping em = aClass.getDeclaredAnnotation(RequestMapping.class);
+                Object requestPath = new ArrayList(Arrays.asList(em.value())).get(0);
+                if (!requestPath.equals(null) && contextPath.startsWith((String) requestPath)) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }).findAny().get();
+
+
+            Secured annotation = classToAuth.getAnnotation(Secured.class);
+            for (RequestMethod requestMethod : annotation.methodsToSecure()) {
+                if (hsr.getMethod().equalsIgnoreCase(String.valueOf(requestMethod))) {
+                    handleFilter(hsr);
+                    break;
+                }
+
             }
+
+
         }
         return true;
     }

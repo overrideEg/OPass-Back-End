@@ -1,5 +1,10 @@
+/*
+ * Copyright (c) 2020. overrideeg.ocm.
+ */
+
 package com.overrideeg.apps.opass.ui.entrypoint.webapp;
 
+import com.overrideeg.apps.opass.annotations.Secured;
 import com.overrideeg.apps.opass.io.entities.employee;
 import com.overrideeg.apps.opass.service.employeeService;
 import com.overrideeg.apps.opass.system.ApiUrls;
@@ -12,6 +17,7 @@ import java.lang.reflect.InvocationTargetException;
 
 @RestController
 @RequestMapping(ApiUrls.employee_EP)
+@Secured(methodsToSecure = {RequestMethod.DELETE, RequestMethod.POST, RequestMethod.PUT, RequestMethod.GET})
 public class employeeEntryPoint extends RestEntryPoint<employee> {
 
     public employeeEntryPoint(final employeeService inService) {
