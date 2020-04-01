@@ -4,6 +4,7 @@
 
 package com.overrideeg.apps.opass.ui.entrypoint.reports;
 
+import com.overrideeg.apps.opass.annotations.Secured;
 import com.overrideeg.apps.opass.io.entities.reports.reportDefinition;
 import com.overrideeg.apps.opass.io.valueObjects.translatedField;
 import com.overrideeg.apps.opass.service.ReportDefinitionService;
@@ -28,6 +29,7 @@ import java.util.List;
         RequestMethod.PUT, RequestMethod.OPTIONS, RequestMethod.HEAD},
         allowCredentials = "true", allowedHeaders = "*")
 @RequestMapping(ApiUrls.reportDefinition_EP)
+@Secured(methodsToSecure = {RequestMethod.DELETE, RequestMethod.PUT})
 public class ReportDefinitionEntryPoint {
 
     @Autowired
