@@ -1,4 +1,8 @@
-package com.overrideeg.apps.opass.ui.entrypoint.webapp;
+/*
+ * Copyright (c) 2020. overrideeg.ocm.
+ */
+
+package com.overrideeg.apps.opass.ui.entrypoint.reports;
 
 import com.overrideeg.apps.opass.io.entities.reports.reportCategory;
 import com.overrideeg.apps.opass.service.reportCategoryService;

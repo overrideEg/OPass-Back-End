@@ -40,39 +40,52 @@ public class AuthenticationFilter implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest hsr,
                              HttpServletResponse hsr1, Object handler) throws Exception {
 
-        StringBuilder requestURL = new StringBuilder(hsr.getRequestURL().toString());
-        String shortURL = requestURL.substring(requestURL.lastIndexOf("/") + 1);
-        if (shortURL.equals(ApiUrls.Auth_ep)) {
+        String contextPath = hsr.getServletPath().substring(1);
+        if (ApiUrls.Users_EP.equals(contextPath) && hsr.getMethod().equalsIgnoreCase("POST")) {
+            return true;
+        } else if ("error".equals(contextPath) || ApiUrls.reader_ep.equals(contextPath) || contextPath.startsWith(ApiUrls.reportDefinition_EP)) {
+            return true;
+        } else if (ApiUrls.Auth_ep.equals(contextPath)) {
             handleAuthRequest(hsr, hsr1);
-        } else if (shortURL.equals("error") || shortURL.equals(ApiUrls.reader_ep)) {
-            System.out.println(shortURL);
         } else {
-            String method = hsr.getMethod();
-            if (!method.equalsIgnoreCase("OPTIONS")) {
-                String authorizationHeader = hsr.getHeaders("Authorization").nextElement();
-                if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer")) {
-                    throw new AuthenticationException("Authorization header must be provided");
-                }
-
-                // Extract the token
-                String token = authorizationHeader.substring("Bearer".length()).trim();
-
-                // Extract user id
-                String userId = hsr.getHeader("userId");
-
-                if (!token.equals("U3VwZXIgVXNlciBBZG1pbg==")) {
-                    String tenantId1 = hsr.getHeader("tenantId");
-                    if (tenantId1 != null) {
-                        long tenantId = Long.parseLong(tenantId1);
-                        resolveTenant(tenantId);
-                    }
-                    validateToken(token, userId);
-                }
+            if (!hsr.getMethod().equalsIgnoreCase("OPTIONS")) {
+                return handleFilter(hsr);
             }
         }
-
         return true;
+    }
 
+    private String checkText(String origin, String another) {
+        if (origin.equalsIgnoreCase(another))
+            return another;
+        if (origin.startsWith(another))
+            return origin;
+
+
+        return "false";
+    }
+
+    private boolean handleFilter(HttpServletRequest hsr) {
+        String authorizationHeader = hsr.getHeaders("Authorization").nextElement();
+        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer")) {
+            throw new AuthenticationException("Authorization header must be provided");
+        }
+
+        // Extract the token
+        String token = authorizationHeader.substring("Bearer".length()).trim();
+
+        // Extract user id
+        String userId = hsr.getHeader("userId");
+
+        if (!token.equals("U3VwZXIgVXNlciBBZG1pbg==")) {
+            String tenantId1 = hsr.getHeader("tenantId");
+            if (tenantId1 != null) {
+                long tenantId = Long.parseLong(tenantId1);
+                resolveTenant(tenantId);
+            }
+            validateToken(token, userId);
+        }
+        return true;
     }
 
     private void resolveTenant(Long tenantId) {

@@ -4,10 +4,13 @@
 
 package com.overrideeg.apps.opass.service;
 
+import com.overrideeg.apps.opass.exceptions.AuthenticationException;
 import com.overrideeg.apps.opass.exceptions.CouldNotCreateRecordException;
 import com.overrideeg.apps.opass.exceptions.MissingRequiredFieldException;
+import com.overrideeg.apps.opass.exceptions.NoRecordFoundException;
 import com.overrideeg.apps.opass.io.entities.Users;
 import com.overrideeg.apps.opass.io.repositories.UsersRepo;
+import com.overrideeg.apps.opass.ui.entrypoint.auth.restorePasswordRequest;
 import com.overrideeg.apps.opass.ui.sys.ErrorMessages;
 import com.overrideeg.apps.opass.ui.sys.ResponseModel;
 import com.overrideeg.apps.opass.utils.EntityUtils;
@@ -75,5 +78,26 @@ public class UsersService extends AbstractService<Users> {
         inEntity.setSalt(user.getSalt());
         inEntity.setToken(user.getToken());
         return super.update(inEntity);
+    }
+
+    public ResponseModel resetPassword(restorePasswordRequest restoreRequest) throws NoSuchMethodException {
+        Users existsUser = find("userName", restoreRequest.getUserName());
+
+        if (existsUser.getId().equals(null))
+            throw new NoRecordFoundException("This user not registered");
+
+        try {
+            String encryptedOldPassword = userProfileUtils.generateSecurePassword(restoreRequest.getOldPassword(), existsUser.getSalt());
+            if (!encryptedOldPassword.equalsIgnoreCase(existsUser.getEncryptedPassword()))
+                throw new AuthenticationException("Password Entered Not True");
+        } catch (Exception e) {
+            throw new AuthenticationException("Password Entered Not True");
+        }
+
+        // Generate secure password
+        String encryptedPassword = userProfileUtils.generateSecurePassword(restoreRequest.getNewPassword(), existsUser.getSalt());
+        existsUser.setEncryptedPassword(encryptedPassword);
+
+        return super.update(existsUser);
     }
 }
