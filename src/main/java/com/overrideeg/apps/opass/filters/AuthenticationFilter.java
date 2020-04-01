@@ -50,25 +50,29 @@ public class AuthenticationFilter implements HandlerInterceptor {
         } else if ("error".equals(contextPath)) {
             return true;
         } else {
-            Class<?> classToAuth = AuthenticationUtils.getSecuredEntryPoints().stream().filter(aClass -> {
-                RequestMapping em = aClass.getDeclaredAnnotation(RequestMapping.class);
-                Object requestPath = new ArrayList(Arrays.asList(em.value())).get(0);
-                if (!requestPath.equals(null) && contextPath.startsWith((String) requestPath)) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }).findAny().get();
+try {
+    Class<?> classToAuth = AuthenticationUtils.getSecuredEntryPoints().stream().filter(aClass -> {
+        RequestMapping em = aClass.getDeclaredAnnotation(RequestMapping.class);
+        Object requestPath = new ArrayList(Arrays.asList(em.value())).get(0);
+        if (!requestPath.equals(null) && contextPath.startsWith((String) requestPath)) {
+            return true;
+        } else {
+            return false;
+        }
+    }).findAny().get();
 
 
-            Secured annotation = classToAuth.getAnnotation(Secured.class);
-            for (RequestMethod requestMethod : annotation.methodsToSecure()) {
-                if (hsr.getMethod().equalsIgnoreCase(String.valueOf(requestMethod))) {
-                    handleFilter(hsr);
-                    break;
-                }
+    Secured annotation = classToAuth.getAnnotation(Secured.class);
+    for (RequestMethod requestMethod : annotation.methodsToSecure()) {
+        if (hsr.getMethod().equalsIgnoreCase(String.valueOf(requestMethod))) {
+            handleFilter(hsr);
+            break;
+        }
 
-            }
+    }
+} catch (Exception e) {
+    return true;
+}
 
 
         }
