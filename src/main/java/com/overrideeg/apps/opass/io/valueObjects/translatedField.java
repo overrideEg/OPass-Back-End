@@ -1,6 +1,7 @@
 package com.overrideeg.apps.opass.io.valueObjects;
 
 import javax.persistence.Embeddable;
+import javax.persistence.PrePersist;
 
 /**
  * translate embeddable object
@@ -22,6 +23,22 @@ public class translatedField {
     }
 
     public translatedField() {
+    }
+
+    @PrePersist()
+    public void PrePersist() {
+        if ((getAr() == null || getAr().equals("")) && getEn() != null)
+            setAr(getEn());
+        if ((getTr() == null || getTr().equals("")) && getEn() != null)
+            setTr(getEn());
+        if ((getEn() == null || getEn().equals("")) && getAr() != null)
+            setEn(getAr());
+        if ((getEn() == null || getEn().equals("")) && getTr() != null)
+            setEn(getTr());
+        if ((getTr() == null || getTr().equals("")) && getEn() != null)
+            setTr(getEn());
+        if ((getTr() == null || getTr().equals("")) && getAr() != null)
+            setEn(getAr());
     }
 
     public String getAr() {

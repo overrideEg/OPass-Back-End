@@ -40,31 +40,29 @@ public class AuthenticationFilter implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest hsr,
                              HttpServletResponse hsr1, Object handler) throws Exception {
 
-        StringBuilder requestURL = new StringBuilder(hsr.getRequestURL().toString());
-        String shortURL = requestURL.substring(requestURL.lastIndexOf("/") + 1);
-        switch (shortURL) {
-            case "error":
-            case ApiUrls.reader_ep: {
-                return true;
-            }
-            case ApiUrls.Users_EP:
-            case ApiUrls.reportDefinition_EP: {
-                if (hsr.getMethod().equalsIgnoreCase("POST")) {
-                    return true;
-                } else {
-                    handleFilter(hsr);
-                }
-            }
-            case ApiUrls.Auth_ep:
-                handleAuthRequest(hsr, hsr1);
-                break;
-            default: {
-                if (!hsr.getMethod().equalsIgnoreCase("OPTIONS")) {
-                    return handleFilter(hsr);
-                }
+        String contextPath = hsr.getServletPath().substring(1);
+        if (ApiUrls.Users_EP.equals(contextPath) && hsr.getMethod().equalsIgnoreCase("POST")) {
+            return true;
+        } else if ("error".equals(contextPath) || ApiUrls.reader_ep.equals(contextPath) || contextPath.startsWith(ApiUrls.reportDefinition_EP)) {
+            return true;
+        } else if (ApiUrls.Auth_ep.equals(contextPath)) {
+            handleAuthRequest(hsr, hsr1);
+        } else {
+            if (!hsr.getMethod().equalsIgnoreCase("OPTIONS")) {
+                return handleFilter(hsr);
             }
         }
         return true;
+    }
+
+    private String checkText(String origin, String another) {
+        if (origin.equalsIgnoreCase(another))
+            return another;
+        if (origin.startsWith(another))
+            return origin;
+
+
+        return "false";
     }
 
     private boolean handleFilter(HttpServletRequest hsr) {
