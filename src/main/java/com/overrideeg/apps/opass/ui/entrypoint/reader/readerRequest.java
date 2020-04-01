@@ -6,10 +6,20 @@ package com.overrideeg.apps.opass.ui.entrypoint.reader;
 
 public class readerRequest {
     private Long company_id;
-    private Long department_id;
     private Long branch_id;
+    private Long department_id;
+    private Long employee_id;
     private String qr;
     private Long scan_time;
+
+
+    public Long getEmployee_id() {
+        return employee_id;
+    }
+
+    public void setEmployee_id(Long employee_id) {
+        this.employee_id = employee_id;
+    }
 
     public Long getCompany_id() {
         return company_id;
