@@ -33,12 +33,13 @@ public class translatedField {
             setTr(getEn());
         if ((getEn() == null || getEn().equals("")) && getAr() != null)
             setEn(getAr());
+        if ((getTr() == null || getTr().equals("")) && getAr() != null)
+            setTr(getAr());
         if ((getEn() == null || getEn().equals("")) && getTr() != null)
             setEn(getTr());
-        if ((getTr() == null || getTr().equals("")) && getEn() != null)
-            setTr(getEn());
-        if ((getTr() == null || getTr().equals("")) && getAr() != null)
-            setEn(getAr());
+        if ((getAr() == null || getAr().equals("")) && getTr() != null)
+            setAr(getEn());
+
     }
 
     public String getAr() {
