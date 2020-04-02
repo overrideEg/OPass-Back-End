@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2020. overrideeg.ocm.
+ */
+
 package com.overrideeg.apps.opass.system;
 
 public class ApiUrls {
@@ -6,6 +10,7 @@ public class ApiUrls {
     public static final String Auth_ep = "Auth";
     public static final String Qr_Generator_ep = "QR_Generator";
     public static final String reader_ep = "reader";
+    public static final String REST_REPORT_ep = "restReport";
 
 
     public static final String city_EP = "city";

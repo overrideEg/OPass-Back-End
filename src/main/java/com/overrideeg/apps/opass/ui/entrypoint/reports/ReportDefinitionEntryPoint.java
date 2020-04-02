@@ -12,6 +12,7 @@ import com.overrideeg.apps.opass.service.reportCategoryService;
 import com.overrideeg.apps.opass.service.system.RestLogService;
 import com.overrideeg.apps.opass.system.ApiUrls;
 import com.overrideeg.apps.opass.system.Connection.TenantContext;
+import com.overrideeg.apps.opass.ui.entrypoint.reports.valueObjects.reportParams;
 import com.overrideeg.apps.opass.ui.sys.ResponseModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

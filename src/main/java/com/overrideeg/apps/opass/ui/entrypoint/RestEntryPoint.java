@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2020. overrideeg.ocm.
+ */
+
 package com.overrideeg.apps.opass.ui.entrypoint;
 
 
@@ -102,7 +106,6 @@ public abstract class RestEntryPoint<E extends OEntity> {
             TenantContext.setCurrentTenant(tenantId);
         }
         restLogService.saveLog(request.getRequestURI(), request.getRemoteAddr(), request.getMethod());
-
     }
 
 

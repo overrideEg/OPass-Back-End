@@ -24,6 +24,7 @@ public class UsersEntryPoint extends RestEntryPoint<Users> {
     @Autowired
     UsersService usersService;
 
+
     public UsersEntryPoint(final UsersService inService) {
         setService(inService);
     }

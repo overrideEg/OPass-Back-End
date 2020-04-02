@@ -27,6 +27,14 @@ public class attendanceService extends AbstractService<attendance> {
 
 
     public List<attendance> employeeTodaysShitLogs(employee employee, Date currentDate, workShift currentShift) {
-        return attendanceRepo.findEmployeeTodaysShitLogs(employee,currentDate,currentShift);
+        return attendanceRepo.findEmployeeTodaysShitLogs(employee, currentDate, currentShift);
+    }
+
+    public List<attendance> createAttendanceHistoryReport(Long employee, Integer page, Integer pageSize) {
+        return attendanceRepo.createAttendanceHistoryReport(employee, page, pageSize);
+    }
+
+    public Long findAbsenceDays(Long employee) {
+        return attendanceRepo.findAbsenceDays(employee);
     }
 }
