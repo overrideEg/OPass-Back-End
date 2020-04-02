@@ -46,75 +46,9 @@ public class readerService {
         checkMachineRelated(request, qr);
         checkScanTime(request, qr);
 
-        final attType attType = checkWorkShifts(request, qr, employee);
-
-        final attendance attendance = new attendance();
-
-
-        return attendance;
+        return processWorkShifts(request, qr, employee);
     }
 
-    private attType checkWorkShifts(readerRequest request, qrData qr, employee employee) {
-        final List<workShift> workShifts = employee.getShifts();
-
-        if (!workShifts.isEmpty()) {
-            final Date scanTime = new Date(request.getScan_time());
-            final attendanceRules attendanceRules = employee.fetchEmployeeAttRules();
-
-            final workShift workShift = employee.getCurrentWorkShift(scanTime,workShifts,attendanceRules);
-
-            if (workShift == null){
-                return attType.LOG;
-            }
-
-            final List<attendance> todaysWorkShiftAttendance = null;//TODO khouly query
-
-
-            final attStatus canLog =workShift.canLog(scanTime,attendanceRules,todaysWorkShiftAttendance);
-
-
-
-
-
-
-            throw new NoRecordFoundException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
-
-        } else {
-            return true;
-        }
-
-    }
-
-
-    private void checkScanTime(readerRequest request, qrData qr) {
-
-        if (qr.getIssueDate() > request.getScan_time() || qr.getExpireDate() < request.getScan_time()) {
-            throw new QRExpiredException(ErrorMessages.QR_EXPIRED.getErrorMessage());
-        }
-
-
-    }
-
-    private void checkMachineRelated(readerRequest request, qrData qr) {
-        final Optional<qrMachine> qrMachine = qrMachineService.find(qr.getQrMachine_id());
-
-        if (!qrMachine.isPresent()) {
-            throw new NoRecordFoundException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
-        }
-
-        if (!qrMachine.get().getBranch().getId().equals(request.getBranch_id()) || !qrMachine.get().getDepartment().getId().equals(request.getDepartment_id())) {
-            throw new MatchingIdsException(ErrorMessages.MATCHING_ID_EXCEPTION.getErrorMessage());
-        }
-
-
-    }
-
-    private void checkMatchingIds(readerRequest request, qrData qr) {
-        if (!request.getBranch_id().equals(qr.getBranch_id()) || !request.getDepartment_id().equals(qr.getDepartment_id())) {
-
-            throw new MatchingIdsException(ErrorMessages.MATCHING_ID_EXCEPTION.getErrorMessage());
-        }
-    }
 
     private employee checkEmployeeRelated(readerRequest request) {
         final Optional<employee> employee = employeeService.find(request.getEmployee_id());
@@ -135,6 +69,61 @@ public class readerService {
 
         return employee.get();
     }
+
+    private void checkMatchingIds(readerRequest request, qrData qr) {
+        if (!request.getBranch_id().equals(qr.getBranch_id()) || !request.getDepartment_id().equals(qr.getDepartment_id())) {
+
+            throw new MatchingIdsException(ErrorMessages.MATCHING_ID_EXCEPTION.getErrorMessage());
+        }
+    }
+
+    private void checkMachineRelated(readerRequest request, qrData qr) {
+        final Optional<qrMachine> qrMachine = qrMachineService.find(qr.getQrMachine_id());
+
+        if (!qrMachine.isPresent()) {
+            throw new NoRecordFoundException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
+        }
+
+        if (!qrMachine.get().getBranch().getId().equals(request.getBranch_id()) || !qrMachine.get().getDepartment().getId().equals(request.getDepartment_id())) {
+            throw new MatchingIdsException(ErrorMessages.MATCHING_ID_EXCEPTION.getErrorMessage());
+        }
+
+
+    }
+
+    private void checkScanTime(readerRequest request, qrData qr) {
+
+        if (qr.getIssueDate() > request.getScan_time() || qr.getExpireDate() < request.getScan_time()) {
+            throw new QRExpiredException(ErrorMessages.QR_EXPIRED.getErrorMessage());
+        }
+
+
+    }
+
+    private attendance processWorkShifts(readerRequest request, qrData qr, employee employee) {
+        final List<workShift> workShifts = employee.getShifts();
+        final Date scanTime = new Date(request.getScan_time());
+
+        if (!workShifts.isEmpty()) {
+            final attendanceRules attendanceRules = employee.fetchEmployeeAttRules();
+
+            final workShift currentWorkShift = employee.getCurrentWorkShift(scanTime, workShifts, attendanceRules);
+
+            if (currentWorkShift == null) {
+                return new attendance(employee, null, scanTime, scanTime, attType.LOG, attStatus.normal);
+            }
+
+            final List<attendance> todayShiftLogs = attendanceService.employeeTodaysShitLogs(employee, scanTime, currentWorkShift);
+
+            return currentWorkShift.createAttLog(scanTime, attendanceRules, todayShiftLogs);
+
+        } else {
+            return new attendance(employee, null, scanTime, scanTime, attType.LOG, attStatus.normal);
+
+        }
+
+    }
+
 
     /**
      * method that decode qr encoded from request and map it into object called qrData

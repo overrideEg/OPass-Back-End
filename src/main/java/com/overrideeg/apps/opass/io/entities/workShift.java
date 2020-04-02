@@ -7,6 +7,7 @@ package com.overrideeg.apps.opass.io.entities;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.overrideeg.apps.opass.enums.attStatus;
+import com.overrideeg.apps.opass.enums.attType;
 import com.overrideeg.apps.opass.io.entities.system.OEntity;
 import com.overrideeg.apps.opass.io.valueObjects.attendanceRules;
 import com.overrideeg.apps.opass.io.valueObjects.shiftHours;
@@ -53,7 +54,7 @@ public class workShift extends OEntity {
     }
 
 
-    public attStatus canLog(Date scanTime, attendanceRules attendanceRules, List<attendance> todaysWorkShiftAttendance ) {
+    public attendance createAttLog(employee employee,Date scanTime, attendanceRules attendanceRules, List<attendance> todayShiftLogs ) {
         final DateUtils dateUtils = new DateUtils();
         final shiftHours shiftHours = getShiftHours();
 
@@ -61,10 +62,22 @@ public class workShift extends OEntity {
         final Date maxOverTime = dateUtils.addOrSubtractHours(getShiftHours().getToHour(), attendanceRules.getMaxOverTimeHours());
         final Date minEarlyLeavyTime = dateUtils.addOrSubtractHours(getShiftHours().getToHour(), attendanceRules.getMaxOverTimeHours());
 
+        Boolean isLeaving=false;
+
+        for (attendance shiftLog:todayShiftLogs){
+            if(shiftLog.getAttType()== attType.IN){
+                isLeaving=true;
+                break;
+            }
+        }
+
+
 
 //        if (dateUtils.afterOrEqual(shiftHours.getFromHour(), scanTime)&& dateUtils.beforeOrEqual(shiftHours.getToHour(), scanTime)){
 //            return att
 //        }
+
+        return new attendance(employee, this, scanTime, scanTime, attType.LOG, attStatus.normal);
 
     }
 
