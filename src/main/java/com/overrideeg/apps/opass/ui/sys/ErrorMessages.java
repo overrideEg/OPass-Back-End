@@ -32,7 +32,9 @@ public enum ErrorMessages {
     EMAIL_ADDRESS_NOT_VERIFIED("Email address could not be verified"),
     MAC_ADDRESS_ILLEGAL("Mac Address Not Registered"),
     Time_EXCEDDED(" Time is Exceeded"),
+    QR_EXPIRED("qr is expired"),
     DATE_WRONG_EXCEPTION("Date Period Is Wrong"),
+    MATCHING_ID_EXCEPTION("the request ids is not matching"),
     DEPARTMENT_is_invalid("Department IS Invalid for Selected Machine"),
     Branch_is_invalid("Branch IS Invalid for Selected Machine"),
     REPORT_TYPE_INVALID("Report Type Is Invalid");

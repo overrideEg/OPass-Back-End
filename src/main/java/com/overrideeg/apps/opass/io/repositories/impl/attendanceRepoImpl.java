@@ -5,6 +5,8 @@
 package com.overrideeg.apps.opass.io.repositories.impl;
 
 import com.overrideeg.apps.opass.io.entities.attendance;
+import com.overrideeg.apps.opass.io.entities.employee;
+import com.overrideeg.apps.opass.io.entities.workShift;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -23,17 +25,19 @@ public class attendanceRepoImpl {
     protected EntityManager mEntityManager;
 
 
-    public List<attendance> findByDate(Date date) {
+    public List<attendance> findEmployeeTodaysShitLogs(employee employee, Date currentDate, workShift currentShift) {
         CriteriaBuilder cb = mEntityManager.getCriteriaBuilder();
         CriteriaQuery<attendance> query = cb.createQuery(attendance.class);
         Root<attendance> root = query.from(attendance.class);
         query.select(root);
-        Predicate[] predicates = new Predicate[2];
-        predicates[0] = cb.equal(root.get("scanDate"), date);
-        predicates[1] = cb.equal(root.get("workShift").get("id"), 1L);
-        query.select(root).where(cb.and(predicates));
-        List<attendance> resultList = mEntityManager.createQuery(query).getResultList();
+        Predicate[] predicates = new Predicate[3];
+        predicates[0] = cb.equal(root.get("scanDate"), currentDate);
+        predicates[1] = cb.equal(root.get("workShift").get("id"), currentShift.getId());
+        predicates[3] = cb.equal(root.get("employee").get("id"), employee.getId());
 
-        return resultList;
+        query.select(root).where(cb.and(predicates));
+
+        return mEntityManager.createQuery(query).getResultList();
+
     }
 }

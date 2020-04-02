@@ -6,27 +6,124 @@ package com.overrideeg.apps.opass.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.overrideeg.apps.opass.exceptions.AuthenticationException;
-import com.overrideeg.apps.opass.exceptions.CouldNotCreateRecordException;
+import com.overrideeg.apps.opass.enums.attStatus;
+import com.overrideeg.apps.opass.enums.attType;
+import com.overrideeg.apps.opass.exceptions.*;
 import com.overrideeg.apps.opass.io.entities.attendance;
+import com.overrideeg.apps.opass.io.entities.employee;
+import com.overrideeg.apps.opass.io.entities.qrMachine;
+import com.overrideeg.apps.opass.io.entities.workShift;
+import com.overrideeg.apps.opass.io.valueObjects.attendanceRules;
+import com.overrideeg.apps.opass.io.valueObjects.shiftHours;
 import com.overrideeg.apps.opass.ui.entrypoint.reader.qrData;
 import com.overrideeg.apps.opass.ui.entrypoint.reader.readerRequest;
+import com.overrideeg.apps.opass.ui.sys.ErrorMessages;
+import com.overrideeg.apps.opass.utils.DateUtils;
 import com.overrideeg.apps.opass.utils.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+
+//todo bimbo work here
 @Service
 public class readerService {
+    @Autowired //TODO replace with the memory wise impl
+    private attendanceService attendanceService;
     @Autowired
-    attendanceService attendanceService;
+    private employeeService employeeService;
     @Autowired
-    qrMachineService qrMachineService;
+    private qrMachineService qrMachineService;
 
     public attendance validate(readerRequest request) {
-        qrData qr = handleQrBody(request.getQr());
-        //todo bimbo work here
-        return null;
+        final qrData qr = handleQrBody(request.getQr());
+
+        final employee employee = checkEmployeeRelated(request);
+
+        checkMatchingIds(request, qr);
+        checkMachineRelated(request, qr);
+        checkScanTime(request, qr);
+
+        return processWorkShifts(request, qr, employee);
     }
+
+
+    private employee checkEmployeeRelated(readerRequest request) {
+        final Optional<employee> employee = employeeService.find(request.getEmployee_id());
+
+        if (!employee.isPresent()) {
+            throw new NoRecordFoundException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
+
+        }
+
+
+        if (!employee.get().getDepartment().getId().equals(request.getDepartment_id()) ||
+                !employee.get().getBranch().getId().equals(request.getBranch_id())) {
+
+            throw new NoRecordFoundException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
+
+        }
+
+
+        return employee.get();
+    }
+
+    private void checkMatchingIds(readerRequest request, qrData qr) {
+        if (!request.getBranch_id().equals(qr.getBranch_id()) || !request.getDepartment_id().equals(qr.getDepartment_id())) {
+
+            throw new MatchingIdsException(ErrorMessages.MATCHING_ID_EXCEPTION.getErrorMessage());
+        }
+    }
+
+    private void checkMachineRelated(readerRequest request, qrData qr) {
+        final Optional<qrMachine> qrMachine = qrMachineService.find(qr.getQrMachine_id());
+
+        if (!qrMachine.isPresent()) {
+            throw new NoRecordFoundException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
+        }
+
+        if (!qrMachine.get().getBranch().getId().equals(request.getBranch_id()) || !qrMachine.get().getDepartment().getId().equals(request.getDepartment_id())) {
+            throw new MatchingIdsException(ErrorMessages.MATCHING_ID_EXCEPTION.getErrorMessage());
+        }
+
+
+    }
+
+    private void checkScanTime(readerRequest request, qrData qr) {
+
+        if (qr.getIssueDate() > request.getScan_time() || qr.getExpireDate() < request.getScan_time()) {
+            throw new QRExpiredException(ErrorMessages.QR_EXPIRED.getErrorMessage());
+        }
+
+
+    }
+
+    private attendance processWorkShifts(readerRequest request, qrData qr, employee employee) {
+        final List<workShift> workShifts = employee.getShifts();
+        final Date scanTime = new Date(request.getScan_time());
+
+        if (!workShifts.isEmpty()) {
+            final attendanceRules attendanceRules = employee.fetchEmployeeAttRules();
+
+            final workShift currentWorkShift = employee.getCurrentWorkShift(scanTime, workShifts, attendanceRules);
+
+            if (currentWorkShift == null) {
+                return new attendance(employee, null, scanTime, scanTime, attType.LOG, attStatus.normal);
+            }
+
+            final List<attendance> todayShiftLogs = attendanceService.employeeTodaysShitLogs(employee, scanTime, currentWorkShift);
+
+            return currentWorkShift.createAttLog(scanTime, attendanceRules, todayShiftLogs);
+
+        } else {
+            return new attendance(employee, null, scanTime, scanTime, attType.LOG, attStatus.normal);
+
+        }
+
+    }
+
 
     /**
      * method that decode qr encoded from request and map it into object called qrData
@@ -58,3 +155,12 @@ public class readerService {
         return returnValue;
     }
 }
+
+
+//        List<String> whereNames = new ArrayList<>(Arrays.asList("userName", "email"));
+//        List whereValues = new ArrayList<>(Arrays.asList("fafasd","assad@g"));
+//
+//        List<Users> query = createQuery("select u from Users u where " +
+//                "(u.userName=:userName)and(u.email=:email)", whereNames, whereValues);
+//
+//        attendanceService.findWhere(<String>[""],[""]);

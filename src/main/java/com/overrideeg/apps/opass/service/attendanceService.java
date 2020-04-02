@@ -5,6 +5,8 @@
 package com.overrideeg.apps.opass.service;
 
 import com.overrideeg.apps.opass.io.entities.attendance;
+import com.overrideeg.apps.opass.io.entities.employee;
+import com.overrideeg.apps.opass.io.entities.workShift;
 import com.overrideeg.apps.opass.io.repositories.attendanceRepo;
 import com.overrideeg.apps.opass.io.repositories.impl.attendanceRepoImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,9 +25,8 @@ public class attendanceService extends AbstractService<attendance> {
     @Autowired
     attendanceRepoImpl attendanceRepo;
 
-    @Override
-    public List<attendance> findAll(int start, int limit) {
-        List<attendance> byDate = attendanceRepo.findByDate(new Date());
-        return super.findAll(start, limit);
+
+    public List<attendance> employeeTodaysShitLogs(employee employee, Date currentDate, workShift currentShift) {
+        return attendanceRepo.findEmployeeTodaysShitLogs(employee,currentDate,currentShift);
     }
 }

@@ -9,9 +9,14 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.overrideeg.apps.opass.enums.employeeStatus;
+import com.overrideeg.apps.opass.exceptions.NoRecordFoundException;
 import com.overrideeg.apps.opass.io.entities.system.OEntity;
+import com.overrideeg.apps.opass.io.valueObjects.attendanceRules;
 import com.overrideeg.apps.opass.io.valueObjects.contactInfo;
+import com.overrideeg.apps.opass.io.valueObjects.shiftHours;
 import com.overrideeg.apps.opass.io.valueObjects.translatedField;
+import com.overrideeg.apps.opass.ui.sys.ErrorMessages;
+import com.overrideeg.apps.opass.utils.DateUtils;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -184,5 +189,42 @@ public class employee extends OEntity {
 
     public void setUserType(com.overrideeg.apps.opass.enums.userType userType) {
         this.userType = userType;
+    }
+
+    /**
+     * helper method to determine employee current work shift
+     * TODO resolve two continous shifts
+     * TODO resolve TwoDays shift (11pm-7am)
+     */
+    public workShift getCurrentWorkShift(Date scanTime, List<workShift> workShifts, attendanceRules attendanceRules) {
+
+        for (workShift workShift : workShifts) {
+
+            final shiftHours shiftTime = workShift.getShiftHours();
+
+            final Date toHourWithAllowance = new DateUtils().addOrSubtractHours(shiftTime.getToHour(), attendanceRules.getMaxOverTimeHours());
+
+            final boolean currentShift = new DateUtils().isBetweenTwoTime(shiftTime.getFromHour(), toHourWithAllowance, scanTime);
+            if (currentShift) {
+                return workShift;
+            }
+        }
+        return null;
+
+    }
+    /**
+     * helper method to determine employee current Attendance Rules
+     */
+    public attendanceRules fetchEmployeeAttRules() {
+
+        if (getDepartment().getAttendanceRules() != null) {
+            return getDepartment().getAttendanceRules();
+        }
+
+        if (getBranch().getAttendanceRules() != null) {
+            return getDepartment().getAttendanceRules();
+        }
+        throw new NoRecordFoundException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage()); //TODO better naming for exceptions
+
     }
 }
