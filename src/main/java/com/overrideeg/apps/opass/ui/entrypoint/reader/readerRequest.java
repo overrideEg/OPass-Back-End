@@ -4,7 +4,10 @@
 
 package com.overrideeg.apps.opass.ui.entrypoint.reader;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class readerRequest {
+    @JsonProperty(required = true)
     private Long company_id;
     private Long branch_id;
     private Long department_id;

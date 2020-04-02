@@ -6,6 +6,8 @@ package com.overrideeg.apps.opass.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.overrideeg.apps.opass.enums.attStatus;
+import com.overrideeg.apps.opass.enums.attType;
 import com.overrideeg.apps.opass.exceptions.*;
 import com.overrideeg.apps.opass.io.entities.attendance;
 import com.overrideeg.apps.opass.io.entities.employee;
@@ -44,25 +46,33 @@ public class readerService {
         checkMachineRelated(request, qr);
         checkScanTime(request, qr);
 
-        final Boolean isLog = checkWorkShifts(request, qr, employee);
+        final attType attType = checkWorkShifts(request, qr, employee);
 
-        if (isLog) {
-            final attendance attendance = new attendance();
-//            attendance.da
-        }
+        final attendance attendance = new attendance();
 
-        return new attendance();
+
+        return attendance;
     }
 
-    private Boolean checkWorkShifts(readerRequest request, qrData qr, employee employee) {
+    private attType checkWorkShifts(readerRequest request, qrData qr, employee employee) {
         final List<workShift> workShifts = employee.getShifts();
 
         if (!workShifts.isEmpty()) {
-            final Date date = new Date(request.getScan_time());
-            final attendanceRules attendanceRules = fetchEmployeeAttRules(employee);
+            final Date scanTime = new Date(request.getScan_time());
+            final attendanceRules attendanceRules = employee.fetchEmployeeAttRules();
 
-            final workShift workShift = getCurrentWorkShift(date,workShifts,attendanceRules);
-            if (workShift == null) return true;
+            final workShift workShift = employee.getCurrentWorkShift(scanTime,workShifts,attendanceRules);
+
+            if (workShift == null){
+                return attType.LOG;
+            }
+
+            final List<attendance> todaysWorkShiftAttendance = null;//TODO khouly query
+
+
+            final attStatus canLog =workShift.canLog(scanTime,attendanceRules,todaysWorkShiftAttendance);
+
+
 
 
 
@@ -75,35 +85,6 @@ public class readerService {
 
     }
 
-
-    //final Date fromHourWithAllowance = new DateUtils().addOrSubtractMinutes(shiftTime.getFromHour(),attendanceRules.getAllowedLateMinutes());
-    private workShift getCurrentWorkShift(Date currentDate, List<workShift> workShifts, attendanceRules attendanceRules) {
-
-        for (workShift workShift : workShifts) {
-
-            final shiftHours shiftTime =workShift.getShiftHours();
-
-            final Date toHourWithAllowance = new DateUtils().addOrSubtractHours(shiftTime.getToHour(),attendanceRules.getMaxOverTimeHours());
-
-            final boolean currentShift= new DateUtils().isBetweenTwoTime(shiftTime.getFromHour(),toHourWithAllowance,currentDate);
-            if(currentShift){
-                return workShift;
-            }
-        }
-        return null;
-
-    }
-
-    private attendanceRules fetchEmployeeAttRules(employee employee) {
-        if (employee.getDepartment().getAttendanceRules() != null) {
-            return employee.getDepartment().getAttendanceRules();
-        }
-        if (employee.getBranch().getAttendanceRules() != null) {
-            return employee.getDepartment().getAttendanceRules();
-        }
-        throw new NoRecordFoundException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage()); //TODO better naming for exceptions
-
-    }
 
     private void checkScanTime(readerRequest request, qrData qr) {
 
@@ -135,7 +116,6 @@ public class readerService {
         }
     }
 
-
     private employee checkEmployeeRelated(readerRequest request) {
         final Optional<employee> employee = employeeService.find(request.getEmployee_id());
 
@@ -155,7 +135,6 @@ public class readerService {
 
         return employee.get();
     }
-
 
     /**
      * method that decode qr encoded from request and map it into object called qrData
