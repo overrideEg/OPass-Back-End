@@ -14,11 +14,9 @@ import com.overrideeg.apps.opass.io.entities.employee;
 import com.overrideeg.apps.opass.io.entities.qrMachine;
 import com.overrideeg.apps.opass.io.entities.workShift;
 import com.overrideeg.apps.opass.io.valueObjects.attendanceRules;
-import com.overrideeg.apps.opass.io.valueObjects.shiftHours;
 import com.overrideeg.apps.opass.ui.entrypoint.reader.qrData;
 import com.overrideeg.apps.opass.ui.entrypoint.reader.readerRequest;
 import com.overrideeg.apps.opass.ui.sys.ErrorMessages;
-import com.overrideeg.apps.opass.utils.DateUtils;
 import com.overrideeg.apps.opass.utils.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -54,15 +52,12 @@ public class readerService {
         final Optional<employee> employee = employeeService.find(request.getEmployee_id());
 
         if (!employee.isPresent()) {
-            throw new NoRecordFoundException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
+            throw new EmployeeNotRelatedException(ErrorMessages.EMPLOYEE_NOT_RELATED.getErrorMessage());
 
-        }
-
-
-        if (!employee.get().getDepartment().getId().equals(request.getDepartment_id()) ||
+        }else if (!employee.get().getDepartment().getId().equals(request.getDepartment_id()) ||
                 !employee.get().getBranch().getId().equals(request.getBranch_id())) {
 
-            throw new NoRecordFoundException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
+            throw new EmployeeNotRelatedException(ErrorMessages.EMPLOYEE_NOT_RELATED.getErrorMessage());
 
         }
 
@@ -115,7 +110,7 @@ public class readerService {
 
             final List<attendance> todayShiftLogs = attendanceService.employeeTodaysShitLogs(employee, scanTime, currentWorkShift);
 
-            return currentWorkShift.createAttLog(scanTime, attendanceRules, todayShiftLogs);
+            return currentWorkShift.createAttLog(employee,scanTime, attendanceRules, todayShiftLogs);
 
         } else {
             return new attendance(employee, null, scanTime, scanTime, attType.LOG, attStatus.normal);

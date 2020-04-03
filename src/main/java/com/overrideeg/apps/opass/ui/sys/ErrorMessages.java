@@ -36,6 +36,7 @@ public enum ErrorMessages {
     DATE_WRONG_EXCEPTION("Date Period Is Wrong"),
     MATCHING_ID_EXCEPTION("the request ids is not matching"),
     DEPARTMENT_is_invalid("Department IS Invalid for Selected Machine"),
+    EMPLOYEE_NOT_RELATED("Employee is not related to selected branch and department"),
     Branch_is_invalid("Branch IS Invalid for Selected Machine"),
     REPORT_TYPE_INVALID("Report Type Is Invalid");
 
