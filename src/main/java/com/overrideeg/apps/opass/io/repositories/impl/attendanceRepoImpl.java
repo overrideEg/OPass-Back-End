@@ -33,7 +33,7 @@ public class attendanceRepoImpl {
         CriteriaQuery<attendance> query = cb.createQuery(attendance.class);
         Root<attendance> root = query.from(attendance.class);
         query.select(root);
-        Predicate[] predicates = new Predicate[2];
+        Predicate[] predicates = new Predicate[3];
         predicates[0] = cb.equal(root.get("scanDate"), currentDate);
         predicates[1] = cb.equal(root.get("workShift").get("id"), currentShift.getId());
         predicates[2] = cb.equal(root.get("employee").get("id"), employee.getId());
@@ -67,7 +67,7 @@ public class attendanceRepoImpl {
         long between = 0;
         try {
             attendance attendance = mEntityManager.createQuery(criteriaQuery).setMaxResults(1).getResultList().get(0);
-            between = DateUtils.calculateDaysBetweenTwoDates(attendance.getScanDate(), new Date());
+            between = new DateUtils().calculateDaysBetweenTwoDates(attendance.getScanDate(), new Date());
         } catch (NoResultException e) {
         }
 

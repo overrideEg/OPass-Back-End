@@ -17,10 +17,12 @@ import com.overrideeg.apps.opass.io.valueObjects.attendanceRules;
 import com.overrideeg.apps.opass.ui.entrypoint.reader.qrData;
 import com.overrideeg.apps.opass.ui.entrypoint.reader.readerRequest;
 import com.overrideeg.apps.opass.ui.sys.ErrorMessages;
+import com.overrideeg.apps.opass.utils.DateUtils;
 import com.overrideeg.apps.opass.utils.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Time;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -44,7 +46,7 @@ public class readerService {
         checkMachineRelated(request, qr);
         checkScanTime(request, qr);
 
-        return processWorkShifts(request, qr, employee);
+        return processWorkShifts(request, employee);
     }
 
 
@@ -95,9 +97,10 @@ public class readerService {
 
     }
 
-    private attendance processWorkShifts(readerRequest request, qrData qr, employee employee) {
+    private attendance processWorkShifts(readerRequest request, employee employee) {
         final List<workShift> workShifts = employee.getShifts();
-        final Date scanTime = new Date(request.getScan_time());
+        final Date scanDate = new Date(request.getScan_time());
+        final Time scanTime = new DateUtils().newTime(new Date(request.getScan_time()));
 
         if (!workShifts.isEmpty()) {
             final attendanceRules attendanceRules = employee.fetchEmployeeAttRules();
@@ -105,15 +108,15 @@ public class readerService {
             final workShift currentWorkShift = employee.getCurrentWorkShift(scanTime, workShifts, attendanceRules);
 
             if (currentWorkShift == null) {
-                return new attendance(employee, null, scanTime, scanTime, attType.LOG, attStatus.normal);
+                return new attendance(employee, null, scanDate, scanTime, attType.LOG, attStatus.normal);
             }
 
-            final List<attendance> todayShiftLogs = attendanceService.employeeTodaysShitLogs(employee, scanTime, currentWorkShift);
+            final List<attendance> todayShiftLogs = attendanceService.employeeTodaysShitLogs(employee, scanDate, currentWorkShift);
 
-            return currentWorkShift.createAttLog(employee, scanTime, attendanceRules, todayShiftLogs);
+            return currentWorkShift.createAttLog(employee, scanDate, attendanceRules, todayShiftLogs);
 
         } else {
-            return new attendance(employee, null, scanTime, scanTime, attType.LOG, attStatus.normal);
+            return new attendance(employee, null, scanDate, scanTime, attType.LOG, attStatus.normal);
 
         }
 
