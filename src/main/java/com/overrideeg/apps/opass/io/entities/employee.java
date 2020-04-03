@@ -21,6 +21,7 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
+import java.sql.Time;
 import java.util.Date;
 import java.util.List;
 
@@ -195,16 +196,21 @@ public class employee extends OEntity {
      * helper method to determine employee current work shift
      * TODO resolve two continous shifts
      * TODO resolve TwoDays shift (11pm-7am)
+     * TODO resolve holidays
      */
-    public workShift getCurrentWorkShift(Date scanTime, List<workShift> workShifts, attendanceRules attendanceRules) {
+    public workShift getCurrentWorkShift(Time scanTime, List<workShift> workShifts, attendanceRules attendanceRules) {
 
         for (workShift workShift : workShifts) {
 
             final shiftHours shiftTime = workShift.getShiftHours();
+            final DateUtils dateUtils=new DateUtils();
 
-            final Date toHourWithAllowance = new DateUtils().addOrSubtractHours(shiftTime.getToHour(), attendanceRules.getMaxOverTimeHours());
 
-            final boolean currentShift = new DateUtils().isBetweenTwoTime(shiftTime.getFromHour(), toHourWithAllowance, scanTime);
+            final Time shiftEndTimeWithOvertTime = dateUtils.addOrSubtractHours(dateUtils.newTime(shiftTime.getToHour()), attendanceRules.getMaxOverTimeHours());
+
+
+            final boolean currentShift = dateUtils.isBetweenTwoTimes(dateUtils.newTime(shiftTime.getFromHour()), shiftEndTimeWithOvertTime, dateUtils.newTime(scanTime));
+
             if (currentShift) {
                 return workShift;
             }
@@ -224,6 +230,10 @@ public class employee extends OEntity {
         if (getBranch().getAttendanceRules() != null) {
             return getDepartment().getAttendanceRules();
         }
+
+//        if (getBranch().getAttendanceRules() != null) {
+//            return getDepartment().getAttendanceRules();
+//        }
         throw new NoRecordFoundException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage()); //TODO better naming for exceptions
 
     }
