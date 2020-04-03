@@ -128,10 +128,10 @@ public class readerService {
      */
     private qrData handleQrBody(String qr) {
         String encodedOverride = EntityUtils.encode("OVERRIDE");
-        String override = qr.substring(0, qr.indexOf(","));
+        String override = qr.substring(0, qr.indexOf(",", 0));
         if (!override.equalsIgnoreCase(encodedOverride))
             throw new AuthenticationException("Text Not Illegal Here");
-        String qrBodyEncoded = qr.substring(qr.indexOf(",") + 1);
+        String qrBodyEncoded = qr.substring(qr.lastIndexOf(",") + 1);
         String decodedQr;
         try {
             decodedQr = EntityUtils.decode(qrBodyEncoded);
