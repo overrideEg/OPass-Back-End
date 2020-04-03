@@ -14,10 +14,10 @@ import java.util.Date;
 @Embeddable
 public class shiftHours {
     @Temporal(TemporalType.TIME)
-    @JsonFormat(pattern = "hh:mm", shape = JsonFormat.Shape.STRING)
+    @JsonFormat(pattern = "hh:mm", shape = JsonFormat.Shape.STRING, timezone = "Africa/Cairo")
     private Date fromHour;
     @Temporal(TemporalType.TIME)
-    @JsonFormat(pattern = "hh:mm", shape = JsonFormat.Shape.STRING)
+    @JsonFormat(pattern = "hh:mm", shape = JsonFormat.Shape.STRING, timezone = "Africa/Cairo")
     private Date toHour;
 
     public Date getFromHour() {
