@@ -1,8 +1,15 @@
+/*
+ * Copyright (c) 2020. overrideeg.ocm.
+ */
+
 package com.overrideeg.apps.opass.utils;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 
 /**
  * User: amr
@@ -228,5 +235,15 @@ public class DateUtils {
 //
 //    }
 
+    public static LocalDate convertToLocalDateViaInstant(Date dateToConvert) {
+        return Instant.ofEpochMilli(dateToConvert.getTime())
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate();
+    }
 
+    public static Long calculateDaysBetweenTwoDates(Date before, Date after) {
+        LocalDate dateBefore = convertToLocalDateViaInstant(before);
+        LocalDate dateAfter = convertToLocalDateViaInstant(after);
+        return ChronoUnit.DAYS.between(dateBefore, dateAfter);
+    }
 }

@@ -2,7 +2,7 @@
  * Copyright (c) 2020. overrideeg.ocm.
  */
 
-package com.overrideeg.apps.opass.ui.entrypoint.reports;
+package com.overrideeg.apps.opass.ui.entrypoint.reports.valueObjects;
 
 import java.util.Map;
 
