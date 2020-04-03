@@ -52,15 +52,12 @@ public class readerService {
         final Optional<employee> employee = employeeService.find(request.getEmployee_id());
 
         if (!employee.isPresent()) {
-            throw new NoRecordFoundException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
+            throw new EmployeeNotRelatedException(ErrorMessages.EMPLOYEE_NOT_RELATED.getErrorMessage());
 
-        }
-
-
-        if (!employee.get().getDepartment().getId().equals(request.getDepartment_id()) ||
+        }else if (!employee.get().getDepartment().getId().equals(request.getDepartment_id()) ||
                 !employee.get().getBranch().getId().equals(request.getBranch_id())) {
 
-            throw new NoRecordFoundException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
+            throw new EmployeeNotRelatedException(ErrorMessages.EMPLOYEE_NOT_RELATED.getErrorMessage());
 
         }
 
