@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2020. overrideeg.ocm.
+ */
+
 create table app_setting
 (
     id               bigint not null auto_increment,
@@ -21,7 +25,7 @@ create table attendance
     last_update_date datetime(6),
     att_status       varchar(255),
     att_type         varchar(255),
-    scan_date        datetime(6),
+    scan_date        date,
     scan_time        datetime(6),
     employee_id      bigint,
     work_shift_id    bigint,
