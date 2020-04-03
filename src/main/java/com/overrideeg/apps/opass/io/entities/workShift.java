@@ -60,7 +60,7 @@ public class workShift extends OEntity {
 
         final Date lateArriveTime = dateUtils.addOrSubtractMinutes(getShiftHours().getFromHour(), attendanceRules.getAllowedLateMinutes());
         final Date maxOverTime = dateUtils.addOrSubtractHours(getShiftHours().getToHour(), attendanceRules.getMaxOverTimeHours());
-        final Date minEarlyLeavyTime = dateUtils.addOrSubtractHours(getShiftHours().getToHour(), attendanceRules.getMaxOverTimeHours());
+        final Date minEarlyLeaveTime = dateUtils.addOrSubtractHours(getShiftHours().getToHour(), attendanceRules.getMaxOverTimeHours());
 
         final attendance attendanceLog = new attendance(employee, this, scanTime, scanTime, attType.LOG, attStatus.normal);
 
@@ -84,7 +84,7 @@ public class workShift extends OEntity {
                 attendanceLog.setAttStatus(attStatus.normal);
 
                 //check attending at late time
-            } else if (dateUtils.after(lateArriveTime, scanTime, false, false) && dateUtils.before(minEarlyLeavyTime, scanTime, false, false)) {
+            } else if (dateUtils.after(lateArriveTime, scanTime, false, false) && dateUtils.before(minEarlyLeaveTime, scanTime, false, false)) {
 
                 attendanceLog.setAttStatus(attStatus.lateEntrance);
             }
@@ -98,7 +98,7 @@ public class workShift extends OEntity {
 
 
             //check leaving at normal time
-            if (dateUtils.after(minEarlyLeavyTime, scanTime, false, true) && dateUtils.before(getShiftHours().getToHour(), scanTime, false, true)) {
+            if (dateUtils.after(minEarlyLeaveTime, scanTime, false, true) && dateUtils.before(getShiftHours().getToHour(), scanTime, false, true)) {
                 attendanceLog.setAttStatus(attStatus.normal);
 
                 //check leaving at over time
