@@ -115,7 +115,7 @@ public class readerService {
 
             final List<attendance> todayShiftLogs = attendanceService.employeeTodaysShitLogs(employee, scanTime, currentWorkShift);
 
-            return currentWorkShift.createAttLog(scanTime, attendanceRules, todayShiftLogs);
+            return currentWorkShift.createAttLog(employee,scanTime, attendanceRules, todayShiftLogs);
 
         } else {
             return new attendance(employee, null, scanTime, scanTime, attType.LOG, attStatus.normal);

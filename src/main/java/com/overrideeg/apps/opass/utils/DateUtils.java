@@ -12,7 +12,7 @@ import java.util.GregorianCalendar;
 public class DateUtils {
 
 
-    public Calendar newCalender(Date date) {
+    private Calendar newCalender(Date date) {
         Calendar newCalender = Calendar.getInstance();
         newCalender.setTime(date);
         return newCalender;

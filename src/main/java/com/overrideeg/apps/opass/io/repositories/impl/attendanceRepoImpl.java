@@ -30,10 +30,10 @@ public class attendanceRepoImpl {
         CriteriaQuery<attendance> query = cb.createQuery(attendance.class);
         Root<attendance> root = query.from(attendance.class);
         query.select(root);
-        Predicate[] predicates = new Predicate[3];
+        Predicate[] predicates = new Predicate[2];
         predicates[0] = cb.equal(root.get("scanDate"), currentDate);
         predicates[1] = cb.equal(root.get("workShift").get("id"), currentShift.getId());
-        predicates[3] = cb.equal(root.get("employee").get("id"), employee.getId());
+        predicates[2] = cb.equal(root.get("employee").get("id"), employee.getId());
 
         query.select(root).where(cb.and(predicates));
 
