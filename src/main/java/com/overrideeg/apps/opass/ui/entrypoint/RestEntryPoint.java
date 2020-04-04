@@ -59,7 +59,7 @@ public abstract class RestEntryPoint<E extends OEntity> {
     E postOne(@RequestBody E req, @RequestHeader Long tenantId, HttpServletRequest request) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, NoSuchFieldException {
         validateFields(req);
         resolveTenant(tenantId, request);
-        E resp = (E) mService.save(req);
+        E resp = mService.save(req);
         return resp;
     }
 
@@ -84,6 +84,7 @@ public abstract class RestEntryPoint<E extends OEntity> {
                 case "userType":
                 case "shiftHours":
                 case "attendanceRules":
+                case "contactInfo":
                     continue;
                 default:
                     Object result = EntityUtils.runGetter(field, req);

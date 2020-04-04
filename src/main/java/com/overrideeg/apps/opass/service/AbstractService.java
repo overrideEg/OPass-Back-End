@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2020. overrideeg.ocm.
+ */
+
 package com.overrideeg.apps.opass.service;
 
 
@@ -199,11 +203,6 @@ public abstract class AbstractService<E extends OEntity> {
         return mRepository.createSQLQuery(queryString);
     }
 
-
-    public E save(E inEntity, Long companyId) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, NoSuchFieldException {
-        return save(inEntity);
-
-    }
 
 
 }

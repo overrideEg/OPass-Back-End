@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2020. overrideeg.ocm.
+ */
+
 package com.overrideeg.apps.opass.io.repositories.customisation;
 
 
@@ -133,8 +137,13 @@ public class JpaRepositoryCustomisationsImpl<T> extends SimpleJpaRepository<T, L
         CriteriaQuery<T> criteria = cb.createQuery(this.inEntityType);
         Root<T> root = criteria.from(this.inEntityType);
         criteria.select(root);
-        criteria.where(cb.equal(root.get(name), value));
-
+        if (!name.contains("."))
+            criteria.where(cb.equal(root.get(name), value));
+        else {
+            String firstObject = name.substring(0, name.indexOf("."));
+            String secondObject = name.substring(name.indexOf(".") + 1);
+            criteria.where(cb.equal(root.get(firstObject).get(secondObject), value));
+        }
         // Fetch single result
         Query query = mEntityManager.createQuery(criteria);
         List<T> resultList = query.getResultList();
