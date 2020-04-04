@@ -32,7 +32,7 @@ public class UsersEntryPoint extends RestEntryPoint<Users> {
 
     @PostMapping("/resetPassword")
     public @ResponseBody
-    ResponseModel runReport(@RequestHeader Long tenantId, HttpServletRequest servletRequest, @RequestBody restorePasswordRequest request) throws Exception {
+    ResponseModel resetPassword(@RequestHeader Long tenantId, HttpServletRequest servletRequest, @RequestBody restorePasswordRequest request) throws Exception {
         resolveTenant(tenantId, servletRequest);
         return usersService.resetPassword(request);
     }

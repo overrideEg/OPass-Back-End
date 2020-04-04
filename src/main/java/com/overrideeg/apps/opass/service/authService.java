@@ -85,8 +85,9 @@ public class authService {
     private void updateUserProfile(Users userProfile) {
         try {
             this.usersService.update(userProfile);
-        } catch (NoSuchMethodException e) {
+        } catch (Exception e) {
             e.printStackTrace();
+            throw new AuthenticationException("Mac Address Registered Before: " + e.getMessage());
         }
     }
 

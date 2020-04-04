@@ -4,7 +4,9 @@
 
 package com.overrideeg.apps.opass.ui.entrypoint.auth;
 
+import com.overrideeg.apps.opass.enums.userType;
 import com.overrideeg.apps.opass.exceptions.AuthenticationException;
+import com.overrideeg.apps.opass.exceptions.MissingRequiredFieldException;
 import com.overrideeg.apps.opass.io.entities.Users;
 import com.overrideeg.apps.opass.service.authService;
 import com.overrideeg.apps.opass.system.ApiUrls;
@@ -49,6 +51,11 @@ public class authEntryPoint {
         authResponse returnValue = new authResponse();
 
         Users authenticatedUser = authenticationService.authenticate(loginCredentials.getUserName(), loginCredentials.getPassword());
+
+        if (authenticatedUser.getUserType().equals(userType.user)) {
+            if (loginCredentials.getMacAddress() == null || loginCredentials.getMacAddress().equals(""))
+                throw new MissingRequiredFieldException("Mac Address Must Provided For Type User");
+        }
 
         authenticationService.checkMacAddress(authenticatedUser, loginCredentials);
         // Reset Access Token
