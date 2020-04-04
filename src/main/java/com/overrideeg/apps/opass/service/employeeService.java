@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2020. overrideeg.ocm.
+ */
+
 package com.overrideeg.apps.opass.service;
 
 import com.overrideeg.apps.opass.exceptions.CouldNotCreateRecordException;
@@ -5,8 +9,8 @@ import com.overrideeg.apps.opass.io.entities.Users;
 import com.overrideeg.apps.opass.io.entities.company;
 import com.overrideeg.apps.opass.io.entities.employee;
 import com.overrideeg.apps.opass.io.repositories.employeeRepo;
-import com.overrideeg.apps.opass.system.Connection.TenantContext;
 import com.overrideeg.apps.opass.system.Connection.TenantResolver;
+import com.overrideeg.apps.opass.ui.sys.ErrorMessages;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,15 +31,18 @@ public class employeeService extends AbstractService<employee> {
     }
 
 
-    @Override
+
     public employee save(employee inEntity, Long companyId) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, NoSuchFieldException {
-        TenantContext.setCurrentTenant(companyId);
-        Users createdUser = null;
+        Users exitsUser = usersService.find("userName", companyId + "." + inEntity.getContactInfo().getMobile());
+        employee exitsEmployee = find("contactInfo.mobile", inEntity.getContactInfo().getMobile());
+        if (exitsUser.isValid() || exitsEmployee.isValid()) {
+            throw new CouldNotCreateRecordException(ErrorMessages.RECORD_ALREADY_EXISTS.getErrorMessage());
+        }
+        Users createdUser = new Users();
         try {
             // create user for new employee in master database
             createdUser = createUserForEmployee(inEntity, companyId);
         } catch (Exception e) {
-            e.printStackTrace();
             if (createdUser.getId() != null)
                 usersService.delete(createdUser.getId());
             throw new CouldNotCreateRecordException(e.getMessage());
@@ -76,7 +83,9 @@ public class employeeService extends AbstractService<employee> {
         users.setUserName(companyId + "." + inEntity.getContactInfo().getMobile());
         users.setPassword(inEntity.getSsn());
         users.setEmail(inEntity.getContactInfo().getEmail());
-        company companyForTenantId = tenantResolver.findCompanyForTenantId(companyId);
+        company companyForTenantId = null;
+        if (companyId != 0)
+            companyForTenantId = tenantResolver.findCompanyForTenantId(companyId);
         users.setCompany_id(companyForTenantId.getId());
         users.setUserType(inEntity.getUserType());
         return usersService.save(users);

@@ -46,7 +46,7 @@ public class AuthenticationFilter implements HandlerInterceptor {
 
         String contextPath = hsr.getServletPath().substring(1);
         if (!hsr.getMethod().equalsIgnoreCase("OPTIONS")) {
-            if (contextPath.equals(ApiUrls.Auth_ep)) {
+            if (contextPath.equals(ApiUrls.Auth_ep) || contextPath.equalsIgnoreCase(ApiUrls.reader_ep)) {
                 handleAuthRequest(hsr, hsr1);
             } else if ("error".equals(contextPath)) {
                 return true;
