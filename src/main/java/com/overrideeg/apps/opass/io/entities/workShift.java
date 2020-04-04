@@ -79,14 +79,15 @@ public class workShift extends OEntity {
 
         //attending state
         if (!in) {
-            attendanceLog.setAttType(attType.IN);
 
             //check attending at normal time
             if (dateUtils.timeAfter(dateUtils.newTime(shiftHours.getFromHour()), scanTime, true) && dateUtils.timeBefore(lateArriveTime, scanTime, true)) {
+                attendanceLog.setAttType(attType.IN);
                 attendanceLog.setAttStatus(attStatus.normal);
 
                 //check attending at late time
             } else if (dateUtils.timeAfter(lateArriveTime, scanTime, false) && dateUtils.timeBefore(minEarlyLeaveTime, scanTime, false)) {
+                attendanceLog.setAttType(attType.IN);
 
                 attendanceLog.setAttStatus(attStatus.lateEntrance);
             }
@@ -96,16 +97,16 @@ public class workShift extends OEntity {
 
         //leaving state
         } else if (!out) {
-            attendanceLog.setAttType(attType.OUT);
 
 
             //check leaving at normal time
             if (dateUtils.timeAfter(minEarlyLeaveTime, scanTime, true) && dateUtils.timeBefore(dateUtils.newTime( getShiftHours().getToHour()), scanTime, true)) {
+                attendanceLog.setAttType(attType.OUT);
                 attendanceLog.setAttStatus(attStatus.normal);
 
                 //check leaving at over time
             } else if (dateUtils.timeAfter(dateUtils.newTime( getShiftHours().getToHour()), scanTime, false) && dateUtils.timeBefore(maxOverTime, scanTime, true)) {
-
+                attendanceLog.setAttType(attType.OUT);
                 attendanceLog.setAttStatus(attStatus.overTime);
             }
             //else just log
