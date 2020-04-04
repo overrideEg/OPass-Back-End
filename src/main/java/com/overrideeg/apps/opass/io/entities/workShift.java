@@ -56,65 +56,70 @@ public class workShift extends OEntity {
 
 
     public attendance createAttLog(employee employee, Date scanDate, attendanceRules attendanceRules, List<attendance> todayShiftLogs) {
-
         final DateUtils dateUtils = new DateUtils();
         final Time scanTime = dateUtils.newTime(scanDate);
-
-        final Time lateArriveTime = dateUtils.addOrSubtractMinutes(dateUtils.newTime(getShiftHours().getFromHour()), attendanceRules.getAllowedLateMinutes());
-        final Time maxOverTime = dateUtils.addOrSubtractHours(dateUtils.newTime(getShiftHours().getToHour()), attendanceRules.getMaxOverTimeHours());
-        final Time minEarlyLeaveTime = dateUtils.addOrSubtractMinutes(dateUtils.newTime(getShiftHours().getToHour()), -attendanceRules.getAllowedEarlyLeaveMinutes());
-
         final attendance attendanceLog = new attendance(employee, this, scanDate, scanTime, attType.LOG, attStatus.normal);
 
-        boolean in = false;
-        boolean out = false;
+        try {
 
-        for (attendance shiftLog : todayShiftLogs) {
-            if (shiftLog.getAttType() == attType.IN) {
-                in = true;
-            } else if (shiftLog.getAttType() == attType.OUT) {
-                out = true;
+            final Time lateArriveTime = dateUtils.addOrSubtractMinutes(dateUtils.newTime(getShiftHours().getFromHour()), attendanceRules.getAllowedLateMinutes());
+            final Time maxOverTime = dateUtils.addOrSubtractHours(dateUtils.newTime(getShiftHours().getToHour()), attendanceRules.getMaxOverTimeHours());
+            final Time minNormalLeaveTime = dateUtils.addOrSubtractMinutes(dateUtils.newTime(getShiftHours().getToHour()), -attendanceRules.getAllowedEarlyLeaveMinutes());
+            final Time maxNormalLeaveTime = dateUtils.addOrSubtractMinutes(dateUtils.newTime(getShiftHours().getToHour()), attendanceRules.getAllowedEarlyLeaveMinutes());
+
+
+            boolean in = false;
+            boolean out = false;
+
+            for (attendance shiftLog : todayShiftLogs) {
+                if (shiftLog.getAttType() == attType.IN) {
+                    in = true;
+                } else if (shiftLog.getAttType() == attType.OUT) {
+                    out = true;
+                }
             }
-        }
 
-        //attending state
-        if (!in) {
+            //attending state
+            if (!in) {
 
-            //check attending at normal time
-            if (dateUtils.timeAfter(dateUtils.newTime(shiftHours.getFromHour()), scanTime, true) && dateUtils.timeBefore(lateArriveTime, scanTime, true)) {
-                attendanceLog.setAttType(attType.IN);
-                attendanceLog.setAttStatus(attStatus.normal);
+                //check attending at normal time
+                if (dateUtils.timeAfter(dateUtils.newTime(shiftHours.getFromHour()), scanTime, true) && dateUtils.timeBefore(lateArriveTime, scanTime, true)) {
+                    attendanceLog.setAttType(attType.IN);
+                    attendanceLog.setAttStatus(attStatus.normal);
 
-                //check attending at late time
-            } else if (dateUtils.timeAfter(lateArriveTime, scanTime, false) && dateUtils.timeBefore(minEarlyLeaveTime, scanTime, false)) {
-                attendanceLog.setAttType(attType.IN);
+                    //check attending at late time
+                } else if (dateUtils.timeAfter(lateArriveTime, scanTime, false) && dateUtils.timeBefore(minNormalLeaveTime, scanTime, false)) {
+                    attendanceLog.setAttType(attType.IN);
 
-                attendanceLog.setAttStatus(attStatus.lateEntrance);
+                    attendanceLog.setAttStatus(attStatus.lateEntrance);
+                }
+                //else just log
+                return attendanceLog;
+
+
+                //leaving state
+            } else if (!out) {
+
+                //check leaving at normal time
+                if (dateUtils.timeAfter(minNormalLeaveTime, scanTime, true) && dateUtils.timeBefore(maxNormalLeaveTime, scanTime, true)) {
+                    attendanceLog.setAttType(attType.OUT);
+                    attendanceLog.setAttStatus(attStatus.normal);
+
+                    //check leaving at over time
+                } else if (dateUtils.timeAfter(maxNormalLeaveTime, scanTime, false) && dateUtils.timeBefore(maxOverTime, scanTime, true)) {
+                    attendanceLog.setAttType(attType.OUT);
+                    attendanceLog.setAttStatus(attStatus.overTime);
+                }
+                //else just log
+                return attendanceLog;
+
             }
-            //else just log
             return attendanceLog;
 
-
-        //leaving state
-        } else if (!out) {
-
-
-            //check leaving at normal time
-            if (dateUtils.timeAfter(minEarlyLeaveTime, scanTime, true) && dateUtils.timeBefore(dateUtils.newTime( getShiftHours().getToHour()), scanTime, true)) {
-                attendanceLog.setAttType(attType.OUT);
-                attendanceLog.setAttStatus(attStatus.normal);
-
-                //check leaving at over time
-            } else if (dateUtils.timeAfter(dateUtils.newTime( getShiftHours().getToHour()), scanTime, false) && dateUtils.timeBefore(maxOverTime, scanTime, true)) {
-                attendanceLog.setAttType(attType.OUT);
-                attendanceLog.setAttStatus(attStatus.overTime);
-            }
-            //else just log
+        } catch (Exception e) {
             return attendanceLog;
 
         }
-
-        return attendanceLog;
 
     }
 
