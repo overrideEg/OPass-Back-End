@@ -45,36 +45,40 @@ public class AuthenticationFilter implements HandlerInterceptor {
                              HttpServletResponse hsr1, Object handler) throws Exception {
 
         String contextPath = hsr.getServletPath().substring(1);
-        if (contextPath.equals(ApiUrls.Auth_ep)) {
-            handleAuthRequest(hsr, hsr1);
-        } else if ("error".equals(contextPath)) {
-            return true;
+        if (!hsr.getMethod().equalsIgnoreCase("OPTIONS")) {
+            if (contextPath.equals(ApiUrls.Auth_ep)) {
+                handleAuthRequest(hsr, hsr1);
+            } else if ("error".equals(contextPath)) {
+                return true;
+            } else {
+                try {
+                    Class<?> classToAuth = AuthenticationUtils.getSecuredEntryPoints().stream().filter(aClass -> {
+                        RequestMapping em = aClass.getDeclaredAnnotation(RequestMapping.class);
+                        Object requestPath = new ArrayList(Arrays.asList(em.value())).get(0);
+                        return !requestPath.equals(null) && contextPath.startsWith((String) requestPath);
+                    }).findAny().get();
+
+
+                    Secured annotation = classToAuth.getAnnotation(Secured.class);
+                    for (RequestMethod requestMethod : annotation.methodsToSecure()) {
+                        if (hsr.getMethod().equalsIgnoreCase(String.valueOf(requestMethod))) {
+                            handleFilter(hsr);
+                            break;
+                        }
+
+                    }
+                    return true;
+                } catch (Exception e) {
+                    return true;
+                }
+
+
+            }
         } else {
-try {
-    Class<?> classToAuth = AuthenticationUtils.getSecuredEntryPoints().stream().filter(aClass -> {
-        RequestMapping em = aClass.getDeclaredAnnotation(RequestMapping.class);
-        Object requestPath = new ArrayList(Arrays.asList(em.value())).get(0);
-        if (!requestPath.equals(null) && contextPath.startsWith((String) requestPath)) {
-            return true;
-        } else {
-            return false;
-        }
-    }).findAny().get();
-
-
-    Secured annotation = classToAuth.getAnnotation(Secured.class);
-    for (RequestMethod requestMethod : annotation.methodsToSecure()) {
-        if (hsr.getMethod().equalsIgnoreCase(String.valueOf(requestMethod))) {
-            handleFilter(hsr);
-            break;
-        }
-
-    }
-} catch (Exception e) {
-    return true;
-}
-
-
+            hsr1.setStatus(HttpServletResponse.SC_NO_CONTENT);
+            hsr1.setHeader("Access-Control-Allow-Origin", "*");
+            hsr1.setHeader("Access-Control-Allow-Methods", "*");
+            hsr1.setHeader("Access-Control-Allow-Headers", "*");
         }
         return true;
     }
