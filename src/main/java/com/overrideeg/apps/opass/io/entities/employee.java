@@ -198,19 +198,21 @@ public class employee extends OEntity {
      * helper method to determine employee current work shift
      * loops through emp work shifts.. and filter shifts that meet the scanTime
      * drop current shift and look for the second one that meet the current time if user attended and left in this current shift
-     * TODO resolve two continous shifts (add overtime)
+     * TODO resolve two continuous shifts (add overtime)
      * TODO resolve TwoDays shift (11pm-7am)
      * TODO resolve holidays
      */
     public workShift getCurrentWorkShift(attendanceService attendanceService, Date scanDate, List<workShift> workShifts, attendanceRules attendanceRules) {
 
+        final DateUtils dateUtils = new DateUtils();
+
         for (workShift workShift : workShifts) {
 
             final shiftHours shiftTime = workShift.getShiftHours();
-            final DateUtils dateUtils = new DateUtils();
 
 
-            final Time shiftEndTimeWithAllowedMinuets = dateUtils.addOrSubtractHours(dateUtils.newTime(shiftTime.getToHour()), attendanceRules.getAllowedLateLeaveMinutes());
+            final Time shiftStartLeavingTime = dateUtils.addOrSubtractMinutes(dateUtils.newTime(shiftTime.getToHour()), -attendanceRules.getAllowedEarlyLeaveMinutes());
+            final Time shiftEndTimeWithAllowedMinuets = dateUtils.addOrSubtractMinutes(dateUtils.newTime(shiftTime.getToHour()), attendanceRules.getAllowedLateLeaveMinutes());
 
 
             final boolean currentShift = dateUtils.isBetweenTwoTimes(dateUtils.newTime(shiftTime.getFromHour()), shiftEndTimeWithAllowedMinuets, dateUtils.newTime(scanDate));
@@ -228,10 +230,11 @@ public class employee extends OEntity {
                         left = true;
                     }
                 }
-                if (!attended || !left) {
 
+                if((!attended&& dateUtils.timeBefore(shiftStartLeavingTime,dateUtils.newTime(scanDate),false)) || !left){
                     return workShift;
                 }
+
             }
         }
         return null;
