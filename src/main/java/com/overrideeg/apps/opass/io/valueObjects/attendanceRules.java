@@ -17,12 +17,20 @@ import java.util.List;
 public class attendanceRules {
 
     private Integer allowedLateMinutes;
+    private Integer allowedLateLeaveMinutes;
     private Integer allowedEarlyLeaveMinutes;
     private Integer maxOverTimeHours;
     @ElementCollection(fetch = FetchType.EAGER)
     @Fetch(FetchMode.SUBSELECT)
     private List<Integer> daysOff;
 
+    public Integer getAllowedLateLeaveMinutes() {
+        return allowedLateLeaveMinutes;
+    }
+
+    public void setAllowedLateLeaveMinutes(Integer allowedLateLeaveMinutes) {
+        this.allowedLateLeaveMinutes = allowedLateLeaveMinutes;
+    }
 
     public Integer getAllowedLateMinutes() {
         return allowedLateMinutes;

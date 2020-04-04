@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.overrideeg.apps.opass.enums.attType;
 import com.overrideeg.apps.opass.enums.employeeStatus;
 import com.overrideeg.apps.opass.exceptions.NoRecordFoundException;
 import com.overrideeg.apps.opass.io.entities.system.OEntity;
@@ -15,6 +16,7 @@ import com.overrideeg.apps.opass.io.valueObjects.attendanceRules;
 import com.overrideeg.apps.opass.io.valueObjects.contactInfo;
 import com.overrideeg.apps.opass.io.valueObjects.shiftHours;
 import com.overrideeg.apps.opass.io.valueObjects.translatedField;
+import com.overrideeg.apps.opass.service.attendanceService;
 import com.overrideeg.apps.opass.ui.sys.ErrorMessages;
 import com.overrideeg.apps.opass.utils.DateUtils;
 import org.hibernate.annotations.Fetch;
@@ -194,30 +196,51 @@ public class employee extends OEntity {
 
     /**
      * helper method to determine employee current work shift
-     * TODO resolve two continous shifts
+     * loops through emp work shifts.. and filter shifts that meet the scanTime
+     * drop current shift and look for the second one that meet the current time if user attended and left in this current shift
+     * TODO resolve two continuous shifts (add overtime)
      * TODO resolve TwoDays shift (11pm-7am)
      * TODO resolve holidays
      */
-    public workShift getCurrentWorkShift(Time scanTime, List<workShift> workShifts, attendanceRules attendanceRules) {
+    public workShift getCurrentWorkShift(attendanceService attendanceService, Date scanDate, List<workShift> workShifts, attendanceRules attendanceRules) {
+
+        final DateUtils dateUtils = new DateUtils();
 
         for (workShift workShift : workShifts) {
 
             final shiftHours shiftTime = workShift.getShiftHours();
-            final DateUtils dateUtils=new DateUtils();
 
 
-            final Time shiftEndTimeWithOvertTime = dateUtils.addOrSubtractHours(dateUtils.newTime(shiftTime.getToHour()), attendanceRules.getMaxOverTimeHours());
+            final Time shiftStartLeavingTime = dateUtils.addOrSubtractMinutes(dateUtils.newTime(shiftTime.getToHour()), -attendanceRules.getAllowedEarlyLeaveMinutes());
+            final Time shiftEndTimeWithAllowedMinuets = dateUtils.addOrSubtractMinutes(dateUtils.newTime(shiftTime.getToHour()), attendanceRules.getAllowedLateLeaveMinutes());
 
 
-            final boolean currentShift = dateUtils.isBetweenTwoTimes(dateUtils.newTime(shiftTime.getFromHour()), shiftEndTimeWithOvertTime, dateUtils.newTime(scanTime));
+            final boolean currentShift = dateUtils.isBetweenTwoTimes(dateUtils.newTime(shiftTime.getFromHour()), shiftEndTimeWithAllowedMinuets, dateUtils.newTime(scanDate));
 
             if (currentShift) {
-                return workShift;
+
+                boolean left = false;
+                boolean attended = false;
+                final List<attendance> todayShiftLogs = attendanceService.employeeTodaysShitLogs(this, scanDate, workShift);
+
+                for (attendance shiftLog : todayShiftLogs) {
+                    if (shiftLog.getAttType() == attType.IN) {
+                        attended = true;
+                    } else if (shiftLog.getAttType() == attType.OUT) {
+                        left = true;
+                    }
+                }
+
+                if((!attended&& dateUtils.timeBefore(shiftStartLeavingTime,dateUtils.newTime(scanDate),false)) || !left){
+                    return workShift;
+                }
+
             }
         }
         return null;
 
     }
+
     /**
      * helper method to determine employee current Attendance Rules
      */

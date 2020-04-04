@@ -105,7 +105,7 @@ public class readerService {
         if (!workShifts.isEmpty()) {
             final attendanceRules attendanceRules = employee.fetchEmployeeAttRules();
 
-            final workShift currentWorkShift = employee.getCurrentWorkShift(scanTime, workShifts, attendanceRules);
+            final workShift currentWorkShift = employee.getCurrentWorkShift(attendanceService,scanDate, workShifts, attendanceRules);
 
             if (currentWorkShift == null) {
                 return new attendance(employee, null, scanDate, scanTime, attType.LOG, attStatus.normal);
