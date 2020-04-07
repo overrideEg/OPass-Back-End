@@ -4,6 +4,7 @@
 
 package com.overrideeg.apps.opass;
 
+import com.overrideeg.apps.opass.filters.WebConfig;
 import com.overrideeg.apps.opass.io.repositories.customisation.JpaRepositoryCustomisationsImpl;
 import com.overrideeg.apps.opass.utils.FileStorageProperties;
 import org.springframework.boot.SpringApplication;
@@ -19,6 +20,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.servlet.ServletContext;
@@ -50,6 +52,11 @@ public class opassApplication extends SpringBootServletInitializer implements We
         super.onStartup(servletContext);
         servletContext.getServletRegistration(DispatcherServletAutoConfiguration.DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)
                 .setInitParameter("dispatchOptionsRequest", "true");
+    }
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(new WebConfig());
     }
 
     @Bean
