@@ -4,6 +4,7 @@
 
 package com.overrideeg.apps.opass.system.Connection;
 
+import com.overrideeg.apps.opass.io.entities.User;
 import com.overrideeg.apps.opass.io.entities.company;
 import com.overrideeg.apps.opass.io.entities.country;
 import com.overrideeg.apps.opass.io.valueObjects.translatedField;
@@ -15,6 +16,8 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -74,9 +77,9 @@ public class TenantResolver {
 
         try {
             return jdbcTemplate.queryForObject(
-                    "SELECT c.database_name FROM Users u \n" +
+                    "SELECT c.database_name FROM User u \n" +
                             "INNER JOIN company c on c.id = u.company_id\n" +
-                            " WHERE u.user_name  =  ?",
+                            " WHERE u.username  =  ?",
                     String.class, username);
         } catch (EmptyResultDataAccessException e) {
             return null;
@@ -89,13 +92,69 @@ public class TenantResolver {
             return null;
         try {
             return jdbcTemplate.queryForObject(
-                    "SELECT c.id FROM Users u INNER JOIN company c on c.id = u.company_id WHERE u.user_name =  ?", Long.class,
+                    "SELECT c.id FROM User u INNER JOIN company c on c.id = u.company_id WHERE u.username =  ?", Long.class,
                     username);
 
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
 
+    }
+
+    public User findUserFromMasterDatabaseByUserName(String username) throws SQLException {
+        String selectSQL = "select * from opass_master.user u " +
+                "left join user_roles ur on u.id = ur.user_id " +
+                "where u.username =?";
+        List<Map<String, Object>> maps = jdbcTemplate.queryForList(selectSQL, username);
+        User user = new User();
+        if (maps.size() > 0) {
+            Map<String, Object> result = maps.get(0);
+            user.setId((Long) result.get("id"));
+            user.setRoles((List<String>) result.get("roles"));
+            user.setUsername((String) result.get("username"));
+            user.setMacAddress((String) result.get("mac_address"));
+            user.setCompany_id((Long) result.get("company_id"));
+            user.setImage((String) result.get("image"));
+            user.setEmail((String) result.get("email"));
+        }
+        return user;
+    }
+
+    public User saveUserIntoMasterDatabase(User userToSave) {
+        String idSql = "select max(id) from user";
+        Long lastId = jdbcTemplate.queryForObject(idSql, Long.TYPE);
+        Long newId = lastId + 1;
+        String INSERT_SQL = "insert into user (id,username,email,company_id,password,mac_address,image)values(?,?,?,?,?,?,?)";
+        int updatedId = jdbcTemplate.update(INSERT_SQL, newId, userToSave.getUsername(), userToSave.getEmail(),
+                userToSave.getCompany_id(), userToSave.getPassword(), userToSave.getMacAddress(), userToSave.getImage());
+        if (updatedId != 0) {
+            String insetRolesSQL = "insert into opass_master.user_roles (user_id, roles) values (?,?)";
+            userToSave.getRoles().forEach(role -> {
+                jdbcTemplate.update(insetRolesSQL, newId, role);
+            });
+        }
+        String selectSQL = "select * from opass_master.user u " +
+                "left join user_roles ur on u.id = ur.user_id " +
+                "where u.id =?";
+        List<Map<String, Object>> maps = jdbcTemplate.queryForList(selectSQL, newId);
+        User user = new User();
+        Map<String, Object> result = maps.get(0);
+        user.setId((Long) result.get("id"));
+        List<String> roles = new ArrayList<>();
+        Object rules = result.get("roles");
+        roles.add((String) rules);
+        user.setRoles(roles);
+        user.setUsername((String) result.get("username"));
+        user.setMacAddress((String) result.get("mac_address"));
+        user.setCompany_id((Long) result.get("company_id"));
+        user.setImage((String) result.get("image"));
+        user.setEmail((String) result.get("email"));
+        return user;
+    }
+
+
+    public Integer removeUser(Long userId) {
+        return jdbcTemplate.update("delete from user where id = ?", userId);
     }
 
 }

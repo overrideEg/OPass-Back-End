@@ -1,0 +1,9 @@
+{
+  "properties": [
+    {
+      "name": "org.springframework.web",
+      "type": "java.lang.String",
+      "description": "Description for org.springframework.web."
+    }
+  ]
+}

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.InvocationTargetException;
+import java.sql.SQLException;
 
 
 @RestController
@@ -24,15 +25,15 @@ public class employeeEntryPoint extends RestEntryPoint<employee> {
     @Autowired
     employeeService employeeService;
 
+
     public employeeEntryPoint(final employeeService inService) {
         setService(inService);
     }
 
     @Override
     public @ResponseBody
-    employee postOne(@RequestBody employee req, @RequestHeader Long tenantId, HttpServletRequest request) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, NoSuchFieldException {
+    employee postOne(@RequestBody employee req, @RequestHeader Long tenantId, HttpServletRequest request) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, NoSuchFieldException, SQLException {
         validateFields(req);
-        resolveTenant(tenantId, request);
         return employeeService.save(req, tenantId);
     }
 }

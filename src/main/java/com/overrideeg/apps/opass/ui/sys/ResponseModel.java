@@ -1,4 +1,8 @@
 /*
+ * Copyright (c) 2020. overrideeg.ocm.
+ */
+
+/*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
@@ -20,6 +24,9 @@ public class ResponseModel<E> {
         this.entity = entity;
         this.requestOperation = requestOperation;
         this.responseStatus = responseStatus;
+    }
+
+    public ResponseModel() {
     }
 
     public E getEntity() {

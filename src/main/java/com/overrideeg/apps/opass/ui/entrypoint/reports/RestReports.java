@@ -5,7 +5,7 @@
 package com.overrideeg.apps.opass.ui.entrypoint.reports;
 
 import com.overrideeg.apps.opass.annotations.Secured;
-import com.overrideeg.apps.opass.io.entities.attendance;
+import com.overrideeg.apps.opass.io.valueObjects.AttendanceHistory;
 import com.overrideeg.apps.opass.service.RestReportsService;
 import com.overrideeg.apps.opass.service.system.RestLogService;
 import com.overrideeg.apps.opass.system.ApiUrls;
@@ -29,7 +29,7 @@ public class RestReports {
 
     @GetMapping("attendanceHistory/{employeeId}")
     public @ResponseBody
-    List<attendance> findAttendanceHistory(
+    List<AttendanceHistory> findAttendanceHistory(
             @RequestParam(name = "page") Integer page,
             @RequestParam(name = "pageSize") Integer pageSize,
             @RequestHeader Long tenantId, HttpServletRequest hsr, @PathVariable Long employeeId) {

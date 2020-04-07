@@ -5,46 +5,58 @@
 package com.overrideeg.apps.opass.service;
 
 import com.overrideeg.apps.opass.exceptions.CouldNotCreateRecordException;
-import com.overrideeg.apps.opass.io.entities.Users;
+import com.overrideeg.apps.opass.io.entities.User;
 import com.overrideeg.apps.opass.io.entities.company;
 import com.overrideeg.apps.opass.io.entities.employee;
+import com.overrideeg.apps.opass.io.repositories.UserRepo;
 import com.overrideeg.apps.opass.io.repositories.employeeRepo;
+import com.overrideeg.apps.opass.system.Connection.ResolveTenant;
 import com.overrideeg.apps.opass.system.Connection.TenantResolver;
 import com.overrideeg.apps.opass.ui.sys.ErrorMessages;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.InvocationTargetException;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Service
 public class employeeService extends AbstractService<employee> {
-    @Autowired
-    UsersService usersService;
+
     @Autowired
     companyService companyService;
     @Autowired
     TenantResolver tenantResolver;
+    @Autowired
+    UserRepo users;
+    @Autowired
+    ResolveTenant resolveTenant;
+
 
     public employeeService(final employeeRepo inRepository) {
         super(inRepository);
     }
 
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
-
-    public employee save(employee inEntity, Long companyId) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, NoSuchFieldException {
-        Users exitsUser = usersService.find("userName", companyId + "." + inEntity.getContactInfo().getMobile());
+    public employee save(employee inEntity, Long companyId) throws SQLException {
+        boolean present = tenantResolver.findUserFromMasterDatabaseByUserName(inEntity.getContactInfo().getMobile()).getId() != null;
+        this.resolveTenant.resolve(companyId, null);
         employee exitsEmployee = find("contactInfo.mobile", inEntity.getContactInfo().getMobile());
-        if (exitsUser.isValid() || exitsEmployee.isValid()) {
+        if (present || exitsEmployee.isValid()) {
             throw new CouldNotCreateRecordException(ErrorMessages.RECORD_ALREADY_EXISTS.getErrorMessage());
         }
-        Users createdUser = new Users();
+        User createdUser = new User();
+        this.resolveTenant.resolve(0L, null);
         try {
             // create user for new employee in master database
             createdUser = createUserForEmployee(inEntity, companyId);
         } catch (Exception e) {
             if (createdUser.getId() != null)
-                usersService.delete(createdUser.getId());
+                this.tenantResolver.removeUser(createdUser.getId());
             throw new CouldNotCreateRecordException(e.getMessage());
         }
 
@@ -52,19 +64,21 @@ public class employeeService extends AbstractService<employee> {
         inEntity.setCreatedUserId(createdUser.getId());
         // return back saved employee
         employee saved = null;
+
         try {
+            this.resolveTenant.resolve(companyId, null);
             saved = super.save(inEntity);
-            createdUser.setEmployee(saved);
-            usersService.update(createdUser);
+            // update user in master tenant
+//            usersService.save(createdUser);
         } catch (Exception e) {
             e.printStackTrace();
-            usersService.delete(createdUser.getId());
-            throw new CouldNotCreateRecordException(e.getMessage());
+            this.resolveTenant.resolve(0L, null);
 
+            tenantResolver.removeUser(createdUser.getId());
+            throw new CouldNotCreateRecordException(e.getMessage());
         }
         return saved;
     }
-
 
     /**
      * method that create user for employee in master database
@@ -72,23 +86,20 @@ public class employeeService extends AbstractService<employee> {
      * @param inEntity
      * @param companyId
      * @return User Created
-     * @throws InvocationTargetException
-     * @throws NoSuchMethodException
-     * @throws NoSuchFieldException
-     * @throws InstantiationException
-     * @throws IllegalAccessException
      */
-    private Users createUserForEmployee(employee inEntity, Long companyId) throws InvocationTargetException, NoSuchMethodException, NoSuchFieldException, InstantiationException, IllegalAccessException {
-        Users users = new Users();
-        users.setUserName(companyId + "." + inEntity.getContactInfo().getMobile());
-        users.setPassword(inEntity.getSsn());
-        users.setEmail(inEntity.getContactInfo().getEmail());
+    private User createUserForEmployee(employee inEntity, Long companyId) {
+        User user = new User();
+        user.setUsername(inEntity.getContactInfo().getMobile());
+        user.setPassword(passwordEncoder.encode(inEntity.getSsn()));
+        user.setEmail(inEntity.getContactInfo().getEmail());
         company companyForTenantId = null;
         if (companyId != 0)
             companyForTenantId = tenantResolver.findCompanyForTenantId(companyId);
-        users.setCompany_id(companyForTenantId.getId());
-        users.setUserType(inEntity.getUserType());
-        return usersService.save(users);
+        user.setCompany_id(companyForTenantId.getId());
+        List<String> rules = new ArrayList<>();
+        rules.add(inEntity.getUserType().toString());
+        user.setRoles(rules);
+        return tenantResolver.saveUserIntoMasterDatabase(user);
     }
 
 

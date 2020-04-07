@@ -2,6 +2,11 @@
  * Copyright (c) 2020. overrideeg.ocm.
  */
 
+/*
+ * Copyright (c) 2020. overrideeg.ocm.
+ */
+
+
 create table app_setting
 (
     id               bigint not null auto_increment,
@@ -313,7 +318,7 @@ create table terms_and_conditions
     primary key (id)
 ) engine = InnoDB
 ;
-create table users
+create table user
 (
     id                 bigint      not null auto_increment,
     creation_date      datetime(6),
@@ -360,13 +365,13 @@ alter table qr_machine
 alter table subscription_plan_plan_details
     add constraint UK_aoier6jccoccpmludc02a0pvd unique (plan_details_id)
 ;
-alter table users
+alter table user
     add constraint UK_6dotkott2kjsp8vw4d0m25fb7 unique (email)
 ;
-alter table users
+alter table user
     add constraint UK_20nqacqigaop7erdjuc7qsfua unique (mac_address)
 ;
-alter table users
+alter table user
     add constraint UK_k8d0f2n7n88w1a16yhua64onx unique (user_name)
 ;
 alter table attendance
@@ -432,5 +437,5 @@ alter table subscription_plan_plan_details
 alter table subscription_plan_plan_details
     add constraint FKdx2qg3vw83ytg4vigpvb5bdsw foreign key (subscription_plan_id) references subscription_plan (id)
 ;
-alter table users
+alter table user
     add constraint FKfndbe67uw6silwqnlyudtwqmo foreign key (employee_id) references employee (id)

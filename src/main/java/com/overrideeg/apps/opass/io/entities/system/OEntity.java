@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2020. overrideeg.ocm.
+ */
+
 package com.overrideeg.apps.opass.io.entities.system;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -16,7 +20,7 @@ public abstract class OEntity {
     @JsonIgnore
     private Date creationDate;
     @Temporal(TemporalType.TIMESTAMP)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, timezone = "Africa/Cairo")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, timezone = "UTC")
     @JsonIgnore
     private Date lastUpdateDate;
 
