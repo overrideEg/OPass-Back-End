@@ -102,7 +102,7 @@ public class TenantResolver {
     }
 
     public User findUserFromMasterDatabaseByUserName(String username) throws SQLException {
-        String selectSQL = "select * from opass_master.user u " +
+        String selectSQL = "select * from user u " +
                 "left join user_roles ur on u.id = ur.user_id " +
                 "where u.username =?";
         List<Map<String, Object>> maps = jdbcTemplate.queryForList(selectSQL, username);
@@ -128,12 +128,12 @@ public class TenantResolver {
         int updatedId = jdbcTemplate.update(INSERT_SQL, newId, userToSave.getUsername(), userToSave.getEmail(),
                 userToSave.getCompany_id(), userToSave.getPassword(), userToSave.getMacAddress(), userToSave.getImage());
         if (updatedId != 0) {
-            String insetRolesSQL = "insert into opass_master.user_roles (user_id, roles) values (?,?)";
+            String insetRolesSQL = "insert into user_roles (user_id, roles) values (?,?)";
             userToSave.getRoles().forEach(role -> {
                 jdbcTemplate.update(insetRolesSQL, newId, role);
             });
         }
-        String selectSQL = "select * from opass_master.user u " +
+        String selectSQL = "select * from user u " +
                 "left join user_roles ur on u.id = ur.user_id " +
                 "where u.id =?";
         List<Map<String, Object>> maps = jdbcTemplate.queryForList(selectSQL, newId);

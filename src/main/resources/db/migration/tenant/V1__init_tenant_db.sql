@@ -2,11 +2,6 @@
  * Copyright (c) 2020. overrideeg.ocm.
  */
 
-/*
- * Copyright (c) 2020. overrideeg.ocm.
- */
-
-
 create table app_setting
 (
     id               bigint not null auto_increment,
@@ -21,8 +16,7 @@ create table app_setting
     longitude        double precision,
     website          varchar(255),
     primary key (id)
-) engine = InnoDB
-;
+) engine = InnoDB;
 create table attendance
 (
     id               bigint not null auto_increment,
@@ -35,8 +29,7 @@ create table attendance
     employee_id      bigint,
     work_shift_id    bigint,
     primary key (id)
-) engine = InnoDB
-;
+) engine = InnoDB;
 create table branch
 (
     id                          bigint not null auto_increment,
@@ -51,14 +44,12 @@ create table branch
     name_tr                     varchar(255),
     phone_number                varchar(255),
     primary key (id)
-) engine = InnoDB
-;
+) engine = InnoDB;
 create table branch_days_off
 (
     branch_id bigint not null,
     days_off  integer
-) engine = InnoDB
-;
+) engine = InnoDB;
 create table city
 (
     id               bigint not null auto_increment,
@@ -69,8 +60,7 @@ create table city
     name_tr          varchar(255),
     country_id       bigint,
     primary key (id)
-) engine = InnoDB
-;
+) engine = InnoDB;
 create table company
 (
     id               bigint not null auto_increment,
@@ -88,8 +78,7 @@ create table company
     website          varchar(255),
     country_id       bigint,
     primary key (id)
-) engine = InnoDB
-;
+) engine = InnoDB;
 create table country
 (
     id               bigint not null auto_increment,
@@ -99,8 +88,7 @@ create table country
     name_en          varchar(255),
     name_tr          varchar(255),
     primary key (id)
-) engine = InnoDB
-;
+) engine = InnoDB;
 create table currency
 (
     id               bigint not null auto_increment,
@@ -115,8 +103,7 @@ create table currency
     name_en          varchar(255),
     name_tr          varchar(255),
     primary key (id)
-) engine = InnoDB
-;
+) engine = InnoDB;
 create table department
 (
     id                          bigint not null auto_increment,
@@ -131,14 +118,12 @@ create table department
     name_tr                     varchar(255),
     phone_number                varchar(255),
     primary key (id)
-) engine = InnoDB
-;
+) engine = InnoDB;
 create table department_days_off
 (
     department_id bigint not null,
     days_off      integer
-) engine = InnoDB
-;
+) engine = InnoDB;
 create table employee
 (
     id                   bigint not null auto_increment,
@@ -174,14 +159,12 @@ create table employee
     country_id           bigint,
     department_id        bigint,
     primary key (id)
-) engine = InnoDB
-;
+) engine = InnoDB;
 create table employee_shifts
 (
     employee_id bigint not null,
     shift_id    bigint not null
-) engine = InnoDB
-;
+) engine = InnoDB;
 create table faq
 (
     id               bigint not null auto_increment,
@@ -194,8 +177,13 @@ create table faq
     question_en      varchar(255),
     question_tr      varchar(255),
     primary key (id)
-) engine = InnoDB
-;
+) engine = InnoDB;
+create table hibernate_sequence
+(
+    next_val bigint
+) engine = InnoDB;
+insert into hibernate_sequence
+values (1);
 create table plan_details
 (
     id               bigint not null auto_increment,
@@ -204,8 +192,7 @@ create table plan_details
     price            double precision,
     currency_id      bigint,
     primary key (id)
-) engine = InnoDB
-;
+) engine = InnoDB;
 create table qr_machine
 (
     id               bigint not null auto_increment,
@@ -220,8 +207,7 @@ create table qr_machine
     branch_id        bigint,
     department_id    bigint,
     primary key (id)
-) engine = InnoDB
-;
+) engine = InnoDB;
 create table report_category
 (
     id               bigint not null auto_increment,
@@ -231,8 +217,7 @@ create table report_category
     name_en          varchar(255),
     name_tr          varchar(255),
     primary key (id)
-) engine = InnoDB
-;
+) engine = InnoDB;
 create table report_definition
 (
     id                 bigint not null auto_increment,
@@ -247,16 +232,14 @@ create table report_definition
     size               bigint,
     report_category_id bigint,
     primary key (id)
-) engine = InnoDB
-;
+) engine = InnoDB;
 create table report_definition_params
 (
     report_definition_id bigint       not null,
     parameter_type       varchar(255),
     parameter_name       varchar(255) not null,
     primary key (report_definition_id, parameter_name)
-) engine = InnoDB
-;
+) engine = InnoDB;
 create table rest_log
 (
     id               bigint not null auto_increment,
@@ -270,8 +253,7 @@ create table rest_log
     request_method   varchar(255),
     request_name     varchar(255),
     primary key (id)
-) engine = InnoDB
-;
+) engine = InnoDB;
 create table subscription
 (
     id                   bigint not null auto_increment,
@@ -282,8 +264,7 @@ create table subscription
     company_id           bigint,
     subscription_plan_id bigint,
     primary key (id)
-) engine = InnoDB
-;
+) engine = InnoDB;
 create table subscription_plan
 (
     id                   bigint not null auto_increment,
@@ -296,14 +277,12 @@ create table subscription_plan
     name_tr              varchar(255),
     to_no_of_employees   integer,
     primary key (id)
-) engine = InnoDB
-;
+) engine = InnoDB;
 create table subscription_plan_plan_details
 (
     subscription_plan_id bigint not null,
     plan_details_id      bigint not null
-) engine = InnoDB
-;
+) engine = InnoDB;
 create table terms_and_conditions
 (
     id               bigint not null auto_increment,
@@ -316,27 +295,23 @@ create table terms_and_conditions
     title_en         varchar(255),
     title_tr         varchar(255),
     primary key (id)
-) engine = InnoDB
-;
+) engine = InnoDB;
 create table user
 (
-    id                 bigint      not null auto_increment,
-    creation_date      datetime(6),
-    last_update_date   datetime(6),
-    company_id         bigint,
-    email              varchar(255),
-    encrypted_password varchar(255),
-    image              varchar(255),
-    mac_address        varchar(255),
-    salt               varchar(255),
-    token              varchar(255),
-    user_id            varchar(255),
-    user_name          varchar(15) not null,
-    user_type          varchar(255),
-    employee_id        bigint,
+    id          bigint       not null,
+    company_id  bigint,
+    email       varchar(255),
+    image       varchar(255),
+    mac_address varchar(255),
+    password    varchar(255) not null,
+    username    varchar(255) not null,
     primary key (id)
-) engine = InnoDB
-;
+) engine = InnoDB;
+create table user_roles
+(
+    user_id bigint not null,
+    roles   varchar(255)
+) engine = InnoDB;
 create table work_shift
 (
     id               bigint not null auto_increment,
@@ -348,94 +323,64 @@ create table work_shift
     from_hour        time,
     to_hour          time,
     primary key (id)
-) engine = InnoDB
-;
+) engine = InnoDB;
 alter table employee
-    add constraint UK_fopic1oh5oln2khj8eat6ino0 unique (email)
-;
+    add constraint UK_fopic1oh5oln2khj8eat6ino0 unique (email);
 alter table employee
-    add constraint UK_4ts03wxs8exmr93khm543lt4x unique (mobile)
-;
+    add constraint UK_4ts03wxs8exmr93khm543lt4x unique (mobile);
 alter table employee
-    add constraint UK_f35rkopwr25n69dtp946lt3rh unique (ssn)
-;
+    add constraint UK_f35rkopwr25n69dtp946lt3rh unique (ssn);
 alter table qr_machine
-    add constraint UK_6jigeaaed0soa2suvrph78och unique (mac_address)
-;
+    add constraint UK_6jigeaaed0soa2suvrph78och unique (mac_address);
 alter table subscription_plan_plan_details
-    add constraint UK_aoier6jccoccpmludc02a0pvd unique (plan_details_id)
-;
+    add constraint UK_aoier6jccoccpmludc02a0pvd unique (plan_details_id);
 alter table user
-    add constraint UK_6dotkott2kjsp8vw4d0m25fb7 unique (email)
-;
+    add constraint UK_ob8kqyqqgmefl0aco34akdtpe unique (email);
 alter table user
-    add constraint UK_20nqacqigaop7erdjuc7qsfua unique (mac_address)
-;
+    add constraint UK_nxb9sa2vxscd9ik979vy5ae00 unique (mac_address);
 alter table user
-    add constraint UK_k8d0f2n7n88w1a16yhua64onx unique (user_name)
-;
+    add constraint UK_sb8bbouer5wak8vyiiy4pf2bx unique (username);
 alter table attendance
-    add constraint FKr7q0h8jfngkyybll6o9r3h9ua foreign key (employee_id) references employee (id)
-;
+    add constraint FKr7q0h8jfngkyybll6o9r3h9ua foreign key (employee_id) references employee (id);
 alter table attendance
-    add constraint FKfj4bkjnxb247ghct6vvlfwnis foreign key (work_shift_id) references work_shift (id)
-;
+    add constraint FKfj4bkjnxb247ghct6vvlfwnis foreign key (work_shift_id) references work_shift (id);
 alter table branch_days_off
-    add constraint FKow2rw55b13362icw869litx9d foreign key (branch_id) references branch (id)
-;
+    add constraint FKow2rw55b13362icw869litx9d foreign key (branch_id) references branch (id);
 alter table city
-    add constraint FKrpd7j1p7yxr784adkx4pyepba foreign key (country_id) references country (id)
-;
+    add constraint FKrpd7j1p7yxr784adkx4pyepba foreign key (country_id) references country (id);
 alter table company
-    add constraint FKaa85rotlnir4w4xlj1nkilnws foreign key (country_id) references country (id)
-;
+    add constraint FKaa85rotlnir4w4xlj1nkilnws foreign key (country_id) references country (id);
 alter table department_days_off
-    add constraint FK78rstmj8cbcxtnh0v2ee6v7ap foreign key (department_id) references department (id)
-;
+    add constraint FK78rstmj8cbcxtnh0v2ee6v7ap foreign key (department_id) references department (id);
 alter table employee
-    add constraint FKcvhlsx8tao1rxt7mpxrot61jt foreign key (branch_id) references branch (id)
-;
+    add constraint FKcvhlsx8tao1rxt7mpxrot61jt foreign key (branch_id) references branch (id);
 alter table employee
-    add constraint FK289qfli0oe8ae3qcuafi4q3tf foreign key (city_id) references city (id)
-;
+    add constraint FK289qfli0oe8ae3qcuafi4q3tf foreign key (city_id) references city (id);
 alter table employee
-    add constraint FKivtkrlfso4toqek7i2rul2ggy foreign key (country_id) references country (id)
-;
+    add constraint FKivtkrlfso4toqek7i2rul2ggy foreign key (country_id) references country (id);
 alter table employee
-    add constraint FKbejtwvg9bxus2mffsm3swj3u9 foreign key (department_id) references department (id)
-;
+    add constraint FKbejtwvg9bxus2mffsm3swj3u9 foreign key (department_id) references department (id);
 alter table employee_shifts
-    add constraint FKf3sver1ayrxow0ekmx0ynr28a foreign key (shift_id) references work_shift (id)
-;
+    add constraint FKf3sver1ayrxow0ekmx0ynr28a foreign key (shift_id) references work_shift (id);
 alter table employee_shifts
-    add constraint FKpa5cdc7udnmyis0lh91m7qfb foreign key (employee_id) references employee (id)
-;
+    add constraint FKpa5cdc7udnmyis0lh91m7qfb foreign key (employee_id) references employee (id);
 alter table plan_details
-    add constraint FKe0agn054hd4djs4glcyq5xvdg foreign key (currency_id) references currency (id)
-;
+    add constraint FKe0agn054hd4djs4glcyq5xvdg foreign key (currency_id) references currency (id);
 alter table qr_machine
-    add constraint FK60mj082ixc5qju9y7i9qixla6 foreign key (branch_id) references branch (id)
-;
+    add constraint FK60mj082ixc5qju9y7i9qixla6 foreign key (branch_id) references branch (id);
 alter table qr_machine
-    add constraint FKhta5dwyoquq9kygdv4nol5o6s foreign key (department_id) references department (id)
-;
+    add constraint FKhta5dwyoquq9kygdv4nol5o6s foreign key (department_id) references department (id);
 alter table report_definition
-    add constraint FKko7od89jyvjjd9hb8qwsjf44 foreign key (report_category_id) references report_category (id)
-;
+    add constraint FKko7od89jyvjjd9hb8qwsjf44 foreign key (report_category_id) references report_category (id);
 alter table report_definition_params
-    add constraint FKenm5vd32id4ft0jan8ft3cm81 foreign key (report_definition_id) references report_definition (id)
-;
+    add constraint FKenm5vd32id4ft0jan8ft3cm81 foreign key (report_definition_id) references report_definition (id);
 alter table subscription
-    add constraint FK45i0k0ls0erwl77ei45ds25t8 foreign key (company_id) references company (id)
-;
+    add constraint FK45i0k0ls0erwl77ei45ds25t8 foreign key (company_id) references company (id);
 alter table subscription
-    add constraint FKhn8hnxbdoi29nb4m7ojkocqfm foreign key (subscription_plan_id) references subscription_plan (id)
-;
+    add constraint FKhn8hnxbdoi29nb4m7ojkocqfm foreign key (subscription_plan_id) references subscription_plan (id);
 alter table subscription_plan_plan_details
-    add constraint FKrsy21ydncno4c82k7uqc6tlgi foreign key (plan_details_id) references plan_details (id)
-;
+    add constraint FKrsy21ydncno4c82k7uqc6tlgi foreign key (plan_details_id) references plan_details (id);
 alter table subscription_plan_plan_details
-    add constraint FKdx2qg3vw83ytg4vigpvb5bdsw foreign key (subscription_plan_id) references subscription_plan (id)
-;
-alter table user
-    add constraint FKfndbe67uw6silwqnlyudtwqmo foreign key (employee_id) references employee (id)
+    add constraint FKdx2qg3vw83ytg4vigpvb5bdsw foreign key (subscription_plan_id) references subscription_plan (id);
+alter table user_roles
+    add constraint FK55itppkw3i07do3h7qoclqd4k foreign key (user_id) references user (id)
