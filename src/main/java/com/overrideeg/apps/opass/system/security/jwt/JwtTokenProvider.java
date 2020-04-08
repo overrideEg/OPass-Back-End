@@ -4,7 +4,9 @@
 
 package com.overrideeg.apps.opass.system.security.jwt;
 
+import com.overrideeg.apps.opass.exceptions.AuthenticationException;
 import com.overrideeg.apps.opass.service.CustomUserDetailsService;
+import com.overrideeg.apps.opass.system.Connection.TenantContext;
 import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -27,6 +29,7 @@ public class JwtTokenProvider {
     @Autowired
     private CustomUserDetailsService userDetailsService;
 
+
     private String secretKey;
 
     @PostConstruct
@@ -39,8 +42,11 @@ public class JwtTokenProvider {
         Claims claims = Jwts.claims().setSubject(username);
         claims.put("roles", roles);
 
+        Long yearInMs = 31556952000L;
+        jwtProperties.setValidityInMs(yearInMs);
         Date now = new Date();
         Date validity = new Date(now.getTime() + jwtProperties.getValidityInMs());
+//        Date validity = new Date(now.getTime() +yearInMs);
 
         return Jwts.builder()//
                 .setClaims(claims)//
@@ -51,6 +57,7 @@ public class JwtTokenProvider {
     }
 
     public Authentication getAuthentication(String token) {
+        TenantContext.setCurrentTenant(null);
         UserDetails userDetails = this.userDetailsService.loadUserByUsername(getUsername(token));
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
@@ -70,10 +77,9 @@ public class JwtTokenProvider {
     public boolean validateToken(String token) {
         try {
             Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
-
             return !claims.getBody().getExpiration().before(new Date());
         } catch (JwtException | IllegalArgumentException e) {
-            throw new InvalidJwtAuthenticationException("Expired or invalid JWT token");
+            throw new AuthenticationException("Expired or invalid JWT token");
         }
     }
 

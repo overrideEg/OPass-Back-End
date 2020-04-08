@@ -27,7 +27,8 @@ public class RestReportsService {
         List<AttendanceHistory> attendanceHistories = new ArrayList<>();
         attendanceList.forEach(attend -> {
             AttendanceHistory history = new AttendanceHistory();
-            history.setShiftName(attend.getWorkShift().getName());
+            if (attend.getWorkShift() != null)
+                history.setShiftName(attend.getWorkShift().getName());
             history.setStatus(attend.getAttStatus().toString());
             history.setType(attend.getAttType().toString());
             Date scanDate = attend.getScanDate();

@@ -17,19 +17,15 @@ public class ResolveTenant {
 
     public void resolve(Long tenantId, HttpServletRequest request) {
 
-
         if (TenantContext.getCurrentTenant() != tenantId) {
             if (tenantId == 0) {
-                TenantContext.clear();
                 TenantContext.setCurrentTenant(null);
             }
             if (tenantId != 0) {
-                TenantContext.clear();
                 TenantContext.setCurrentTenant(tenantId);
             }
 
         }
-
         if (request != null)
             restLogService.saveLog(request.getRequestURI(), request.getRemoteAddr(), request.getMethod());
     }

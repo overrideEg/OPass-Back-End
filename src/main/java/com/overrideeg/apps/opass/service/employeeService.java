@@ -69,6 +69,8 @@ public class employeeService extends AbstractService<employee> {
             this.resolveTenant.resolve(companyId, null);
             saved = super.save(inEntity);
             // update user in master tenant
+            this.resolveTenant.resolve(0L, null);
+            this.tenantResolver.updateUSerEmployeeId(createdUser.getId(), saved.getId());
 //            usersService.save(createdUser);
         } catch (Exception e) {
             e.printStackTrace();

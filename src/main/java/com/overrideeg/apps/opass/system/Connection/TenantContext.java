@@ -16,17 +16,12 @@ public class TenantContext {
     private static ThreadLocal<Long> currentTenant = new ThreadLocal<>();
 
     public static Long getCurrentTenant() {
-        Long aLong = currentTenant.get();
         return currentTenant.get();
     }
 
     public static void setCurrentTenant(Long tenant) {
-        logger.debug("Setting tenant to " + tenant);
         currentTenant.set(tenant);
     }
 
-    public static void clear() {
-        currentTenant.remove();
-    }
 
 }

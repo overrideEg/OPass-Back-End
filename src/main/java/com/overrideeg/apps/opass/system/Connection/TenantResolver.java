@@ -110,7 +110,10 @@ public class TenantResolver {
         if (maps.size() > 0) {
             Map<String, Object> result = maps.get(0);
             user.setId((Long) result.get("id"));
-            user.setRoles((List<String>) result.get("roles"));
+            List<String> roles = new ArrayList<>();
+            Object rules = result.get("roles");
+            roles.add((String) rules);
+            user.setRoles(roles);
             user.setUsername((String) result.get("username"));
             user.setMacAddress((String) result.get("mac_address"));
             user.setCompany_id((Long) result.get("company_id"));
@@ -157,4 +160,7 @@ public class TenantResolver {
         return jdbcTemplate.update("delete from user where id = ?", userId);
     }
 
+    public Integer updateUSerEmployeeId(Long user_id, Long employee_id) {
+        return jdbcTemplate.update("update user set employee_id = ? where id = ?", employee_id, user_id);
+    }
 }

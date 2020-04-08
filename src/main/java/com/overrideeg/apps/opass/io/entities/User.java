@@ -31,6 +31,7 @@ public class User implements UserDetails {
     @Column(unique = true)
     private String email;
     private Long company_id;
+    private Long employee_id;
     @NotEmpty
     @Column(nullable = false)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY, required = true)
@@ -39,11 +40,11 @@ public class User implements UserDetails {
     private String macAddress;
     private String image;
     @ElementCollection(fetch = FetchType.EAGER)
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY, required = true)
     private List<String> roles = new ArrayList<>();
     @Transient
     private String token;
 
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return this.roles.stream().map(SimpleGrantedAuthority::new).collect(toList());
@@ -147,5 +148,11 @@ public class User implements UserDetails {
         this.token = token;
     }
 
+    public Long getEmployee_id() {
+        return employee_id;
+    }
 
+    public void setEmployee_id(Long employee_id) {
+        this.employee_id = employee_id;
+    }
 }
