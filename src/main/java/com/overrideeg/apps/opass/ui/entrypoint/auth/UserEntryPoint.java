@@ -52,6 +52,16 @@ public class UserEntryPoint {
         return update;
     }
 
+    @PutMapping("/image/{id}")
+    public @ResponseBody
+    ResponseModel updateUserImage(@PathVariable(value = "id") Long inEntityId, @RequestBody User userRequest, @RequestHeader Long tenantId) {
+        userRequest.setCompany_id(tenantId);
+        userRequest.setId(inEntityId);
+        User updatedUser = userService.updateUserImage(userRequest);
+        ResponseModel update = new ResponseModel(updatedUser, RequestOperation.DELETE, ResponseStatus.SUCCESS);
+        return update;
+    }
+
     @DeleteMapping("/{id}")
     public @ResponseBody
     ResponseModel deleteEntityById(@PathVariable(value = "id") Long inEntityId) {

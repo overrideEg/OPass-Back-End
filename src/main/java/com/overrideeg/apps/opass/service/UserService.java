@@ -64,6 +64,22 @@ public class UserService {
             requestUser.setUsername(user.getUsername());
             requestUser.setPassword(user.getPassword());
             requestUser.setEmployee_id(user.getEmployee_id());
+            requestUser.setRoles(user.getRoles());
+            return userRepo.save(requestUser);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new CouldNotUpdateRecordException(e.getMessage());
+        }
+    }
+
+    @Transactional
+    public User updateUserImage(User requestUser) {
+        try {
+            User user = findById(requestUser.getId());
+            requestUser.setEmail(user.getEmail());
+            requestUser.setUsername(user.getUsername());
+            requestUser.setPassword(user.getPassword());
+            requestUser.setEmployee_id(user.getEmployee_id());
             requestUser.setMacAddress(user.getMacAddress());
             requestUser.setRoles(user.getRoles());
             return userRepo.save(requestUser);
