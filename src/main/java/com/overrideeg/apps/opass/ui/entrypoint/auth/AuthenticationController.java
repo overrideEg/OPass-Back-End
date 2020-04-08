@@ -10,6 +10,7 @@ import com.overrideeg.apps.opass.io.repositories.UserRepo;
 import com.overrideeg.apps.opass.service.UserService;
 import com.overrideeg.apps.opass.system.ApiUrls;
 import com.overrideeg.apps.opass.system.Connection.ResolveTenant;
+import com.overrideeg.apps.opass.system.Connection.TenantContext;
 import com.overrideeg.apps.opass.system.Connection.TenantResolver;
 import com.overrideeg.apps.opass.system.security.jwt.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +57,7 @@ public class AuthenticationController {
 
         try {
             String username = data.getUsername();
+            TenantContext.setCurrentTenant(null);
             User user = this.tenantResolver.findUserFromMasterDatabaseByUserName(username);
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, data.getPassword()));
             String token = jwtTokenProvider

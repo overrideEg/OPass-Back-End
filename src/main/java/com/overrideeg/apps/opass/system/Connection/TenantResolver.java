@@ -115,6 +115,7 @@ public class TenantResolver {
             roles.add((String) rules);
             user.setRoles(roles);
             user.setUsername((String) result.get("username"));
+            user.setEmployee_id((Long) result.get("employee_id"));
             user.setMacAddress((String) result.get("mac_address"));
             user.setCompany_id((Long) result.get("company_id"));
             user.setImage((String) result.get("image"));
@@ -150,6 +151,7 @@ public class TenantResolver {
         user.setUsername((String) result.get("username"));
         user.setMacAddress((String) result.get("mac_address"));
         user.setCompany_id((Long) result.get("company_id"));
+        user.setEmployee_id((Long) result.get("employee_id"));
         user.setImage((String) result.get("image"));
         user.setEmail((String) result.get("email"));
         return user;
