@@ -54,7 +54,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(ApiUrls.reader_ep + "/**").anonymous()
                 .antMatchers(ApiUrls.subscriptionPlan_EP + "/**").authenticated()
                 .antMatchers(ApiUrls.subscription_EP + "/**").authenticated()
-                .antMatchers(HttpMethod.POST, ApiUrls.reportDefinition_EP + "/**").hasRole("systemAdmin")
+                .antMatchers(HttpMethod.POST, ApiUrls.reportDefinition_EP + "/**").authenticated()
                 .anyRequest().authenticated()
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and().csrf().disable()
