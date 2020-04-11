@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2020. overrideeg.ocm.
+ */
+
 package com.overrideeg.apps.opass.service;
 
 import com.overrideeg.apps.opass.io.entities.appConstants.appSetting;
@@ -10,5 +14,6 @@ public class appSettingService extends AbstractService<appSetting> {
     public appSettingService(final appSettingRepo inRepository) {
         super(inRepository);
     }
+
 
 }

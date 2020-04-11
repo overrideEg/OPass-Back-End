@@ -76,6 +76,7 @@ public class employee extends OEntity {
     private Long createdUserId;
     @Enumerated(EnumType.STRING)
     private com.overrideeg.apps.opass.enums.userType userType;
+    private Double salary;
 
     @Override
     public boolean isValid() {
@@ -194,6 +195,14 @@ public class employee extends OEntity {
         this.userType = userType;
     }
 
+    public Double getSalary() {
+        return salary;
+    }
+
+    public void setSalary(Double salary) {
+        this.salary = salary;
+    }
+
     /**
      * helper method to determine employee current work shift
      * loops through emp work shifts.. and filter shifts that meet the scanTime
@@ -260,4 +269,5 @@ public class employee extends OEntity {
         throw new NoRecordFoundException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage()); //TODO better naming for exceptions
 
     }
+
 }

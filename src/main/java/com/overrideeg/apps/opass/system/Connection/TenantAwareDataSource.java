@@ -9,13 +9,14 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
 
 import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
 
-
+@Configuration
 public class TenantAwareDataSource extends AbstractRoutingDataSource {
 
     @Autowired
@@ -65,7 +66,7 @@ public class TenantAwareDataSource extends AbstractRoutingDataSource {
         super.setTargetDataSources(targetDataSources);
     }
 
-    private DataSource createDataSourceForTenantId(Long tenantId) {
+    public DataSource createDataSourceForTenantId(Long tenantId) {
         String tenantDatabaseName = tenantResolver.findDataBaseNameByTenantId(tenantId);
         if (tenantDatabaseName == null)
             throw new IllegalArgumentException("Given tenant id is not valid : " + tenantId);

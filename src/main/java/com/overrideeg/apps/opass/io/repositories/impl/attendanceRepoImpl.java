@@ -18,6 +18,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -54,7 +55,13 @@ public class attendanceRepoImpl {
         TypedQuery<attendance> attendanceTypedQuery = mEntityManager.createQuery(criteriaQuery)
                 .setFirstResult((page - 1) * pageSize)
                 .setMaxResults(pageSize);
-        return attendanceTypedQuery.getResultList();
+        List<attendance> resultList = new ArrayList<>();
+        try {
+            resultList = attendanceTypedQuery.getResultList();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return resultList;
     }
 
     public Long findAbsenceDays(Long employeeId) {

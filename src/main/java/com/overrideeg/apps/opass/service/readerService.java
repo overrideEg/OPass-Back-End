@@ -26,6 +26,7 @@ import java.sql.Time;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 //todo bimbo work here
 @Service
@@ -90,7 +91,8 @@ public class readerService {
 
     private void checkScanTime(readerRequest request, qrData qr) {
 
-        if (qr.getIssueDate() > request.getScan_time() || qr.getExpireDate() < request.getScan_time()) {
+        if (TimeUnit.MILLISECONDS.toSeconds(qr.getIssueDate()) > TimeUnit.MILLISECONDS.toSeconds(request.getScan_time())
+                || TimeUnit.MILLISECONDS.toSeconds(qr.getExpireDate()) < TimeUnit.MILLISECONDS.toSeconds(request.getScan_time())) {
             throw new QRExpiredException(ErrorMessages.QR_EXPIRED.getErrorMessage());
         }
 
@@ -131,7 +133,7 @@ public class readerService {
      */
     private qrData handleQrBody(String qr) {
         String encodedOverride = EntityUtils.encode("OVERRIDE");
-        String override = qr.substring(0, qr.indexOf(",", 0));
+        String override = qr.substring(0, qr.indexOf(","));
         if (!override.equalsIgnoreCase(encodedOverride))
             throw new AuthenticationException("Text Not Illegal Here");
         String qrBodyEncoded = qr.substring(qr.lastIndexOf(",") + 1);

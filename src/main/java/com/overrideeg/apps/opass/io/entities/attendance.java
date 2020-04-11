@@ -22,10 +22,10 @@ public class attendance extends OEntity {
     @ManyToOne
     private workShift workShift;
     @Temporal(TemporalType.DATE)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, lenient = OptBoolean.TRUE, timezone = "Africa/Cairo")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, lenient = OptBoolean.TRUE, timezone = "UTC")
     private Date scanDate;
     @Temporal(TemporalType.TIMESTAMP)
-    @JsonFormat(pattern = "hh:mm:ss", lenient = OptBoolean.TRUE, shape = JsonFormat.Shape.STRING, timezone = "Africa/Cairo")
+    @JsonFormat(pattern = "hh:mm:ss", lenient = OptBoolean.TRUE, shape = JsonFormat.Shape.STRING, timezone = "UTC")
     private Date scanTime;
     @Enumerated(EnumType.STRING)
     private attType attType;

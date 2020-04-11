@@ -22,5 +22,4 @@ public class appSettingEntryPoint extends RestEntryPoint<appSetting> {
         setService(inService);
     }
 
-
 }

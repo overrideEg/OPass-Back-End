@@ -2,6 +2,7 @@
  * Copyright (c) 2020. overrideeg.ocm.
  */
 
+;
 create table app_setting
 (
     id               bigint not null auto_increment,
@@ -38,6 +39,7 @@ create table branch
     creation_date               datetime(6),
     last_update_date            datetime(6),
     allowed_early_leave_minutes integer,
+    allowed_late_leave_minutes  integer,
     allowed_late_minutes        integer,
     max_over_time_hours         integer,
     name_ar                     varchar(255),
@@ -117,6 +119,7 @@ create table department
     creation_date               datetime(6),
     last_update_date            datetime(6),
     allowed_early_leave_minutes integer,
+    allowed_late_leave_minutes  integer,
     allowed_late_minutes        integer,
     max_over_time_hours         integer,
     name_ar                     varchar(255),
@@ -166,6 +169,7 @@ create table employee
     city_id              bigint,
     country_id           bigint,
     department_id        bigint,
+    salary               double precision,
     primary key (id)
 ) engine = InnoDB
 ;
@@ -188,6 +192,14 @@ create table faq
     question_tr      varchar(255),
     primary key (id)
 ) engine = InnoDB
+;
+create table hibernate_sequence
+(
+    next_val bigint
+) engine = InnoDB
+;
+insert into hibernate_sequence
+values (1)
 ;
 create table plan_details
 (
@@ -311,23 +323,23 @@ create table terms_and_conditions
     primary key (id)
 ) engine = InnoDB
 ;
-create table users
+create table user
 (
-    id                 bigint      not null auto_increment,
-    creation_date      datetime(6),
-    last_update_date   datetime(6),
-    company_id         bigint,
-    email              varchar(255),
-    encrypted_password varchar(255),
-    image              varchar(255),
-    mac_address        varchar(255),
-    salt               varchar(255),
-    token              varchar(255),
-    user_id            varchar(255),
-    user_name          varchar(15) not null,
-    user_type          varchar(255),
-    employee_id        bigint,
+    id          bigint       not null,
+    company_id  bigint,
+    email       varchar(255),
+    employee_id bigint,
+    image       varchar(255),
+    mac_address varchar(255),
+    password    varchar(255) not null,
+    username    varchar(255) not null,
     primary key (id)
+) engine = InnoDB
+;
+create table user_roles
+(
+    user_id bigint not null,
+    roles   varchar(255)
 ) engine = InnoDB
 ;
 create table work_shift
@@ -358,14 +370,14 @@ alter table qr_machine
 alter table subscription_plan_plan_details
     add constraint UK_aoier6jccoccpmludc02a0pvd unique (plan_details_id)
 ;
-alter table users
-    add constraint UK_6dotkott2kjsp8vw4d0m25fb7 unique (email)
+alter table user
+    add constraint UK_ob8kqyqqgmefl0aco34akdtpe unique (email)
 ;
-alter table users
-    add constraint UK_20nqacqigaop7erdjuc7qsfua unique (mac_address)
+alter table user
+    add constraint UK_nxb9sa2vxscd9ik979vy5ae00 unique (mac_address)
 ;
-alter table users
-    add constraint UK_k8d0f2n7n88w1a16yhua64onx unique (user_name)
+alter table user
+    add constraint UK_sb8bbouer5wak8vyiiy4pf2bx unique (username)
 ;
 alter table attendance
     add constraint FKr7q0h8jfngkyybll6o9r3h9ua foreign key (employee_id) references employee (id)
@@ -430,5 +442,5 @@ alter table subscription_plan_plan_details
 alter table subscription_plan_plan_details
     add constraint FKdx2qg3vw83ytg4vigpvb5bdsw foreign key (subscription_plan_id) references subscription_plan (id)
 ;
-alter table users
-    add constraint FKfndbe67uw6silwqnlyudtwqmo foreign key (employee_id) references employee (id)
+alter table user_roles
+    add constraint FK55itppkw3i07do3h7qoclqd4k foreign key (user_id) references user (id);
