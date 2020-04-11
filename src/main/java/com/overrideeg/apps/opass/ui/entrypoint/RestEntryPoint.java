@@ -80,6 +80,7 @@ public abstract class RestEntryPoint<E extends OEntity> {
                 case "Date":
                 case "List":
                 case "Double":
+                case "double":
                 case "attType":
                 case "employeeStatus":
                 case "Integer":

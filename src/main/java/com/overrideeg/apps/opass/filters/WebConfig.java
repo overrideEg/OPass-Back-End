@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 public class WebConfig implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        String method = request.getMethod();
         if (request.getMethod().equalsIgnoreCase("OPTIONS")) {
             response.setStatus(HttpServletResponse.SC_NO_CONTENT);
             response.setHeader("Access-Control-Allow-Origin", "*");

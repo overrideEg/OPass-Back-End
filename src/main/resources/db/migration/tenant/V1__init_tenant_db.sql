@@ -169,6 +169,7 @@ create table employee
     city_id              bigint,
     country_id           bigint,
     department_id        bigint,
+    salary               double precision,
     primary key (id)
 ) engine = InnoDB
 ;
@@ -442,4 +443,4 @@ alter table subscription_plan_plan_details
     add constraint FKdx2qg3vw83ytg4vigpvb5bdsw foreign key (subscription_plan_id) references subscription_plan (id)
 ;
 alter table user_roles
-    add constraint FK55itppkw3i07do3h7qoclqd4k foreign key (user_id) references user (id)
+    add constraint FK55itppkw3i07do3h7qoclqd4k foreign key (user_id) references user (id);
