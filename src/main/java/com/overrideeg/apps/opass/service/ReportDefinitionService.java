@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2020. overrideeg.ocm.
+ */
+
 package com.overrideeg.apps.opass.service;
 
 import com.overrideeg.apps.opass.exceptions.FileStorageException;
@@ -26,6 +30,8 @@ import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
@@ -119,6 +125,23 @@ public class ReportDefinitionService extends AbstractService<reportDefinition> {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        Map<String, String> params = reportDefinition.getParams();
+        parameters.forEach((key, value) -> {
+            String parameterType = params.get(key);
+            if (parameterType.equalsIgnoreCase("java.util.Date")) {
+                String date = (String) parameters.get(key);
+                Date dateToRun = null;
+                try {
+                    dateToRun = new SimpleDateFormat("yyyy-MM-dd").parse(date);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                parameters.put(key, dateToRun);
+
+            }
+        });
+
         reportPath.append(reportDefinition.getFileName());
 
         Resource resource = fileStorageService.loadFileAsResource(reportDefinition.getFileName());

@@ -20,7 +20,7 @@ public abstract class OEntity {
     @JsonIgnore
     private Date creationDate;
     @Temporal(TemporalType.TIMESTAMP)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, timezone = "UTC")
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     @JsonIgnore
     private Date lastUpdateDate;
 

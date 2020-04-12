@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2020. overrideeg.ocm.
+ */
+
 package com.overrideeg.apps.opass.io.entities;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -6,6 +10,7 @@ import com.overrideeg.apps.opass.io.entities.system.OEntity;
 import com.overrideeg.apps.opass.io.valueObjects.translatedField;
 
 import javax.persistence.*;
+import java.util.TimeZone;
 
 @Entity
 @AttributeOverrides({
@@ -30,6 +35,7 @@ public class company extends OEntity {
     private country country;
     private String database_name;
     private Boolean enabled;
+    private TimeZone timeZone;
 
     @Override
     public boolean isValid() {
@@ -90,5 +96,13 @@ public class company extends OEntity {
 
     public void setEnabled(Boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public TimeZone getTimeZone() {
+        return timeZone;
+    }
+
+    public void setTimeZone(TimeZone timeZone) {
+        this.timeZone = timeZone;
     }
 }
