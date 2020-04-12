@@ -7,10 +7,12 @@ package com.overrideeg.apps.opass.utils;
 import java.sql.Time;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 /**
  * User: amr
@@ -266,6 +268,34 @@ public class DateUtils {
         return Instant.ofEpochMilli(dateToConvert.getTime())
                 .atZone(ZoneId.systemDefault())
                 .toLocalDate();
+    }
+
+    public LocalDate convertToLocalDateViaInstant(Date dateToConvert, TimeZone timeZone) {
+        return Instant.ofEpochMilli(dateToConvert.getTime())
+                .atZone(timeZone.toZoneId())
+                .toLocalDate();
+    }
+
+    public LocalDateTime convertToLocalDateTimeViaInstant(Date dateToConvert, TimeZone timeZone) {
+        return Instant.ofEpochMilli(dateToConvert.getTime())
+                .atZone(timeZone.toZoneId())
+                .toLocalDateTime();
+    }
+
+    public Date convertLocalDateToDate(LocalDate dateToConvert) {
+        return java.sql.Date.valueOf(dateToConvert);
+    }
+
+    public Date convertToDateViaInstant(LocalDate dateToConvert, TimeZone timeZone) {
+        return java.util.Date.from(dateToConvert.atStartOfDay()
+                .atZone(timeZone.toZoneId())
+                .toInstant());
+    }
+
+    public Date convertToDateViaInstant(LocalDateTime dateToConvert, TimeZone timeZone) {
+        return java.util.Date.from(dateToConvert
+                .atZone(timeZone.toZoneId())
+                .toInstant());
     }
 
     public Long calculateDaysBetweenTwoDates(Date before, Date after) {

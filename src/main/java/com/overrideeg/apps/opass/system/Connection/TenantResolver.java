@@ -17,10 +17,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 @Component
@@ -57,6 +54,7 @@ public class TenantResolver {
             company.setId((Long) result.get("id"));
             company.setCreationDate((Date) result.get("creation_date"));
             company.setDatabase_name((String) result.get("database_name"));
+            company.setTimeZone(TimeZone.getTimeZone((String) result.get("time_zone")));
             company.setDescription(new translatedField((String) result.get("description_ar"), (String) result.get("description_en"), (String) result.get("description_tr")));
             company.setName(new translatedField((String) result.get("name_ar"), (String) result.get("name_en"), (String) result.get("name_tr")));
             company.setEnabled((Boolean) result.get("enabled"));
