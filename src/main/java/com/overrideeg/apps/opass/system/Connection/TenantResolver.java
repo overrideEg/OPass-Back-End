@@ -163,4 +163,13 @@ public class TenantResolver {
     public Integer updateUSerEmployeeId(Long user_id, Long employee_id) {
         return jdbcTemplate.update("update user set employee_id = ? where id = ?", employee_id, user_id);
     }
+
+    public Integer updatePassword(String username, String encodedNewPassword) {
+        return jdbcTemplate.update("update user set password = ? where username = ?", encodedNewPassword, username);
+
+    }
+
+    public Integer updateUserName(String oldUserName, String newUserName) {
+        return jdbcTemplate.update("update user set username = ? where username = ?", newUserName, oldUserName);
+    }
 }

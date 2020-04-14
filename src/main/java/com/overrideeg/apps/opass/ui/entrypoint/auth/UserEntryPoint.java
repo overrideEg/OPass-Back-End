@@ -62,6 +62,7 @@ public class UserEntryPoint {
         return update;
     }
 
+
     @DeleteMapping("/{id}")
     public @ResponseBody
     ResponseModel deleteEntityById(@PathVariable(value = "id") Long inEntityId) {

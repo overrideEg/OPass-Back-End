@@ -6,17 +6,24 @@ package com.overrideeg.apps.opass.ui.entrypoint.reader;
 
 import com.overrideeg.apps.opass.exceptions.AuthenticationException;
 import com.overrideeg.apps.opass.io.entities.attendance;
+import com.overrideeg.apps.opass.io.entities.company;
+import com.overrideeg.apps.opass.io.valueObjects.AttendanceHistory;
+import com.overrideeg.apps.opass.io.valueObjects.translatedField;
 import com.overrideeg.apps.opass.service.attendanceService;
 import com.overrideeg.apps.opass.service.readerService;
 import com.overrideeg.apps.opass.system.ApiUrls;
 import com.overrideeg.apps.opass.system.Connection.TenantContext;
+import com.overrideeg.apps.opass.system.Connection.TenantResolver;
+import com.overrideeg.apps.opass.utils.DateUtils;
 import com.overrideeg.apps.opass.utils.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.lang.reflect.InvocationTargetException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,10 +42,12 @@ public class readerEntryPoint {
     @Autowired
     attendanceService attendanceService;
 
+    @Autowired
+    TenantResolver tenantResolver;
 
     @PostMapping
     public @ResponseBody
-    attendance readQr(@RequestBody readerRequest request) throws InvocationTargetException, NoSuchMethodException, NoSuchFieldException, InstantiationException, IllegalAccessException {
+    AttendanceHistory readQr(@RequestBody readerRequest request) throws InvocationTargetException, NoSuchMethodException, NoSuchFieldException, InstantiationException, IllegalAccessException {
         //initiate tenant DB connection
         handleTenant(request.getCompany_id());
         //create attendance record
@@ -46,26 +55,42 @@ public class readerEntryPoint {
         //save attendance log in DB
         attendanceService.save(attendance);
         //return attendance log in request response
-        return attendance;
+
+        TenantContext.setCurrentTenant(null);
+        company company = tenantResolver.findCompanyForTenantId(request.getCompany_id());
+        DateUtils dateUtils = new DateUtils();
+
+        AttendanceHistory history = new AttendanceHistory();
+        if (attendance.getWorkShift() != null)
+            history.setShiftName(attendance.getWorkShift().getName());
+        else
+            history.setShiftName(new translatedField("لا يوجد مناوبةـ سجل فقط", "No Shift Log Only", "No Shift"));
+        history.setStatus(attendance.getAttStatus().toString());
+        history.setType(attendance.getAttType().toString());
+        Date scanTime = attendance.getScanTime();
+        LocalDateTime date = dateUtils.convertToLocalDateTimeViaInstant(scanTime, company.getTimeZone());
+        Date scanTimeAtZone = dateUtils.convertToDateViaInstant(date, company.getTimeZone());
+        history.setTimestamp(scanTimeAtZone.getTime());
+        return history;
     }
 
     @PostMapping("/arr")
     public @ResponseBody
-    List<attendance> readQrArray(@RequestBody List<readerRequest> request) throws InvocationTargetException, NoSuchMethodException, NoSuchFieldException, InstantiationException, IllegalAccessException {
+    List<AttendanceHistory> readQrArray(@RequestBody readerArrayRequest request) {
         // sort by scanTime
-        List<readerRequest> sortedRequest = request.stream().sorted(Comparator.comparing(a -> a.getScan_time())).collect(Collectors.toList());
-        List<attendance> returnValue = new ArrayList<>();
-
+        List<readerRequest> sortedRequest = request.getRequest().stream().sorted(Comparator.comparing(a -> a.getScan_time())).collect(Collectors.toList());
+        List<AttendanceHistory> attendanceHistories = new ArrayList<>();
         // invoke request foreach req
         sortedRequest.forEach(req -> {
             try {
-                returnValue.add(readQr(req));
+                attendanceHistories.add(readQr(req));
             } catch (Exception e) {
                 e.printStackTrace();
                 new Log(getClass(), e);
             }
+
         });
-        return returnValue;
+        return attendanceHistories;
     }
 
 
@@ -83,3 +108,4 @@ public class readerEntryPoint {
         }
     }
 }
+

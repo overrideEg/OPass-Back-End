@@ -51,10 +51,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(ApiUrls.Auth_ep + "/logout").authenticated()
                 .antMatchers(HttpMethod.POST, ApiUrls.Users_EP + "/**").anonymous()
                 .antMatchers("/v3/api-docs/**").anonymous()
-                .antMatchers(ApiUrls.reader_ep + "/**").anonymous()
+                .antMatchers("/opassWebSocket/**").anonymous()
                 .antMatchers(ApiUrls.subscriptionPlan_EP + "/**").authenticated()
                 .antMatchers(ApiUrls.subscription_EP + "/**").authenticated()
                 .antMatchers(HttpMethod.POST, ApiUrls.reportDefinition_EP + "/**").authenticated()
+
                 .anyRequest().authenticated()
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and().csrf().disable()
