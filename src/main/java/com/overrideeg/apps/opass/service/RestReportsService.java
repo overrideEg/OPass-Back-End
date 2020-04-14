@@ -7,6 +7,7 @@ package com.overrideeg.apps.opass.service;
 import com.overrideeg.apps.opass.io.entities.attendance;
 import com.overrideeg.apps.opass.io.entities.company;
 import com.overrideeg.apps.opass.io.valueObjects.AttendanceHistory;
+import com.overrideeg.apps.opass.io.valueObjects.translatedField;
 import com.overrideeg.apps.opass.system.Connection.TenantContext;
 import com.overrideeg.apps.opass.system.Connection.TenantResolver;
 import com.overrideeg.apps.opass.ui.entrypoint.reports.valueObjects.countAttendanceInDate;
@@ -39,6 +40,8 @@ public class RestReportsService {
             AttendanceHistory history = new AttendanceHistory();
             if (attend.getWorkShift() != null)
                 history.setShiftName(attend.getWorkShift().getName());
+            else
+                history.setShiftName(new translatedField("لا يوجد مناوبةـ سجل فقط", "No Shift Log Only", "No Shift"));
             history.setStatus(attend.getAttStatus().toString());
             history.setType(attend.getAttType().toString());
             Date scanTime = attend.getScanTime();

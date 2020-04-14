@@ -51,7 +51,7 @@ public class attendanceRepoImpl {
         Root<attendance> root = criteriaQuery.from(attendance.class);
         criteriaQuery.where(cb.equal(root.get("employee").get("id"), employee));
         criteriaQuery.select(root);
-        criteriaQuery.orderBy(cb.asc(root.get("scanDate")));
+        criteriaQuery.orderBy(cb.desc(root.get("scanDate")));
         TypedQuery<attendance> attendanceTypedQuery = mEntityManager.createQuery(criteriaQuery)
                 .setFirstResult((page - 1) * pageSize)
                 .setMaxResults(pageSize);

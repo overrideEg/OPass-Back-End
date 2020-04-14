@@ -13,6 +13,10 @@ import com.overrideeg.apps.opass.system.Connection.ResolveTenant;
 import com.overrideeg.apps.opass.system.Connection.TenantContext;
 import com.overrideeg.apps.opass.system.Connection.TenantResolver;
 import com.overrideeg.apps.opass.system.security.jwt.JwtTokenProvider;
+import com.overrideeg.apps.opass.ui.entrypoint.auth.model.AuthenticationRequest;
+import com.overrideeg.apps.opass.ui.entrypoint.auth.model.changeCredResponse;
+import com.overrideeg.apps.opass.ui.entrypoint.auth.model.changePassword;
+import com.overrideeg.apps.opass.ui.entrypoint.auth.model.changeUserName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,6 +25,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.*;
 
@@ -52,6 +57,9 @@ public class AuthenticationController {
     @Autowired
     TenantResolver tenantResolver;
 
+    @Autowired
+    PasswordEncoder passwordEncoder;
+
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody AuthenticationRequest data) {
 
@@ -69,6 +77,69 @@ public class AuthenticationController {
             throw new BadCredentialsException("Invalid username/password supplied");
         }
     }
+
+    @PutMapping("/changePassword")
+    public ResponseEntity changePassword(@RequestBody changePassword data) {
+
+        try {
+            String username = data.getUsername();
+            TenantContext.setCurrentTenant(null);
+            this.tenantResolver.findUserFromMasterDatabaseByUserName(username);
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, data.getOldPassword()));
+            String encodedNewPassword = this.passwordEncoder.encode(data.getNewPassword());
+            this.tenantResolver.updatePassword(username, encodedNewPassword);
+
+            changeCredResponse credResponse = new changeCredResponse();
+            credResponse.setCredentialType("changePassword");
+            credResponse.setUpdated(true);
+            credResponse.setUserName(username);
+
+            return ok(credResponse);
+        } catch (AuthenticationException | SQLException e) {
+            throw new BadCredentialsException("Invalid username/password supplied");
+        }
+    }
+
+    @PutMapping("/resetPassword")
+    public ResponseEntity resetPassword(@RequestBody changePassword data) {
+        try {
+            String username = data.getUsername();
+            TenantContext.setCurrentTenant(null);
+            this.tenantResolver.findUserFromMasterDatabaseByUserName(username);
+            String encodedNewPassword = this.passwordEncoder.encode(data.getUsername());
+            this.tenantResolver.updatePassword(username, encodedNewPassword);
+            changeCredResponse credResponse = new changeCredResponse();
+            credResponse.setCredentialType("resetPassword");
+            credResponse.setUpdated(true);
+            credResponse.setUserName(username);
+            return ok(credResponse);
+        } catch (AuthenticationException | SQLException e) {
+            throw new BadCredentialsException("Invalid username/password supplied");
+        }
+    }
+
+    @PutMapping("/changeUserName")
+    public ResponseEntity changeUserName(@RequestBody changeUserName data) {
+
+        try {
+            String username = data.getOldUserName();
+            TenantContext.setCurrentTenant(null);
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, data.getPassword()));
+            User user = this.tenantResolver.findUserFromMasterDatabaseByUserName(data.getNewUserName());
+            if (user.getId() != null)
+                throw new BadCredentialsException("supplied username are exists please try another one");
+            else
+                this.tenantResolver.updateUserName(data.getOldUserName(), data.getNewUserName());
+            changeCredResponse credResponse = new changeCredResponse();
+            credResponse.setCredentialType("changeUserName");
+            credResponse.setUpdated(true);
+            credResponse.setUserName(username);
+            return ok(credResponse);
+        } catch (AuthenticationException | SQLException e) {
+            throw new BadCredentialsException("Invalid username/password supplied");
+        }
+    }
+
 
     @GetMapping("/logout")
     public String logout(HttpServletRequest request, HttpServletResponse response) {

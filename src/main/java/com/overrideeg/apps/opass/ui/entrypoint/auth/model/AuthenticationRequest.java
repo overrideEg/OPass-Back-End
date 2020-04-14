@@ -2,7 +2,7 @@
  * Copyright (c) 2020. overrideeg.ocm.
  */
 
-package com.overrideeg.apps.opass.ui.entrypoint.auth;
+package com.overrideeg.apps.opass.ui.entrypoint.auth.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
