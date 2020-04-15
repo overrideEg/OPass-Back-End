@@ -43,8 +43,7 @@ public class readerService {
 
         final employee employee = checkEmployeeRelated(request);
 
-        checkMatchingIds(request, qr);
-        checkMachineRelated(request, qr);
+        checkMachineRelated(employee, qr);
         checkScanTime(request, qr);
 
         return processWorkShifts(request, employee);
@@ -57,35 +56,22 @@ public class readerService {
         if (!employee.isPresent()) {
             throw new EmployeeNotRelatedException(ErrorMessages.EMPLOYEE_NOT_RELATED.getErrorMessage());
 
-        }else if (!employee.get().getDepartment().getId().equals(request.getDepartment_id()) ||
-                !employee.get().getBranch().getId().equals(request.getBranch_id())) {
-
-            throw new EmployeeNotRelatedException(ErrorMessages.EMPLOYEE_NOT_RELATED.getErrorMessage());
-
         }
-
 
         return employee.get();
     }
 
-    private void checkMatchingIds(readerRequest request, qrData qr) {
-        if (!request.getBranch_id().equals(qr.getBranch_id()) || !request.getDepartment_id().equals(qr.getDepartment_id())) {
 
-            throw new MatchingIdsException(ErrorMessages.MATCHING_ID_EXCEPTION.getErrorMessage());
-        }
-    }
-
-    private void checkMachineRelated(readerRequest request, qrData qr) {
+    private void checkMachineRelated(employee employee, qrData qr) {
         final Optional<qrMachine> qrMachine = qrMachineService.find(qr.getQrMachine_id());
 
         if (!qrMachine.isPresent()) {
             throw new NoRecordFoundException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
         }
 
-        if (!qrMachine.get().getBranch().getId().equals(request.getBranch_id()) || !qrMachine.get().getDepartment().getId().equals(request.getDepartment_id())) {
-            throw new MatchingIdsException(ErrorMessages.MATCHING_ID_EXCEPTION.getErrorMessage());
+        if (!qrMachine.get().getBranch().getId().equals(employee.getBranch().getId()) || !qrMachine.get().getDepartment().getId().equals(employee.getDepartment().getId())) {
+            throw new EmployeeNotRelatedException(ErrorMessages.EMPLOYEE_NOT_RELATED.getErrorMessage());
         }
-
 
     }
 
@@ -102,12 +88,21 @@ public class readerService {
     private attendance processWorkShifts(readerRequest request, employee employee) {
         final List<workShift> workShifts = employee.getShifts();
         final Date scanDate = new Date(request.getScan_time());
+        final int scanWeekDay = new DateUtils().getDateWeekDay(scanDate);
         final Time scanTime = new DateUtils().newTime(new Date(request.getScan_time()));
 
         if (!workShifts.isEmpty()) {
             final attendanceRules attendanceRules = employee.fetchEmployeeAttRules();
 
-            final workShift currentWorkShift = employee.getCurrentWorkShift(attendanceService,scanDate, workShifts, attendanceRules);
+            if (attendanceRules == null) {
+                throw new NoRecordFoundException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
+            }
+
+            if (attendanceRules.getDaysOff().contains(scanWeekDay)) {
+                return new attendance(employee, null, scanDate, scanTime, attType.LOG, attStatus.workOnDayOff);
+            }
+
+            final workShift currentWorkShift = employee.getCurrentWorkShift(attendanceService, scanDate, workShifts, attendanceRules);
 
             if (currentWorkShift == null) {
                 return new attendance(employee, null, scanDate, scanTime, attType.LOG, attStatus.normal);
@@ -115,7 +110,7 @@ public class readerService {
 
             final List<attendance> todayShiftLogs = attendanceService.employeeTodaysShitLogs(employee, scanDate, currentWorkShift);
 
-            return currentWorkShift.createAttLog(employee, scanDate, attendanceRules, todayShiftLogs);
+            return currentWorkShift.createAttLog(employee, scanDate, scanWeekDay, attendanceRules, todayShiftLogs);
 
         } else {
             return new attendance(employee, null, scanDate, scanTime, attType.LOG, attStatus.normal);
