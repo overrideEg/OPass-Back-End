@@ -2,6 +2,10 @@
  * Copyright (c) 2020. overrideeg.ocm.
  */
 
+/*
+ * Copyright (c) 2020. overrideeg.ocm.
+ */
+
 ;
 create table app_setting
 (
@@ -81,6 +85,7 @@ create table company
     name_en          varchar(255),
     name_tr          varchar(255),
     phone_number     varchar(255),
+    time_zone        varchar(255),
     website          varchar(255),
     country_id       bigint,
     primary key (id)
@@ -113,6 +118,17 @@ create table currency
     primary key (id)
 ) engine = InnoDB
 ;
+create table custom_shift_hours
+(
+    id               bigint not null auto_increment,
+    creation_date    datetime(6),
+    last_update_date datetime(6),
+    day              integer,
+    from_hour        time,
+    to_hour          time,
+    primary key (id)
+) engine = InnoDB
+;
 create table department
 (
     id                          bigint not null auto_increment,
@@ -142,34 +158,34 @@ create table employee
     last_update_date     datetime(6),
     attendance_exception bit,
     birth_date           datetime(6),
-    address1             varchar(255),
-    address2             varchar(255),
-    area                 varchar(255),
-    email                varchar(255),
-    fax_number           varchar(255),
-    map_location         varchar(255),
-    mobile               varchar(255),
-    region               varchar(255),
-    state                varchar(255),
-    street               varchar(255),
-    telephone1           varchar(255),
-    telephone2           varchar(255),
-    website              varchar(255),
-    contract_end_date    datetime(6),
-    contract_start_date  datetime(6),
-    created_user_id      bigint,
-    firing_date          datetime(6),
-    name_ar              varchar(255),
-    name_en              varchar(255),
-    name_tr              varchar(255),
-    ssn                  varchar(255),
-    status               varchar(255),
-    user_type            varchar(255),
-    branch_id            bigint,
-    city_id              bigint,
-    country_id           bigint,
-    department_id        bigint,
-    salary               double precision,
+    address1            varchar(255),
+    address2            varchar(255),
+    area                varchar(255),
+    email               varchar(255),
+    fax_number          varchar(255),
+    map_location        varchar(255),
+    mobile              varchar(255),
+    region              varchar(255),
+    state               varchar(255),
+    street              varchar(255),
+    telephone1          varchar(255),
+    telephone2          varchar(255),
+    website             varchar(255),
+    contract_end_date   datetime(6),
+    contract_start_date datetime(6),
+    created_user_id     bigint,
+    firing_date         datetime(6),
+    name_ar             varchar(255),
+    name_en             varchar(255),
+    name_tr             varchar(255),
+    salary              double precision,
+    ssn                 varchar(255),
+    status              varchar(255),
+    user_type           varchar(255),
+    branch_id           bigint,
+    city_id             bigint,
+    country_id          bigint,
+    department_id       bigint,
     primary key (id)
 ) engine = InnoDB
 ;
@@ -355,6 +371,12 @@ create table work_shift
     primary key (id)
 ) engine = InnoDB
 ;
+create table work_shift_custom_shift_hours
+(
+    work_shift_id         bigint not null,
+    custom_shift_hours_id bigint not null
+) engine = InnoDB
+;
 alter table employee
     add constraint UK_fopic1oh5oln2khj8eat6ino0 unique (email)
 ;
@@ -378,6 +400,9 @@ alter table user
 ;
 alter table user
     add constraint UK_sb8bbouer5wak8vyiiy4pf2bx unique (username)
+;
+alter table work_shift_custom_shift_hours
+    add constraint UK_5dfv48o95eu0jiyap3lt4t9d unique (custom_shift_hours_id)
 ;
 alter table attendance
     add constraint FKr7q0h8jfngkyybll6o9r3h9ua foreign key (employee_id) references employee (id)
@@ -443,4 +468,10 @@ alter table subscription_plan_plan_details
     add constraint FKdx2qg3vw83ytg4vigpvb5bdsw foreign key (subscription_plan_id) references subscription_plan (id)
 ;
 alter table user_roles
-    add constraint FK55itppkw3i07do3h7qoclqd4k foreign key (user_id) references user (id);
+    add constraint FK55itppkw3i07do3h7qoclqd4k foreign key (user_id) references user (id)
+;
+alter table work_shift_custom_shift_hours
+    add constraint FKnx9etpf3qwy27ws8wee7hf3ug foreign key (custom_shift_hours_id) references custom_shift_hours (id)
+;
+alter table work_shift_custom_shift_hours
+    add constraint FK3hcii5cpfbyjq0w3j2yuumbdi foreign key (work_shift_id) references work_shift (id)
