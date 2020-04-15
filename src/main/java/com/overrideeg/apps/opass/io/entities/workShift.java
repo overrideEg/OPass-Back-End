@@ -8,11 +8,14 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.overrideeg.apps.opass.enums.attStatus;
 import com.overrideeg.apps.opass.enums.attType;
+import com.overrideeg.apps.opass.io.details.customShiftHours;
 import com.overrideeg.apps.opass.io.entities.system.OEntity;
 import com.overrideeg.apps.opass.io.valueObjects.attendanceRules;
 import com.overrideeg.apps.opass.io.valueObjects.shiftHours;
 import com.overrideeg.apps.opass.io.valueObjects.translatedField;
 import com.overrideeg.apps.opass.utils.DateUtils;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.sql.Time;
@@ -32,6 +35,9 @@ public class workShift extends OEntity {
     private translatedField name;
     @Embedded
     private shiftHours shiftHours;
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @Fetch(FetchMode.SUBSELECT)
+    private List<customShiftHours> customShiftHours;
 
     @Override
     public boolean isValid() {
@@ -54,6 +60,14 @@ public class workShift extends OEntity {
         this.shiftHours = shiftHours;
     }
 
+
+    public List<com.overrideeg.apps.opass.io.details.customShiftHours> getCustomShiftHours() {
+        return customShiftHours;
+    }
+
+    public void setCustomShiftHours(List<com.overrideeg.apps.opass.io.details.customShiftHours> customShiftHours) {
+        this.customShiftHours = customShiftHours;
+    }
 
     public attendance createAttLog(employee employee, Date scanDate, attendanceRules attendanceRules, List<attendance> todayShiftLogs) {
         final DateUtils dateUtils = new DateUtils();
