@@ -69,18 +69,47 @@ public class workShift extends OEntity {
         this.customShiftHours = customShiftHours;
     }
 
-    public attendance createAttLog(employee employee, Date scanDate, attendanceRules attendanceRules, List<attendance> todayShiftLogs) {
+    public attendance createAttLog(employee employee, Date scanDate, int scanWeekDay, attendanceRules attendanceRules, List<attendance> todayShiftLogs) {
         final DateUtils dateUtils = new DateUtils();
         final Time scanTime = dateUtils.newTime(scanDate);
         final attendance attendanceLog = new attendance(employee, this, scanDate, scanTime, attType.LOG, attStatus.normal);
 
+        Time lateArriveTime;
+        Time maxOverTime;
+        Time minNormalLeaveTime;
+        Time maxNormalLeaveTime;
+
         try {
 
-            final Time lateArriveTime = dateUtils.addOrSubtractMinutes(dateUtils.newTime(getShiftHours().getFromHour()), attendanceRules.getAllowedLateMinutes());
-            final Time maxOverTime = dateUtils.addOrSubtractHours(dateUtils.newTime(getShiftHours().getToHour()), attendanceRules.getMaxOverTimeHours());
-            final Time minNormalLeaveTime = dateUtils.addOrSubtractMinutes(dateUtils.newTime(getShiftHours().getToHour()), -attendanceRules.getAllowedEarlyLeaveMinutes());
-            final Time maxNormalLeaveTime = dateUtils.addOrSubtractMinutes(dateUtils.newTime(getShiftHours().getToHour()), attendanceRules.getAllowedEarlyLeaveMinutes());
+            customShiftHours customShiftHour = new customShiftHours();
 
+            //check if today is a custom shift day
+            if (!getCustomShiftHours().isEmpty()) {
+
+                for (customShiftHours customShiftHours : getCustomShiftHours()) {
+                    if (customShiftHours.getDay().equals(scanWeekDay)) {
+                        customShiftHour = customShiftHours;
+                        break;
+                    }
+                }
+
+            }
+
+            if (customShiftHour.getId() == null) {
+
+                lateArriveTime = dateUtils.addOrSubtractMinutes(dateUtils.newTime(getShiftHours().getFromHour()), attendanceRules.getAllowedLateMinutes());
+                maxOverTime = dateUtils.addOrSubtractHours(dateUtils.newTime(getShiftHours().getToHour()), attendanceRules.getMaxOverTimeHours());
+                minNormalLeaveTime = dateUtils.addOrSubtractMinutes(dateUtils.newTime(getShiftHours().getToHour()), -attendanceRules.getAllowedEarlyLeaveMinutes());
+                maxNormalLeaveTime = dateUtils.addOrSubtractMinutes(dateUtils.newTime(getShiftHours().getToHour()), attendanceRules.getAllowedEarlyLeaveMinutes());
+
+            } else {
+
+                lateArriveTime = dateUtils.addOrSubtractMinutes(dateUtils.newTime(customShiftHour.getFromHour()), attendanceRules.getAllowedLateMinutes());
+                maxOverTime = dateUtils.addOrSubtractHours(dateUtils.newTime(customShiftHour.getToHour()), attendanceRules.getMaxOverTimeHours());
+                minNormalLeaveTime = dateUtils.addOrSubtractMinutes(dateUtils.newTime(customShiftHour.getToHour()), -attendanceRules.getAllowedEarlyLeaveMinutes());
+                maxNormalLeaveTime = dateUtils.addOrSubtractMinutes(dateUtils.newTime(customShiftHour.getToHour()), attendanceRules.getAllowedEarlyLeaveMinutes());
+
+            }
 
             boolean in = false;
             boolean out = false;

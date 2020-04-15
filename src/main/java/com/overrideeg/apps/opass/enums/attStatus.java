@@ -5,5 +5,5 @@
 package com.overrideeg.apps.opass.enums;
 
 public enum attStatus {
-    normal, lateEntrance, earlyGo, overTime
+    normal, lateEntrance, earlyGo, overTime,workOnDayOff
 }
