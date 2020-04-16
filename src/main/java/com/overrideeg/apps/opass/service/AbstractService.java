@@ -16,7 +16,6 @@ import com.overrideeg.apps.opass.ui.sys.ResponseModel;
 import com.overrideeg.apps.opass.ui.sys.ResponseStatus;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -53,7 +52,7 @@ public abstract class AbstractService<E extends OEntity> {
      * @return Observable that will receive the saved entity, or exception if error occurs.
      * @p
      */
-    public E save(final E inEntity) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, NoSuchFieldException {
+    public E save(final E inEntity) {
         return mRepository.save(inEntity);
     }
 
@@ -63,7 +62,7 @@ public abstract class AbstractService<E extends OEntity> {
             try {
                 E saved = save(e);
                 entities.add(saved);
-            } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException | NoSuchFieldException ex) {
+            } catch (Exception ex) {
                 ex.printStackTrace();
             }
         });
@@ -77,7 +76,7 @@ public abstract class AbstractService<E extends OEntity> {
      * @return Observable that will receive the updated entity, or exception if error occurs.
      */
     @Transactional(readOnly = false)
-    public ResponseModel update(final E inEntity) throws NoSuchMethodException {
+    public ResponseModel update(final E inEntity) {
         ResponseModel responseModel = null;
         try {
             E persist = mRepository.persist(inEntity);
@@ -85,13 +84,14 @@ public abstract class AbstractService<E extends OEntity> {
         } catch (Exception e) {
             e.printStackTrace();
             responseModel = new ResponseModel(inEntity, RequestOperation.UPDATE, ResponseStatus.ERROR);
+            throw new CouldNotUpdateRecordException(ErrorMessages.COULD_NOT_UPDATE_RECORD.getErrorMessage());
         }
 
         return responseModel;
 
     }
 
-    public List<ResponseModel> update(final List<E> inEntity) throws NoSuchMethodException {
+    public List<ResponseModel> update(final List<E> inEntity) {
         List<ResponseModel> out = new ArrayList<>();
         try {
             inEntity.forEach(e -> {
@@ -106,7 +106,6 @@ public abstract class AbstractService<E extends OEntity> {
         } catch (Exception e) {
             throw new CouldNotUpdateRecordException(ErrorMessages.COULD_NOT_UPDATE_RECORD.getErrorMessage());
         }
-
         return out;
     }
 
@@ -174,7 +173,7 @@ public abstract class AbstractService<E extends OEntity> {
         } catch (final Exception e) {
             e.printStackTrace();
             responseModel = new ResponseModel(inId, RequestOperation.DELETE, ResponseStatus.ERROR);
-            throw new CouldNotDeleteRecordException(ErrorMessages.COULD_NOT_CREATE_RECORD.getErrorMessage());
+            throw new CouldNotDeleteRecordException(ErrorMessages.COULD_NOT_DELETE_RECORD.getErrorMessage());
         }
         return responseModel;
     }
