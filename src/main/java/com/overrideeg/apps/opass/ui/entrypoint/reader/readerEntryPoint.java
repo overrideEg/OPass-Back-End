@@ -19,7 +19,6 @@ import com.overrideeg.apps.opass.utils.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -47,7 +46,7 @@ public class readerEntryPoint {
 
     @PostMapping
     public @ResponseBody
-    AttendanceHistory readQr(@RequestBody readerRequest request) throws InvocationTargetException, NoSuchMethodException, NoSuchFieldException, InstantiationException, IllegalAccessException {
+    AttendanceHistory readQr(@RequestBody readerRequest request) {
         //initiate tenant DB connection
         handleTenant(request.getCompany_id());
         //create attendance record
