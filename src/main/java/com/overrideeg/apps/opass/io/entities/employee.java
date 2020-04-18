@@ -4,7 +4,6 @@
 
 package com.overrideeg.apps.opass.io.entities;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -62,12 +61,11 @@ public class employee extends OEntity {
     @Temporal(TemporalType.TIMESTAMP)
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Date firingDate;
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(
             name = "employee_shifts",
             joinColumns = @JoinColumn(name = "employee_id"),
             inverseJoinColumns = @JoinColumn(name = "shift_id"))
-    @JsonBackReference
     @Fetch(FetchMode.SUBSELECT)
     private List<workShift> shifts;
     @Enumerated(EnumType.STRING)

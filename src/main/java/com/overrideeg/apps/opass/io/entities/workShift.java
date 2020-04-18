@@ -149,12 +149,17 @@ public class workShift extends OEntity {
                     attendanceLog.setAttStatus(attStatus.normal);
 
                     //check leaving early
-                } else if (dateUtils.timeAfter(dateUtils.newTime(shiftHours.getFromHour()), scanTime, true) && dateUtils.timeBefore(minNormalLeaveTime, scanTime, false)) {
-                    attendanceLog.setAttType(attType.OUT);
-                    attendanceLog.setAttStatus(attStatus.earlyGo);
+                }
 
-                    //check leaving at over time
-                } else if (dateUtils.timeAfter(maxNormalLeaveTime, scanTime, false) && dateUtils.timeBefore(maxOverTime, scanTime, true)) {
+                // todo replace with go permissions
+//                else if (dateUtils.timeAfter(dateUtils.newTime(shiftHours.getFromHour()), scanTime, true) && dateUtils.timeBefore(minNormalLeaveTime, scanTime, false)) {
+//                    attendanceLog.setAttType(attType.OUT);
+//                    attendanceLog.setAttStatus(attStatus.earlyGo);
+//
+//                    //check leaving at over time
+//                }
+
+                else if (dateUtils.timeAfter(maxNormalLeaveTime, scanTime, false) && dateUtils.timeBefore(maxOverTime, scanTime, true)) {
                     attendanceLog.setAttType(attType.OUT);
                     attendanceLog.setAttStatus(attStatus.overTime);
 

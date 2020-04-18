@@ -12,6 +12,7 @@ import com.overrideeg.apps.opass.io.valueObjects.translatedField;
 import com.overrideeg.apps.opass.service.attendanceService;
 import com.overrideeg.apps.opass.service.readerService;
 import com.overrideeg.apps.opass.system.ApiUrls;
+import com.overrideeg.apps.opass.system.Connection.ResolveTenant;
 import com.overrideeg.apps.opass.system.Connection.TenantContext;
 import com.overrideeg.apps.opass.system.Connection.TenantResolver;
 import com.overrideeg.apps.opass.utils.DateUtils;
@@ -19,6 +20,7 @@ import com.overrideeg.apps.opass.utils.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -43,6 +45,9 @@ public class readerEntryPoint {
 
     @Autowired
     TenantResolver tenantResolver;
+
+    @Autowired
+    ResolveTenant resolveTenant;
 
     @PostMapping
     public @ResponseBody
@@ -72,6 +77,17 @@ public class readerEntryPoint {
         history.setTimestamp(scanTimeAtZone.getTime());
         return history;
     }
+
+    @PostMapping("/adminReading")
+    public @ResponseBody
+    attendance adminReading(@RequestBody readerAdminRequest adminRequest, @RequestHeader Long tenantId, HttpServletRequest request) {
+        // resolve tenant
+        resolveTenant.resolve(tenantId, request);
+
+        return readerService.adminValidate(adminRequest, tenantId);
+
+    }
+
 
     @PostMapping("/arr")
     public @ResponseBody

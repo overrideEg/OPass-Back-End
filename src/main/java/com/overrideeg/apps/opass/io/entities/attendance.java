@@ -24,7 +24,7 @@ public class attendance extends OEntity {
     @Temporal(TemporalType.DATE)
     @JsonFormat(shape = JsonFormat.Shape.STRING, lenient = OptBoolean.TRUE)
     private Date scanDate;
-    @Temporal(TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.TIME)
     @JsonFormat(pattern = "hh:mm:ss", lenient = OptBoolean.TRUE, shape = JsonFormat.Shape.STRING, timezone = "Africa/Cairo")
     private Date scanTime;
     @Enumerated(EnumType.STRING)

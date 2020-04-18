@@ -303,4 +303,17 @@ public class DateUtils {
         LocalDate dateAfter = convertToLocalDateViaInstant(after);
         return ChronoUnit.DAYS.between(dateBefore, dateAfter);
     }
+
+    public Date copyTimeToDate(Date date, Date time) {
+        Calendar t = Calendar.getInstance();
+        t.setTime(time);
+
+        Calendar c = Calendar.getInstance();
+        c.setTime(date);
+        c.set(Calendar.HOUR_OF_DAY, t.get(Calendar.HOUR_OF_DAY));
+        c.set(Calendar.MINUTE, t.get(Calendar.MINUTE));
+        c.set(Calendar.SECOND, t.get(Calendar.SECOND));
+        c.set(Calendar.MILLISECOND, t.get(Calendar.MILLISECOND));
+        return c.getTime();
+    }
 }
