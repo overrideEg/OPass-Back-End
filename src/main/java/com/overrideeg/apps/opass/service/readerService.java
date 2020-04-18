@@ -15,6 +15,7 @@ import com.overrideeg.apps.opass.io.entities.qrMachine;
 import com.overrideeg.apps.opass.io.entities.workShift;
 import com.overrideeg.apps.opass.io.valueObjects.attendanceRules;
 import com.overrideeg.apps.opass.ui.entrypoint.reader.qrData;
+import com.overrideeg.apps.opass.ui.entrypoint.reader.readerAdminRequest;
 import com.overrideeg.apps.opass.ui.entrypoint.reader.readerRequest;
 import com.overrideeg.apps.opass.ui.sys.ErrorMessages;
 import com.overrideeg.apps.opass.utils.DateUtils;
@@ -47,6 +48,18 @@ public class readerService {
         checkScanTime(request, qr);
 
         return processWorkShifts(request, employee);
+    }
+
+    public attendance adminValidate(readerAdminRequest adminRequest, Long tenantId) {
+        final Optional<employee> employee = employeeService.find(adminRequest.getEmployee().getId());
+        DateUtils dateUtils = new DateUtils();
+        Date date = dateUtils.copyTimeToDate(adminRequest.getDate(), adminRequest.getScan_time());
+        adminRequest.getDate().setTime(date.getTime());
+        readerRequest readerRequest = new readerRequest();
+        readerRequest.setEmployee_id(adminRequest.getEmployee().getId());
+        readerRequest.setScan_time(adminRequest.getDate().getTime());
+        readerRequest.setCompany_id(tenantId);
+        return attendanceService.save(processWorkShifts(readerRequest, employee.get()));
     }
 
 
@@ -149,6 +162,8 @@ public class readerService {
         }
         return returnValue;
     }
+
+
 }
 
 
