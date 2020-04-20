@@ -29,7 +29,17 @@ public class attendanceRepoImpl {
     protected EntityManager mEntityManager;
 
 
-    public List<attendance> findEmployeeTodaysShitLogs(employee employee, Date currentDate, workShift currentShift) {
+    public List<attendance> findAll ( Integer start, Integer limit ) {
+        CriteriaBuilder cb = mEntityManager.getCriteriaBuilder();
+        CriteriaQuery<attendance> query = cb.createQuery(attendance.class);
+        Root<attendance> root = query.from(attendance.class);
+        query.orderBy(cb.desc(root.get("scanDate")), cb.desc(root.get("scanTime")), cb.asc(root.get("employee").get("id")));
+        query.select(root);
+        TypedQuery<attendance> attendanceTypedQuery = mEntityManager.createQuery(query).setFirstResult(start).setMaxResults(limit);
+        return attendanceTypedQuery.getResultList();
+    }
+
+    public List<attendance> findEmployeeTodaysShitLogs ( employee employee, Date currentDate, workShift currentShift ) {
         CriteriaBuilder cb = mEntityManager.getCriteriaBuilder();
         CriteriaQuery<attendance> query = cb.createQuery(attendance.class);
         Root<attendance> root = query.from(attendance.class);

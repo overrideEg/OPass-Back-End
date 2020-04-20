@@ -21,23 +21,27 @@ import java.util.List;
 @Service
 public class attendanceService extends AbstractService<attendance> {
 
-    public attendanceService(final attendanceRepo inRepository) {
+    public attendanceService ( final attendanceRepo inRepository ) {
         super(inRepository);
     }
 
     @Autowired
     attendanceRepoImpl attendanceRepo;
 
+    @Override
+    public List<attendance> findAll ( int start, int limit ) {
+        return attendanceRepo.findAll(start, limit);
+    }
 
-    public List<attendance> employeeTodaysShitLogs(employee employee, Date currentDate, workShift currentShift) {
+    public List<attendance> employeeTodaysShitLogs ( employee employee, Date currentDate, workShift currentShift ) {
         return attendanceRepo.findEmployeeTodaysShitLogs(employee, currentDate, currentShift);
     }
 
-    public List<attendance> createAttendanceHistoryReport(Long employee, Integer page, Integer pageSize) {
+    public List<attendance> createAttendanceHistoryReport ( Long employee, Integer page, Integer pageSize ) {
         return attendanceRepo.createAttendanceHistoryReport(employee, page, pageSize);
     }
 
-    public Long findAbsenceDays(Long employee) {
+    public Long findAbsenceDays ( Long employee ) {
         return attendanceRepo.findAbsenceDays(employee);
     }
 
