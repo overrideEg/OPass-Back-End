@@ -475,6 +475,3 @@ alter table work_shift_custom_shift_hours
 ;
 alter table work_shift_custom_shift_hours
     add constraint FK3hcii5cpfbyjq0w3j2yuumbdi foreign key (work_shift_id) references work_shift (id);
-
-alter table employee
-    add column day_off integer;
