@@ -51,7 +51,7 @@ public class attendanceRepoImpl {
         Root<attendance> root = criteriaQuery.from(attendance.class);
         criteriaQuery.where(cb.equal(root.get("employee").get("id"), employee));
         criteriaQuery.select(root);
-        criteriaQuery.orderBy(cb.desc(root.get("scanDate")));
+        criteriaQuery.orderBy(cb.desc(root.get("scanDate")), cb.desc(root.get("scanTime")));
         TypedQuery<attendance> attendanceTypedQuery = mEntityManager.createQuery(criteriaQuery)
                 .setFirstResult((page - 1) * pageSize)
                 .setMaxResults(pageSize);
@@ -82,9 +82,10 @@ public class attendanceRepoImpl {
     }
 
     public List findTotalEmployeeAttendanceFromFirstMonth(Date fromDate, Date toDate) {
-        String query = "select a.scanDate,count(a) from attendance a\n" +
-                "where (a.scanDate between :fromDate and :toDate) and (a.attType != 'LOG') \n" +
-                "group by a.scanDate";
+//        String query = "select a.scanDate,count(a) from attendance a\n" +
+//                "where a.scanDate between :fromDate and :toDate and a.attType != 'LOG' \n" +
+//                "group by a.scanDate";
+        String query = "";
 
         List resultList = mEntityManager.createQuery(query)
                 .setParameter("fromDate", fromDate).setParameter("toDate", toDate)

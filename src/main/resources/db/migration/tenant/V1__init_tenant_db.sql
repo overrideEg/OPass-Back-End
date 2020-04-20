@@ -31,7 +31,7 @@ create table attendance
     att_status       varchar(255),
     att_type         varchar(255),
     scan_date        date,
-    scan_time        datetime(6),
+    scan_time        time,
     employee_id      bigint,
     work_shift_id    bigint,
     primary key (id)

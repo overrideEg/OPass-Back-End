@@ -5,6 +5,7 @@
 package com.overrideeg.apps.opass.ui.entrypoint.auth;
 
 
+import com.overrideeg.apps.opass.exceptions.AuthenticationException;
 import com.overrideeg.apps.opass.io.entities.User;
 import com.overrideeg.apps.opass.io.repositories.UserRepo;
 import com.overrideeg.apps.opass.service.UserService;
@@ -23,7 +24,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
@@ -31,7 +32,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.sql.SQLException;
+import java.util.Optional;
 
 import static org.springframework.http.ResponseEntity.ok;
 
@@ -68,13 +69,13 @@ public class AuthenticationController {
             TenantContext.setCurrentTenant(null);
             User user = this.tenantResolver.findUserFromMasterDatabaseByUserName(username);
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, data.getPassword()));
+            checkMacAddress(user, data.getMacAddress());
             String token = jwtTokenProvider
                     .createToken(username, user.getRoles());
-            checkMacAddress(user, data.getMacAddress());
             user.setToken(token);
             return ok(user);
-        } catch (AuthenticationException | SQLException e) {
-            throw new BadCredentialsException("Invalid username/password supplied");
+        } catch (Exception e) {
+            throw new AuthenticationException("Invalid username/password supplied");
         }
     }
 
@@ -95,8 +96,8 @@ public class AuthenticationController {
             credResponse.setUserName(username);
 
             return ok(credResponse);
-        } catch (AuthenticationException | SQLException e) {
-            throw new BadCredentialsException("Invalid username/password supplied");
+        } catch (Exception e) {
+            throw new AuthenticationException("Invalid username/password supplied");
         }
     }
 
@@ -113,8 +114,8 @@ public class AuthenticationController {
             credResponse.setUpdated(true);
             credResponse.setUserName(username);
             return ok(credResponse);
-        } catch (AuthenticationException | SQLException e) {
-            throw new BadCredentialsException("Invalid username/password supplied");
+        } catch (Exception e) {
+            throw new AuthenticationException("Invalid username/password supplied");
         }
     }
 
@@ -135,8 +136,8 @@ public class AuthenticationController {
             credResponse.setUpdated(true);
             credResponse.setUserName(username);
             return ok(credResponse);
-        } catch (AuthenticationException | SQLException e) {
-            throw new BadCredentialsException("Invalid username/password supplied");
+        } catch (Exception e) {
+            throw new AuthenticationException("Invalid username/password supplied");
         }
     }
 
@@ -152,10 +153,11 @@ public class AuthenticationController {
 
     }
 
+    //todo check
     public User checkMacAddress(User authenticatedUser, String macAddress) {
         User updatedUser = authenticatedUser;
-        String authority = authenticatedUser.getAuthorities().stream().findFirst().get().getAuthority();
-        if (authority.equals("user")) {
+        Optional<? extends GrantedAuthority> user = authenticatedUser.getAuthorities().stream().filter(o -> o.getAuthority().equals("user")).findFirst();
+        if (user.isPresent()) {
             if (macAddress == null)
                 throw new BadCredentialsException("Mac Address Required");
             if (authenticatedUser.getMacAddress() == null) {

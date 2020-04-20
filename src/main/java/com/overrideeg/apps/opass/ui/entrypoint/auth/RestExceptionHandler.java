@@ -26,17 +26,22 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(InvalidJwtAuthenticationException.class)
     public void InvalidJwtAuthenticationException(HttpServletResponse response) throws IOException {
         response.sendError(UNAUTHORIZED.value());
+        response.setStatus(401);
     }
 
 
     @ExceptionHandler(AuthenticationException.class)
     public void AuthenticationException(HttpServletResponse response) throws IOException {
         response.sendError(UNAUTHORIZED.value());
+        response.setStatus(401);
+
     }
 
     @ExceptionHandler(BadCredentialsException.class)
     public void BadCredentialsException(HttpServletResponse response) throws IOException {
         response.sendError(HttpStatus.BAD_REQUEST.value());
+        response.setStatus(400);
+
     }
 
 }

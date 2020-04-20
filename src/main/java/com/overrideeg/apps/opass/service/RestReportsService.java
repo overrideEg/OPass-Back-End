@@ -44,8 +44,8 @@ public class RestReportsService {
                 history.setShiftName(new translatedField("لا يوجد مناوبةـ سجل فقط", "No Shift Log Only", "No Shift"));
             history.setStatus(attend.getAttStatus().toString());
             history.setType(attend.getAttType().toString());
-            Date scanTime = attend.getScanTime();
-            LocalDateTime date = dateUtils.convertToLocalDateTimeViaInstant(scanTime, company.getTimeZone());
+            Date scanDate = dateUtils.copyTimeToDate(attend.getScanDate(), attend.getScanTime());
+            LocalDateTime date = dateUtils.convertToLocalDateTimeViaInstant(scanDate, company.getTimeZone());
             Date scanTimeAtZone = dateUtils.convertToDateViaInstant(date, company.getTimeZone());
             history.setTimestamp(scanTimeAtZone.getTime());
             attendanceHistories.add(history);

@@ -77,6 +77,7 @@ public abstract class RestEntryPoint<E extends OEntity> {
                 case "Boolean":
                 case "boolean":
                 case "translatedField":
+                case "translatedLob":
                 case "Date":
                 case "TimeZone":
                 case "List":

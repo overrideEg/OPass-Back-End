@@ -6,6 +6,7 @@ package com.overrideeg.apps.opass.io.entities.appConstants;
 
 import com.overrideeg.apps.opass.io.entities.system.OEntity;
 import com.overrideeg.apps.opass.io.valueObjects.translatedField;
+import com.overrideeg.apps.opass.io.valueObjects.translatedLob;
 
 import javax.persistence.*;
 
@@ -22,7 +23,7 @@ public class termsAndConditions extends OEntity {
     @Embedded
     private translatedField title;
     @Embedded
-    private translatedField body;
+    private translatedLob body;
 
     @Override
     public boolean isValid() {
@@ -37,11 +38,11 @@ public class termsAndConditions extends OEntity {
         this.title = title;
     }
 
-    public translatedField getBody() {
+    public translatedLob getBody () {
         return body;
     }
 
-    public void setBody(translatedField body) {
+    public void setBody ( translatedLob body ) {
         this.body = body;
     }
 }
