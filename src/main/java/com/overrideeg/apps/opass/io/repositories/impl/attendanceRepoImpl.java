@@ -104,4 +104,15 @@ public class attendanceRepoImpl {
 
         return resultList;
     }
+
+    public List<attendance> findAttendanceBetweenTwoDates ( Date fromDate, Date toDate ) {
+        CriteriaBuilder cb = mEntityManager.getCriteriaBuilder();
+        CriteriaQuery<attendance> query = cb.createQuery(attendance.class);
+        Root<attendance> root = query.from(attendance.class);
+        query.where(cb.between(root.get("scanDate"), fromDate, toDate));
+        query.orderBy(cb.desc(root.get("scanDate")), cb.desc(root.get("scanTime")), cb.asc(root.get("employee").get("id")));
+        query.select(root);
+        TypedQuery<attendance> attendanceTypedQuery = mEntityManager.createQuery(query);
+        return attendanceTypedQuery.getResultList();
+    }
 }

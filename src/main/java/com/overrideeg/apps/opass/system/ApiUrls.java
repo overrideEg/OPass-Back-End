@@ -54,5 +54,11 @@ public class ApiUrls {
 
     public static final String PasswordResetToken_EP = "PasswordReset";
 
+    public static final String HRSettings_EP = "HRSettings";
+
+    public static final String HRSalaryCalculationDocument_EP = "HRSalaryCalculationDocument";
+
+    public static final String HRSalary_EP = "HRSalary";
+
 }
 
