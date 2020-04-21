@@ -75,7 +75,7 @@ public class employee extends OEntity {
     @Enumerated(EnumType.STRING)
     private com.overrideeg.apps.opass.enums.userType userType;
     private Double salary;
-
+    private Integer dayOff;
     @Override
     public boolean isValid() {
         return super.isValid();
@@ -193,12 +193,20 @@ public class employee extends OEntity {
         this.userType = userType;
     }
 
-    public Double getSalary() {
+    public Double getSalary () {
         return salary;
     }
 
-    public void setSalary(Double salary) {
+    public void setSalary ( Double salary ) {
         this.salary = salary;
+    }
+
+    public Integer getDayOff () {
+        return dayOff;
+    }
+
+    public void setDayOff ( Integer dayOff ) {
+        this.dayOff = dayOff;
     }
 
     /**
@@ -209,7 +217,7 @@ public class employee extends OEntity {
      * TODO resolve TwoDays shift (11pm-7am)
      * TODO resolve holidays
      */
-    public workShift getCurrentWorkShift(attendanceService attendanceService, Date scanDate, List<workShift> workShifts, attendanceRules attendanceRules) {
+    public workShift getCurrentWorkShift ( attendanceService attendanceService, Date scanDate, List<workShift> workShifts, attendanceRules attendanceRules ) {
 
         final DateUtils dateUtils = new DateUtils();
 

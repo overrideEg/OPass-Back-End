@@ -34,7 +34,8 @@ public class JwtTokenProvider {
 
     @PostConstruct
     protected void init() {
-        secretKey = Base64.getEncoder().encodeToString(jwtProperties.getSecretKey().getBytes());
+        String secret = "com.overrideeg.apps.opass.system.security";
+        secretKey = Base64.getEncoder().encodeToString(secret.getBytes());
     }
 
     public String createToken(String username, List<String> roles) {
@@ -42,17 +43,17 @@ public class JwtTokenProvider {
         Claims claims = Jwts.claims().setSubject(username);
         claims.put("roles", roles);
 
-        Long yearInMs = 31556952000L;
-        jwtProperties.setValidityInMs(yearInMs);
+        Long monthInMs = 2592000000L;
+        jwtProperties.setValidityInMs(monthInMs);
+
         Date now = new Date();
         Date validity = new Date(now.getTime() + jwtProperties.getValidityInMs());
-//        Date validity = new Date(now.getTime() +yearInMs);
 
         return Jwts.builder()//
                 .setClaims(claims)//
                 .setIssuedAt(now)//
                 .setExpiration(validity)//
-                .signWith(SignatureAlgorithm.HS256, secretKey)//
+                .signWith(SignatureAlgorithm.HS512, secretKey)//
                 .compact();
     }
 

@@ -5,7 +5,6 @@
 /*
  * Copyright (c) 2020. overrideeg.ocm.
  */
-
 ;
 create table app_setting
 (
@@ -31,7 +30,7 @@ create table attendance
     att_status       varchar(255),
     att_type         varchar(255),
     scan_date        date,
-    scan_time        datetime(6),
+    scan_time        time,
     employee_id      bigint,
     work_shift_id    bigint,
     primary key (id)
@@ -157,35 +156,36 @@ create table employee
     creation_date        datetime(6),
     last_update_date     datetime(6),
     attendance_exception bit,
+    day_off              integer,
     birth_date           datetime(6),
-    address1            varchar(255),
-    address2            varchar(255),
-    area                varchar(255),
-    email               varchar(255),
-    fax_number          varchar(255),
-    map_location        varchar(255),
-    mobile              varchar(255),
-    region              varchar(255),
-    state               varchar(255),
-    street              varchar(255),
-    telephone1          varchar(255),
-    telephone2          varchar(255),
-    website             varchar(255),
-    contract_end_date   datetime(6),
-    contract_start_date datetime(6),
-    created_user_id     bigint,
-    firing_date         datetime(6),
-    name_ar             varchar(255),
-    name_en             varchar(255),
-    name_tr             varchar(255),
-    salary              double precision,
-    ssn                 varchar(255),
-    status              varchar(255),
-    user_type           varchar(255),
-    branch_id           bigint,
-    city_id             bigint,
-    country_id          bigint,
-    department_id       bigint,
+    address1             varchar(255),
+    address2             varchar(255),
+    area                 varchar(255),
+    email                varchar(255),
+    fax_number           varchar(255),
+    map_location         varchar(255),
+    mobile               varchar(255),
+    region               varchar(255),
+    state                varchar(255),
+    street               varchar(255),
+    telephone1           varchar(255),
+    telephone2           varchar(255),
+    website              varchar(255),
+    contract_end_date    datetime(6),
+    contract_start_date  datetime(6),
+    created_user_id      bigint,
+    firing_date          datetime(6),
+    name_ar              varchar(255),
+    name_en              varchar(255),
+    name_tr              varchar(255),
+    salary               double precision,
+    ssn                  varchar(255),
+    status               varchar(255),
+    user_type            varchar(255),
+    branch_id            bigint,
+    city_id              bigint,
+    country_id           bigint,
+    department_id        bigint,
     primary key (id)
 ) engine = InnoDB
 ;
@@ -474,4 +474,4 @@ alter table work_shift_custom_shift_hours
     add constraint FKnx9etpf3qwy27ws8wee7hf3ug foreign key (custom_shift_hours_id) references custom_shift_hours (id)
 ;
 alter table work_shift_custom_shift_hours
-    add constraint FK3hcii5cpfbyjq0w3j2yuumbdi foreign key (work_shift_id) references work_shift (id)
+    add constraint FK3hcii5cpfbyjq0w3j2yuumbdi foreign key (work_shift_id) references work_shift (id);

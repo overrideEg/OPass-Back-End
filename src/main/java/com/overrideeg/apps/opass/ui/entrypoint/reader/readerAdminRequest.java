@@ -11,32 +11,45 @@ import java.util.Date;
 
 public class readerAdminRequest {
     private employee employee;
-    @JsonFormat(pattern = "dd-MM-yyyy", shape = JsonFormat.Shape.STRING)
+    @JsonFormat(pattern = "dd/MM/yyyy", shape = JsonFormat.Shape.STRING)
     private Date date;
     @JsonFormat(pattern = "HH:mm", shape = JsonFormat.Shape.STRING, timezone = "Africa/Cairo")
-    private Date scan_time;
+    private Date inTime;
 
-    public com.overrideeg.apps.opass.io.entities.employee getEmployee() {
+    @JsonFormat(pattern = "HH:mm", shape = JsonFormat.Shape.STRING, timezone = "Africa/Cairo")
+    private Date outTime;
+
+
+    public com.overrideeg.apps.opass.io.entities.employee getEmployee () {
         return employee;
     }
 
-    public void setEmployee(com.overrideeg.apps.opass.io.entities.employee employee) {
+    public void setEmployee ( com.overrideeg.apps.opass.io.entities.employee employee ) {
         this.employee = employee;
     }
 
-    public Date getDate() {
+    public Date getDate () {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate ( Date date ) {
         this.date = date;
     }
 
-    public Date getScan_time() {
-        return scan_time;
+    public Date getInTime () {
+        return inTime;
     }
 
-    public void setScan_time(Date scan_time) {
-        this.scan_time = scan_time;
+    public void setInTime ( Date inTime ) {
+        this.inTime = inTime;
+    }
+
+
+    public Date getOutTime () {
+        return outTime;
+    }
+
+    public void setOutTime ( Date outTime ) {
+        this.outTime = outTime;
     }
 }

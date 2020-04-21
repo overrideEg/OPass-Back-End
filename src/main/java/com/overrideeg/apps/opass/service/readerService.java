@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.Time;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -50,16 +51,29 @@ public class readerService {
         return processWorkShifts(request, employee);
     }
 
-    public attendance adminValidate(readerAdminRequest adminRequest, Long tenantId) {
+    public List<attendance> adminValidate ( readerAdminRequest adminRequest, Long tenantId ) {
         final Optional<employee> employee = employeeService.find(adminRequest.getEmployee().getId());
         DateUtils dateUtils = new DateUtils();
-        Date date = dateUtils.copyTimeToDate(adminRequest.getDate(), adminRequest.getScan_time());
-        adminRequest.getDate().setTime(date.getTime());
-        readerRequest readerRequest = new readerRequest();
-        readerRequest.setEmployee_id(adminRequest.getEmployee().getId());
-        readerRequest.setScan_time(adminRequest.getDate().getTime());
-        readerRequest.setCompany_id(tenantId);
-        return attendanceService.save(processWorkShifts(readerRequest, employee.get()));
+        List<attendance> responses = new ArrayList<>();
+        if (adminRequest.getInTime() != null) {
+            Date date = dateUtils.copyTimeToDate(adminRequest.getDate(), adminRequest.getInTime());
+            adminRequest.getDate().setTime(date.getTime());
+            readerRequest readerRequest = new readerRequest();
+            readerRequest.setEmployee_id(adminRequest.getEmployee().getId());
+            readerRequest.setScan_time(date.getTime());
+            readerRequest.setCompany_id(tenantId);
+            responses.add(attendanceService.save(processWorkShifts(readerRequest, employee.get())));
+        }
+        if (adminRequest.getOutTime() != null) {
+            Date date = dateUtils.copyTimeToDate(adminRequest.getDate(), adminRequest.getOutTime());
+            adminRequest.getOutTime().setTime(date.getTime());
+            readerRequest readerRequest = new readerRequest();
+            readerRequest.setEmployee_id(adminRequest.getEmployee().getId());
+            readerRequest.setScan_time(date.getTime());
+            readerRequest.setCompany_id(tenantId);
+            responses.add(attendanceService.save(processWorkShifts(readerRequest, employee.get())));
+        }
+        return responses;
     }
 
 

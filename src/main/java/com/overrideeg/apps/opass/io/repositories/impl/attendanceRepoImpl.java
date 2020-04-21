@@ -29,7 +29,17 @@ public class attendanceRepoImpl {
     protected EntityManager mEntityManager;
 
 
-    public List<attendance> findEmployeeTodaysShitLogs(employee employee, Date currentDate, workShift currentShift) {
+    public List<attendance> findAll ( Integer start, Integer limit ) {
+        CriteriaBuilder cb = mEntityManager.getCriteriaBuilder();
+        CriteriaQuery<attendance> query = cb.createQuery(attendance.class);
+        Root<attendance> root = query.from(attendance.class);
+        query.orderBy(cb.desc(root.get("scanDate")), cb.desc(root.get("scanTime")), cb.asc(root.get("employee").get("id")));
+        query.select(root);
+        TypedQuery<attendance> attendanceTypedQuery = mEntityManager.createQuery(query).setFirstResult(start).setMaxResults(limit);
+        return attendanceTypedQuery.getResultList();
+    }
+
+    public List<attendance> findEmployeeTodaysShitLogs ( employee employee, Date currentDate, workShift currentShift ) {
         CriteriaBuilder cb = mEntityManager.getCriteriaBuilder();
         CriteriaQuery<attendance> query = cb.createQuery(attendance.class);
         Root<attendance> root = query.from(attendance.class);
@@ -51,7 +61,7 @@ public class attendanceRepoImpl {
         Root<attendance> root = criteriaQuery.from(attendance.class);
         criteriaQuery.where(cb.equal(root.get("employee").get("id"), employee));
         criteriaQuery.select(root);
-        criteriaQuery.orderBy(cb.desc(root.get("scanDate")));
+        criteriaQuery.orderBy(cb.desc(root.get("scanDate")), cb.desc(root.get("scanTime")));
         TypedQuery<attendance> attendanceTypedQuery = mEntityManager.createQuery(criteriaQuery)
                 .setFirstResult((page - 1) * pageSize)
                 .setMaxResults(pageSize);
@@ -82,9 +92,10 @@ public class attendanceRepoImpl {
     }
 
     public List findTotalEmployeeAttendanceFromFirstMonth(Date fromDate, Date toDate) {
-        String query = "select a.scanDate,count(a) from attendance a\n" +
-                "where (a.scanDate between :fromDate and :toDate) and (a.attType != 'LOG') \n" +
-                "group by a.scanDate";
+//        String query = "select a.scanDate,count(a) from attendance a\n" +
+//                "where a.scanDate between :fromDate and :toDate and a.attType != 'LOG' \n" +
+//                "group by a.scanDate";
+        String query = "";
 
         List resultList = mEntityManager.createQuery(query)
                 .setParameter("fromDate", fromDate).setParameter("toDate", toDate)
