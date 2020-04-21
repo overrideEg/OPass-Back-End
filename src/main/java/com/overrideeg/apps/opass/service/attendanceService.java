@@ -49,6 +49,7 @@ public class attendanceService extends AbstractService<attendance> {
                     record.setInType(attendance.getAttType().name());
                     record.setInStatus(attendance.getAttStatus().name());
                     record.setWorkShift(attendance.getWorkShift());
+                    record.setInId(attendance.getId());
                     record.setInTime(attendance.getScanTime());
                 } else {
                     dayByDay.setInTime(attendance.getScanTime());
@@ -57,6 +58,8 @@ public class attendanceService extends AbstractService<attendance> {
                     dayByDay.setEmployee(attendance.getEmployee());
                     dayByDay.setWorkShift(attendance.getWorkShift());
                     dayByDay.setScanDate(attendance.getScanDate());
+                    dayByDay.setInId(attendance.getId());
+
                     dayByDays.add(dayByDay);
                 }
             }
@@ -69,6 +72,8 @@ public class attendanceService extends AbstractService<attendance> {
                     record.setOutStatus(attendance.getAttStatus().name());
                     record.setOutTime(attendance.getScanTime());
                     record.setWorkShift(attendance.getWorkShift());
+                    record.setOutId(attendance.getId());
+
                 } else {
                     dayByDay.setOutTime(attendance.getScanTime());
                     dayByDay.setOutStatus(attendance.getAttStatus().name());
@@ -76,17 +81,20 @@ public class attendanceService extends AbstractService<attendance> {
                     dayByDay.setEmployee(attendance.getEmployee());
                     dayByDay.setWorkShift(attendance.getWorkShift());
                     dayByDay.setScanDate(attendance.getScanDate());
+                    dayByDay.setOutId(attendance.getId());
+
                     dayByDays.add(dayByDay);
                 }
             }
             if (attendance.getAttType().equals(attType.LOG)) {
                 Optional<attendanceDayByDay> anyRecord = findRecord(dayByDays, attendance);
-                if (anyRecord.isPresent()) {
+                if (anyRecord.isPresent() && anyRecord.get().getLogStatus() == null) {
                     attendanceDayByDay record = anyRecord.get();
                     record.setLogType(attendance.getAttType().name());
                     record.setLogStatus(attendance.getAttStatus().name());
                     record.setWorkShift(attendance.getWorkShift());
                     record.setLogTime(attendance.getScanTime());
+                    record.setLogId(attendance.getId());
                 } else {
                     dayByDay.setLogTime(attendance.getScanTime());
                     dayByDay.setLogStatus(attendance.getAttStatus().name());
@@ -94,6 +102,7 @@ public class attendanceService extends AbstractService<attendance> {
                     dayByDay.setEmployee(attendance.getEmployee());
                     dayByDay.setWorkShift(attendance.getWorkShift());
                     dayByDay.setScanDate(attendance.getScanDate());
+                    dayByDay.setLogId(attendance.getId());
                     dayByDays.add(dayByDay);
                 }
             }

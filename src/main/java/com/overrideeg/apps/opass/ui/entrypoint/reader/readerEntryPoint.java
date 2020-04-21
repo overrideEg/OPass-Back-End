@@ -80,18 +80,30 @@ public class readerEntryPoint {
 
     @PostMapping("/adminReading")
     public @ResponseBody
-    attendance adminReading(@RequestBody readerAdminRequest adminRequest, @RequestHeader Long tenantId, HttpServletRequest request) {
+    List<attendance> adminReading ( @RequestBody readerAdminRequest adminRequest, @RequestHeader Long tenantId, HttpServletRequest request ) {
         // resolve tenant
         resolveTenant.resolve(tenantId, request);
-
         return readerService.adminValidate(adminRequest, tenantId);
+    }
 
+    @PostMapping("/adminReading/arr")
+    public @ResponseBody
+    List<attendance> adminReadingArray ( @RequestBody List<readerAdminRequest> adminRequest, @RequestHeader Long tenantId, HttpServletRequest request ) {
+        // resolve tenant
+        resolveTenant.resolve(tenantId, request);
+        List<attendance> returnValue = new ArrayList<>();
+        List<readerAdminRequest> sortedRequest = adminRequest.stream()
+                .sorted(Comparator.comparing(a -> a.getDate())).collect(Collectors.toList());
+        sortedRequest.forEach(req -> {
+            returnValue.addAll(readerService.adminValidate(req, tenantId));
+        });
+        return returnValue;
     }
 
 
     @PostMapping("/arr")
     public @ResponseBody
-    List<AttendanceHistory> readQrArray(@RequestBody readerArrayRequest request) {
+    List<AttendanceHistory> readQrArray ( @RequestBody readerArrayRequest request ) {
         // sort by scanTime
         List<readerRequest> sortedRequest = request.getRequest().stream().sorted(Comparator.comparing(a -> a.getScan_time())).collect(Collectors.toList());
         List<AttendanceHistory> attendanceHistories = new ArrayList<>();
