@@ -145,7 +145,7 @@ public abstract class AbstractService<E extends OEntity> {
      *
      * @return Observable that will receive a list of entities, or exception if error occurs.
      */
-    public List<E> findAll(int start, int limit) {
+    public List<E> findAll ( int start, int limit ) {
         List<E> theEntitiesList = null;
         try {
             theEntitiesList = mRepository.findAll(start, limit);
@@ -157,13 +157,17 @@ public abstract class AbstractService<E extends OEntity> {
 
     }
 
+    public List<E> findAll () {
+        return mRepository.findAll();
+    }
+
     /**
      * Deletes the entity having supplied id.
      *
      * @param inId Id of entity to delete.
      * @return Observable that will receive completion, or exception if error occurs.
      */
-    public ResponseModel delete(final Long inId) {
+    public ResponseModel delete ( final Long inId ) {
         ResponseModel responseModel = null;
 
         try {
