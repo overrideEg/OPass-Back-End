@@ -10,7 +10,7 @@ import com.overrideeg.apps.opass.io.entities.workShift;
 
 import java.util.Date;
 
-public class attendanceDayByDay {
+public class attendanceReport {
     private employee employee;
     private workShift workShift;
     @JsonFormat(shape = JsonFormat.Shape.STRING, timezone = "Africa/Cairo")

@@ -35,7 +35,7 @@ public interface JpaRepositoryCustomisations<T> extends JpaRepository<T, Long> {
 
     T findByField(String name, Object value);
 
-    T findBySomeFields(List<String> names, List values);
+    Optional<T> findBySomeFields ( List<String> names, List values );
 
     List<T> findWhere(List<String> names, List values);
 

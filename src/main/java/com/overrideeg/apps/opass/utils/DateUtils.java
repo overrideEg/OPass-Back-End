@@ -264,19 +264,24 @@ public class DateUtils {
     }
 
 
-    public LocalDate convertToLocalDateViaInstant(Date dateToConvert) {
+    public LocalDate convertToLocalDateViaInstant ( Date dateToConvert ) {
         return Instant.ofEpochMilli(dateToConvert.getTime())
                 .atZone(ZoneId.systemDefault())
                 .toLocalDate();
     }
 
-    public LocalDate convertToLocalDateViaInstant(Date dateToConvert, TimeZone timeZone) {
+    public LocalDateTime convertToLocalDateViaInstantAtStartOfDate ( Date dateToConvert ) {
+        LocalDate localDate = new java.sql.Date(dateToConvert.getTime()).toLocalDate();
+        return localDate.atStartOfDay();
+    }
+
+    public LocalDate convertToLocalDateViaInstant ( Date dateToConvert, TimeZone timeZone ) {
         return Instant.ofEpochMilli(dateToConvert.getTime())
                 .atZone(timeZone.toZoneId())
                 .toLocalDate();
     }
 
-    public LocalDateTime convertToLocalDateTimeViaInstant(Date dateToConvert, TimeZone timeZone) {
+    public LocalDateTime convertToLocalDateTimeViaInstant ( Date dateToConvert, TimeZone timeZone ) {
         return Instant.ofEpochMilli(dateToConvert.getTime())
                 .atZone(timeZone.toZoneId())
                 .toLocalDateTime();
@@ -316,4 +321,6 @@ public class DateUtils {
         c.set(Calendar.MILLISECOND, t.get(Calendar.MILLISECOND));
         return c.getTime();
     }
+
+
 }

@@ -17,7 +17,10 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
 
 
 @Component
@@ -52,7 +55,6 @@ public class TenantResolver {
             List<Map<String, Object>> maps = jdbcTemplate.queryForList("SELECT * FROM company WHERE id = ?", tenantId);
             Map<String, Object> result = maps.get(0);
             company.setId((Long) result.get("id"));
-            company.setCreationDate((Date) result.get("creation_date"));
             company.setDatabase_name((String) result.get("database_name"));
             company.setTimeZone(TimeZone.getTimeZone((String) result.get("time_zone")));
             company.setDescription(new translatedField((String) result.get("description_ar"), (String) result.get("description_en"), (String) result.get("description_tr")));
@@ -156,15 +158,20 @@ public class TenantResolver {
     }
 
 
-    public Integer removeUser(Long userId) {
+    public Integer removeUser ( Long userId ) {
+        try {
+            int update = jdbcTemplate.update("delete from user_roles where user_id =?", userId);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return jdbcTemplate.update("delete from user where id = ?", userId);
     }
 
-    public Integer updateUSerEmployeeId(Long user_id, Long employee_id) {
+    public Integer updateUSerEmployeeId ( Long user_id, Long employee_id ) {
         return jdbcTemplate.update("update user set employee_id = ? where id = ?", employee_id, user_id);
     }
 
-    public Integer updatePassword(String username, String encodedNewPassword) {
+    public Integer updatePassword ( String username, String encodedNewPassword ) {
         return jdbcTemplate.update("update user set password = ? where username = ?", encodedNewPassword, username);
 
     }

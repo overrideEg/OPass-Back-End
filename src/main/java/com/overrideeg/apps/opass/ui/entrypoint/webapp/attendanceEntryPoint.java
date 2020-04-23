@@ -6,7 +6,7 @@ package com.overrideeg.apps.opass.ui.entrypoint.webapp;
 
 import com.overrideeg.apps.opass.annotations.Secured;
 import com.overrideeg.apps.opass.io.entities.attendance;
-import com.overrideeg.apps.opass.io.valueObjects.attendanceDayByDay;
+import com.overrideeg.apps.opass.io.valueObjects.attendanceReport;
 import com.overrideeg.apps.opass.service.attendanceService;
 import com.overrideeg.apps.opass.system.ApiUrls;
 import com.overrideeg.apps.opass.system.Connection.ResolveTenant;
@@ -34,13 +34,13 @@ public class attendanceEntryPoint extends RestEntryPoint<attendance> {
 
     @GetMapping("/dayByDay")
     @ResponseBody
-    List<attendanceDayByDay> findAll ( HttpServletRequest request, @RequestHeader Long tenantId,
-                                       @RequestParam(name = "start", required = false) Integer start,
-                                       @RequestParam(name = "limit", required = false) Integer limit ) {
+    List<attendanceReport> findAll ( HttpServletRequest request, @RequestHeader Long tenantId,
+                                     @RequestParam(name = "start", required = false) Integer start,
+                                     @RequestParam(name = "limit", required = false) Integer limit ) {
         resolveTenant.resolve(tenantId, request);
         if (start == null) start = 0;
         if (limit == null) limit = 25;
-        return attendanceService.findAllDayByDay(start, limit);
+        return attendanceService.findAttendanceReport(start, limit);
     }
 
 }

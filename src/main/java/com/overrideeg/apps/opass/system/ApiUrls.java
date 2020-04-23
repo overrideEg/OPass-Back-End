@@ -60,5 +60,9 @@ public class ApiUrls {
 
     public static final String HRSalary_EP = "HRSalary";
 
+    public static final String officialHoliday_EP = "officialHoliday";
+
+    public static final String HRPermissions_EP = "HRPermissions";
+
 }
 

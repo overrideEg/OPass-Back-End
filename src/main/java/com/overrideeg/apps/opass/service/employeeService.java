@@ -5,6 +5,7 @@
 package com.overrideeg.apps.opass.service;
 
 import com.overrideeg.apps.opass.exceptions.CouldNotCreateRecordException;
+import com.overrideeg.apps.opass.exceptions.CouldNotDeleteRecordException;
 import com.overrideeg.apps.opass.io.entities.User;
 import com.overrideeg.apps.opass.io.entities.company;
 import com.overrideeg.apps.opass.io.entities.employee;
@@ -12,7 +13,7 @@ import com.overrideeg.apps.opass.io.repositories.UserRepo;
 import com.overrideeg.apps.opass.io.repositories.employeeRepo;
 import com.overrideeg.apps.opass.system.Connection.ResolveTenant;
 import com.overrideeg.apps.opass.system.Connection.TenantResolver;
-import com.overrideeg.apps.opass.ui.sys.ErrorMessages;
+import com.overrideeg.apps.opass.ui.sys.ResponseModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -34,6 +36,7 @@ public class employeeService extends AbstractService<employee> {
     UserRepo users;
     @Autowired
     ResolveTenant resolveTenant;
+
 
 
     public employeeService(final employeeRepo inRepository) {
@@ -136,9 +139,11 @@ public class employeeService extends AbstractService<employee> {
         user.setUsername(inEntity.getContactInfo().getMobile());
         user.setPassword(passwordEncoder.encode(inEntity.getSsn()));
         user.setEmail(inEntity.getContactInfo().getEmail());
-        company companyForTenantId = null;
+        company companyForTenantId = new company();
         if (companyId != 0)
             companyForTenantId = tenantResolver.findCompanyForTenantId(companyId);
+        else
+            companyForTenantId.setId(0L);
         user.setCompany_id(companyForTenantId.getId());
         List<String> rules = new ArrayList<>();
         rules.add(inEntity.getUserType().toString());
@@ -147,4 +152,22 @@ public class employeeService extends AbstractService<employee> {
     }
 
 
+    public ResponseModel delete ( Long inId, Long companyId ) {
+        this.resolveTenant.resolve(companyId, null);
+        Optional<employee> employee = find(inId);
+        ResponseModel delete = new ResponseModel();
+        if (employee.isPresent()) {
+            employee existsEmployee = employee.get();
+            try {
+                delete = super.delete(inId);
+                this.resolveTenant.resolve(0L, null);
+                User existsUser = this.tenantResolver.findUserFromMasterDatabaseByUserName(existsEmployee.getContactInfo().getMobile());
+                Integer integer = this.tenantResolver.removeUser(existsUser.getId());
+            } catch (SQLException e) {
+                e.printStackTrace();
+                throw new CouldNotDeleteRecordException(e.getMessage());
+            }
+        }
+        return delete;
+    }
 }

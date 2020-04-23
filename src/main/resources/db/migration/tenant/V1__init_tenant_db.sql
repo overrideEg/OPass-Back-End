@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2020. overrideeg.ocm.
- */
-
-/*
- * Copyright (c) 2020. overrideeg.ocm.
- */
 ;
 create table app_setting
 (
@@ -117,6 +110,17 @@ create table currency
     primary key (id)
 ) engine = InnoDB
 ;
+create table custom_shift_hours_aud
+(
+    id        bigint  not null,
+    rev       integer not null,
+    revtype   tinyint,
+    day       integer,
+    from_hour time,
+    to_hour   time,
+    primary key (id, rev)
+) engine = InnoDB
+;
 create table custom_shift_hours
 (
     id               bigint not null auto_increment,
@@ -156,7 +160,6 @@ create table employee
     creation_date        datetime(6),
     last_update_date     datetime(6),
     attendance_exception bit,
-    day_off              integer,
     birth_date           datetime(6),
     address1             varchar(255),
     address2             varchar(255),
@@ -169,24 +172,30 @@ create table employee
     state                varchar(255),
     street               varchar(255),
     telephone1           varchar(255),
-    telephone2           varchar(255),
-    website              varchar(255),
-    contract_end_date    datetime(6),
-    contract_start_date  datetime(6),
-    created_user_id      bigint,
-    firing_date          datetime(6),
-    name_ar              varchar(255),
-    name_en              varchar(255),
-    name_tr              varchar(255),
-    salary               double precision,
-    ssn                  varchar(255),
-    status               varchar(255),
-    user_type            varchar(255),
-    branch_id            bigint,
-    city_id              bigint,
-    country_id           bigint,
-    department_id        bigint,
+    telephone2          varchar(255),
+    website             varchar(255),
+    contract_end_date   datetime(6),
+    contract_start_date datetime(6),
+    created_user_id     bigint,
+    firing_date         datetime(6),
+    name_ar             varchar(255),
+    name_en             varchar(255),
+    name_tr             varchar(255),
+    salary              double precision,
+    ssn                 varchar(255),
+    status              varchar(255),
+    user_type           varchar(255),
+    branch_id           bigint,
+    city_id             bigint,
+    country_id          bigint,
+    department_id       bigint,
     primary key (id)
+) engine = InnoDB
+;
+create table employee_days_off
+(
+    employee_id bigint not null,
+    days_off    integer
 ) engine = InnoDB
 ;
 create table employee_shifts
@@ -216,6 +225,46 @@ create table hibernate_sequence
 ;
 insert into hibernate_sequence
 values (1)
+;
+create table hr_permissions
+(
+    id               bigint not null auto_increment,
+    creation_date    datetime(6),
+    last_update_date datetime(6),
+    absence_allowed  bit,
+    date             date,
+    description_ar   longtext,
+    description_en   longtext,
+    description_tr   longtext,
+    hours_early_go   integer,
+    hours_late       integer,
+    employee_id      bigint,
+    primary key (id)
+) engine = InnoDB
+;
+create table hr_settins
+(
+    id                       bigint not null auto_increment,
+    creation_date            datetime(6),
+    last_update_date         datetime(6),
+    absence_day_deduction    double precision,
+    delay_hour_deduction     double precision,
+    over_time_addition       double precision,
+    work_on_day_off_addition double precision,
+    primary key (id)
+) engine = InnoDB
+;
+create table official_holiday
+(
+    id               bigint not null auto_increment,
+    creation_date    datetime(6),
+    last_update_date datetime(6),
+    date             date,
+    name_ar          varchar(255),
+    name_en          varchar(255),
+    name_tr          varchar(255),
+    primary key (id)
+) engine = InnoDB
 ;
 create table plan_details
 (
@@ -293,6 +342,38 @@ create table rest_log
     primary key (id)
 ) engine = InnoDB
 ;
+create table revinfo
+(
+    rev      integer not null auto_increment,
+    revtstmp bigint,
+    primary key (rev)
+) engine = InnoDB
+;
+create table salary
+(
+    id               bigint not null auto_increment,
+    creation_date    datetime(6),
+    last_update_date datetime(6),
+    addition         double precision,
+    deduction        double precision,
+    from_date        date,
+    salary           double precision,
+    to_date          datetime(6),
+    total            double precision,
+    employee_id      bigint,
+    primary key (id)
+) engine = InnoDB
+;
+create table salary_calculation
+(
+    id               bigint not null auto_increment,
+    creation_date    datetime(6),
+    last_update_date datetime(6),
+    from_date        datetime(6),
+    to_date          datetime(6),
+    primary key (id)
+) engine = InnoDB
+;
 create table subscription
 (
     id                   bigint not null auto_increment,
@@ -330,9 +411,9 @@ create table terms_and_conditions
     id               bigint not null auto_increment,
     creation_date    datetime(6),
     last_update_date datetime(6),
-    body_ar          varchar(255),
-    body_en          varchar(255),
-    body_tr          varchar(255),
+    body_ar          longtext,
+    body_en          longtext,
+    body_tr          longtext,
     title_ar         varchar(255),
     title_en         varchar(255),
     title_tr         varchar(255),
@@ -356,6 +437,28 @@ create table user_roles
 (
     user_id bigint not null,
     roles   varchar(255)
+) engine = InnoDB
+;
+create table work_shift_aud
+(
+    id        bigint  not null,
+    rev       integer not null,
+    revtype   tinyint,
+    name_ar   varchar(255),
+    name_en   varchar(255),
+    name_tr   varchar(255),
+    from_hour time,
+    to_hour   time,
+    primary key (id, rev)
+) engine = InnoDB
+;
+create table work_shift_custom_shift_hours_aud
+(
+    rev                   integer not null,
+    work_shift_id         bigint  not null,
+    custom_shift_hours_id bigint  not null,
+    revtype               tinyint,
+    primary key (rev, work_shift_id, custom_shift_hours_id)
 ) engine = InnoDB
 ;
 create table work_shift
@@ -419,6 +522,9 @@ alter table city
 alter table company
     add constraint FKaa85rotlnir4w4xlj1nkilnws foreign key (country_id) references country (id)
 ;
+alter table custom_shift_hours_aud
+    add constraint FKtbne2pbap1qd3ibuoqypt4xgo foreign key (rev) references revinfo (rev)
+;
 alter table department_days_off
     add constraint FK78rstmj8cbcxtnh0v2ee6v7ap foreign key (department_id) references department (id)
 ;
@@ -434,11 +540,17 @@ alter table employee
 alter table employee
     add constraint FKbejtwvg9bxus2mffsm3swj3u9 foreign key (department_id) references department (id)
 ;
+alter table employee_days_off
+    add constraint FKbtnrafos5kppyrf3d4a0fe11g foreign key (employee_id) references employee (id)
+;
 alter table employee_shifts
     add constraint FKf3sver1ayrxow0ekmx0ynr28a foreign key (shift_id) references work_shift (id)
 ;
 alter table employee_shifts
     add constraint FKpa5cdc7udnmyis0lh91m7qfb foreign key (employee_id) references employee (id)
+;
+alter table hr_permissions
+    add constraint FK3gifnd8hobuhejyguqfjrvy8a foreign key (employee_id) references employee (id)
 ;
 alter table plan_details
     add constraint FKe0agn054hd4djs4glcyq5xvdg foreign key (currency_id) references currency (id)
@@ -455,6 +567,9 @@ alter table report_definition
 alter table report_definition_params
     add constraint FKenm5vd32id4ft0jan8ft3cm81 foreign key (report_definition_id) references report_definition (id)
 ;
+alter table salary
+    add constraint FKnlnv3jbyvbiu8ci59r3btlk00 foreign key (employee_id) references employee (id)
+;
 alter table subscription
     add constraint FK45i0k0ls0erwl77ei45ds25t8 foreign key (company_id) references company (id)
 ;
@@ -470,8 +585,14 @@ alter table subscription_plan_plan_details
 alter table user_roles
     add constraint FK55itppkw3i07do3h7qoclqd4k foreign key (user_id) references user (id)
 ;
+alter table work_shift_aud
+    add constraint FKqv2idp0w2y0ptqbgt9fe1jtx4 foreign key (rev) references revinfo (rev)
+;
+alter table work_shift_custom_shift_hours_aud
+    add constraint FKbfyj19ra1wikubovws22kv6jm foreign key (rev) references revinfo (rev)
+;
 alter table work_shift_custom_shift_hours
     add constraint FKnx9etpf3qwy27ws8wee7hf3ug foreign key (custom_shift_hours_id) references custom_shift_hours (id)
 ;
 alter table work_shift_custom_shift_hours
-    add constraint FK3hcii5cpfbyjq0w3j2yuumbdi foreign key (work_shift_id) references work_shift (id);
+    add constraint FK3hcii5cpfbyjq0w3j2yuumbdi foreign key (work_shift_id) references work_shift (id)

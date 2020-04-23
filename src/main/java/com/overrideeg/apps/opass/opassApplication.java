@@ -16,6 +16,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
@@ -34,6 +35,7 @@ import javax.servlet.ServletException;
 @EnableJpaRepositories(basePackages = {"com.overrideeg.apps.opass.io.repositories"},
         repositoryBaseClass = JpaRepositoryCustomisationsImpl.class)
 @EnableConfigurationProperties({FileStorageProperties.class})
+@EnableJpaAuditing
 @EnableGlobalMethodSecurity(prePostEnabled = true, proxyTargetClass = true)
 public class opassApplication extends SpringBootServletInitializer implements WebMvcConfigurer {
 
@@ -41,6 +43,7 @@ public class opassApplication extends SpringBootServletInitializer implements We
     public static void main(String[] args) {
         SpringApplication.run(opassApplication.class, args);
     }
+
 
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {

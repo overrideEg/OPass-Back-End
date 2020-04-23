@@ -32,7 +32,9 @@ public class attendance extends OEntity {
     private attStatus attStatus;
 
     public attendance() {
+
     }
+
 
     public attendance(com.overrideeg.apps.opass.io.entities.employee employee, com.overrideeg.apps.opass.io.entities.workShift workShift, Date scanDate, Date scanTime, com.overrideeg.apps.opass.enums.attType attType, com.overrideeg.apps.opass.enums.attStatus attStatus) {
         this.employee = employee;
@@ -42,6 +44,7 @@ public class attendance extends OEntity {
         this.attType = attType;
         this.attStatus = attStatus;
     }
+
 
     @Override
     public boolean isValid() {
