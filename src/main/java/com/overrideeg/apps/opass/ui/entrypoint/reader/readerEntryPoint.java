@@ -93,7 +93,7 @@ public class readerEntryPoint {
         resolveTenant.resolve(tenantId, request);
         List<attendance> returnValue = new ArrayList<>();
         List<readerAdminRequest> sortedRequest = adminRequest.stream()
-                .sorted(Comparator.comparing(a -> a.getDate())).collect(Collectors.toList());
+                .sorted(Comparator.comparing(readerAdminRequest::getDate)).collect(Collectors.toList());
         sortedRequest.forEach(req -> {
             returnValue.addAll(readerService.adminValidate(req, tenantId));
         });
@@ -105,7 +105,7 @@ public class readerEntryPoint {
     public @ResponseBody
     List<AttendanceHistory> readQrArray ( @RequestBody readerArrayRequest request ) {
         // sort by scanTime
-        List<readerRequest> sortedRequest = request.getRequest().stream().sorted(Comparator.comparing(a -> a.getScan_time())).collect(Collectors.toList());
+        List<readerRequest> sortedRequest = request.getRequest().stream().sorted(Comparator.comparing(readerRequest::getScan_time)).collect(Collectors.toList());
         List<AttendanceHistory> attendanceHistories = new ArrayList<>();
         // invoke request foreach req
         sortedRequest.forEach(req -> {
@@ -124,7 +124,7 @@ public class readerEntryPoint {
     /**
      * method that resolve tenant for reader request null and zero are illegal
      *
-     * @param tenantId
+     * @param tenantId tenant
      */
     private void handleTenant(Long tenantId) {
         if (tenantId == 0 || tenantId == null) {

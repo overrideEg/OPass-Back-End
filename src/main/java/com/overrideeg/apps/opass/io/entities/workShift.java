@@ -4,6 +4,7 @@
 
 package com.overrideeg.apps.opass.io.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.overrideeg.apps.opass.enums.attStatus;
@@ -16,6 +17,8 @@ import com.overrideeg.apps.opass.io.valueObjects.translatedField;
 import com.overrideeg.apps.opass.utils.DateUtils;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.hibernate.envers.Audited;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.sql.Time;
@@ -28,6 +31,8 @@ import java.util.List;
         @AttributeOverride(name = "name.en", column = @Column(name = "name_en")),
         @AttributeOverride(name = "name.tr", column = @Column(name = "name_tr")),
 })
+@Audited
+@EntityListeners(AuditingEntityListener.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class workShift extends OEntity {
     @Embedded
@@ -38,13 +43,15 @@ public class workShift extends OEntity {
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @Fetch(FetchMode.SUBSELECT)
     private List<customShiftHours> customShiftHours;
+    @JsonIgnore
+    private Long updateDateTime;
 
     @Override
-    public boolean isValid() {
+    public boolean isValid () {
         return super.isValid();
     }
 
-    public translatedField getName() {
+    public translatedField getName () {
         return name;
     }
 
@@ -173,5 +180,11 @@ public class workShift extends OEntity {
 
     }
 
+    public Long getUpdateDateTime () {
+        return updateDateTime;
+    }
 
+    public void setUpdateDateTime ( Long updateDateTime ) {
+        this.updateDateTime = updateDateTime;
+    }
 }

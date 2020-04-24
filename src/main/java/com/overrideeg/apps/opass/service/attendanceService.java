@@ -10,7 +10,7 @@ import com.overrideeg.apps.opass.io.entities.employee;
 import com.overrideeg.apps.opass.io.entities.workShift;
 import com.overrideeg.apps.opass.io.repositories.attendanceRepo;
 import com.overrideeg.apps.opass.io.repositories.impl.attendanceRepoImpl;
-import com.overrideeg.apps.opass.io.valueObjects.attendanceDayByDay;
+import com.overrideeg.apps.opass.io.valueObjects.attendanceReport;
 import com.overrideeg.apps.opass.ui.entrypoint.reports.valueObjects.countAttendanceInDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,16 +36,24 @@ public class attendanceService extends AbstractService<attendance> {
         return attendanceRepo.findAll(start, limit);
     }
 
-    public List<attendanceDayByDay> findAllDayByDay ( int start, int limit ) {
+    public List<attendanceReport> findAttendanceReport ( int start, int limit ) {
         List<attendance> all = attendanceRepo.findAll(start, limit);
+        return getAttendanceReports(all);
+    }
 
-        List<attendanceDayByDay> dayByDays = new ArrayList<>();
+    public List<attendanceReport> findAttendanceReportBetweenTwoDates ( Date fromDate, Date toDate ) {
+        List<attendance> all = attendanceRepo.findAttendanceBetweenTwoDates(fromDate, toDate);
+        return getAttendanceReports(all);
+    }
+
+    private List<attendanceReport> getAttendanceReports ( List<attendance> all ) {
+        List<attendanceReport> dayByDays = new ArrayList<>();
         all.forEach(attendance -> {
-            attendanceDayByDay dayByDay = new attendanceDayByDay();
+            attendanceReport dayByDay = new attendanceReport();
             if (attendance.getAttType().equals(attType.IN)) {
-                Optional<attendanceDayByDay> anyRecord = findRecord(dayByDays, attendance);
+                Optional<attendanceReport> anyRecord = findRecord(dayByDays, attendance);
                 if (anyRecord.isPresent()) {
-                    attendanceDayByDay record = anyRecord.get();
+                    attendanceReport record = anyRecord.get();
                     record.setInType(attendance.getAttType().name());
                     record.setInStatus(attendance.getAttStatus().name());
                     record.setWorkShift(attendance.getWorkShift());
@@ -64,10 +72,10 @@ public class attendanceService extends AbstractService<attendance> {
                 }
             }
             if (attendance.getAttType().equals(attType.OUT)) {
-                Optional<attendanceDayByDay> anyRecord = findRecord(dayByDays, attendance);
+                Optional<attendanceReport> anyRecord = findRecord(dayByDays, attendance);
 
                 if (anyRecord.isPresent()) {
-                    attendanceDayByDay record = anyRecord.get();
+                    attendanceReport record = anyRecord.get();
                     record.setOutType(attendance.getAttType().name());
                     record.setOutStatus(attendance.getAttStatus().name());
                     record.setOutTime(attendance.getScanTime());
@@ -87,9 +95,9 @@ public class attendanceService extends AbstractService<attendance> {
                 }
             }
             if (attendance.getAttType().equals(attType.LOG)) {
-                Optional<attendanceDayByDay> anyRecord = findRecord(dayByDays, attendance);
+                Optional<attendanceReport> anyRecord = findRecord(dayByDays, attendance);
                 if (anyRecord.isPresent() && anyRecord.get().getLogStatus() == null) {
-                    attendanceDayByDay record = anyRecord.get();
+                    attendanceReport record = anyRecord.get();
                     record.setLogType(attendance.getAttType().name());
                     record.setLogStatus(attendance.getAttStatus().name());
                     record.setWorkShift(attendance.getWorkShift());
@@ -112,7 +120,8 @@ public class attendanceService extends AbstractService<attendance> {
         return dayByDays;
     }
 
-    private Optional<attendanceDayByDay> findRecord ( List<attendanceDayByDay> dayByDays, attendance attendance ) {
+
+    private Optional<attendanceReport> findRecord ( List<attendanceReport> dayByDays, attendance attendance ) {
         return dayByDays.stream()
                 .filter(day -> day.getEmployee() != null && day.getEmployee().getId().equals(attendance.getEmployee().getId()))
                 .filter(day -> day.getScanDate().equals(attendance.getScanDate())).findFirst();

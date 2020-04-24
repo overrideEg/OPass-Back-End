@@ -10,13 +10,14 @@ import com.overrideeg.apps.opass.exceptions.CouldNotUpdateRecordException;
 import com.overrideeg.apps.opass.exceptions.NoRecordFoundException;
 import com.overrideeg.apps.opass.io.entities.system.OEntity;
 import com.overrideeg.apps.opass.io.repositories.customisation.JpaRepositoryCustomisations;
-import com.overrideeg.apps.opass.ui.sys.ErrorMessages;
 import com.overrideeg.apps.opass.ui.sys.RequestOperation;
 import com.overrideeg.apps.opass.ui.sys.ResponseModel;
 import com.overrideeg.apps.opass.ui.sys.ResponseStatus;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -53,6 +54,7 @@ public abstract class AbstractService<E extends OEntity> {
      * @p
      */
     public E save(final E inEntity) {
+        inEntity.setCreatedAt(Date.from(Instant.now()));
         return mRepository.save(inEntity);
     }
 
@@ -77,6 +79,7 @@ public abstract class AbstractService<E extends OEntity> {
      */
     @Transactional(readOnly = false)
     public ResponseModel update(final E inEntity) {
+        inEntity.setUpdatedAt(Date.from(Instant.now()));
         ResponseModel responseModel = null;
         try {
             E persist = mRepository.persist(inEntity);
@@ -84,7 +87,7 @@ public abstract class AbstractService<E extends OEntity> {
         } catch (Exception e) {
             e.printStackTrace();
             responseModel = new ResponseModel(inEntity, RequestOperation.UPDATE, ResponseStatus.ERROR);
-            throw new CouldNotUpdateRecordException(ErrorMessages.COULD_NOT_UPDATE_RECORD.getErrorMessage());
+            throw new CouldNotUpdateRecordException(e.getMessage());
         }
 
         return responseModel;
@@ -92,9 +95,12 @@ public abstract class AbstractService<E extends OEntity> {
     }
 
     public List<ResponseModel> update(final List<E> inEntity) {
+
         List<ResponseModel> out = new ArrayList<>();
         try {
             inEntity.forEach(e -> {
+                e.setUpdatedAt(Date.from(Instant.now()));
+
                 try {
                     mRepository.persist(e);
                     out.add(new ResponseModel(e, RequestOperation.UPDATE, ResponseStatus.SUCCESS));
@@ -104,7 +110,7 @@ public abstract class AbstractService<E extends OEntity> {
                 }
             });
         } catch (Exception e) {
-            throw new CouldNotUpdateRecordException(ErrorMessages.COULD_NOT_UPDATE_RECORD.getErrorMessage());
+            throw new CouldNotUpdateRecordException(e.getMessage());
         }
         return out;
     }
@@ -132,7 +138,7 @@ public abstract class AbstractService<E extends OEntity> {
         return mRepository.findByField(by, value);
     }
 
-    public E find(List<String> names, List values) {
+    public Optional<E> find ( List<String> names, List values ) {
         return mRepository.findBySomeFields(names, values);
     }
 
@@ -177,7 +183,7 @@ public abstract class AbstractService<E extends OEntity> {
         } catch (final Exception e) {
             e.printStackTrace();
             responseModel = new ResponseModel(inId, RequestOperation.DELETE, ResponseStatus.ERROR);
-            throw new CouldNotDeleteRecordException(ErrorMessages.COULD_NOT_DELETE_RECORD.getErrorMessage());
+            throw new CouldNotDeleteRecordException(e.getMessage());
         }
         return responseModel;
     }
