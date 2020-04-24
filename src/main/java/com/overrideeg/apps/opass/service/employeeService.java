@@ -134,10 +134,11 @@ public class employeeService extends AbstractService<employee> {
      * @param companyId
      * @return User Created
      */
-    private User createUserForEmployee(employee inEntity, Long companyId) {
+    private User createUserForEmployee ( employee inEntity, Long companyId ) {
         User user = new User();
         user.setUsername(inEntity.getContactInfo().getMobile());
         user.setPassword(passwordEncoder.encode(inEntity.getSsn()));
+        user.setFullName(inEntity.getName());
         user.setEmail(inEntity.getContactInfo().getEmail());
         company companyForTenantId = new company();
         if (companyId != 0)
@@ -146,7 +147,7 @@ public class employeeService extends AbstractService<employee> {
             companyForTenantId.setId(0L);
         user.setCompany_id(companyForTenantId.getId());
         List<String> rules = new ArrayList<>();
-        rules.add(inEntity.getUserType().toString());
+        inEntity.getUserType().forEach(userType -> rules.add(userType.name()));
         user.setRoles(rules);
         return tenantResolver.saveUserIntoMasterDatabase(user);
     }

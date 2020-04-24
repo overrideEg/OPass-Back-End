@@ -11,6 +11,7 @@ import com.overrideeg.apps.opass.system.security.jwt.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -48,7 +49,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and().authorizeRequests()
                 .antMatchers(ApiUrls.Auth_ep + "/login").permitAll()
                 .antMatchers(ApiUrls.Auth_ep + "/logout").authenticated()
-//                .antMatchers(HttpMethod.POST, ApiUrls.Users_EP + "/**").anonymous()
+                .antMatchers(HttpMethod.POST, ApiUrls.Users_EP + "/**").anonymous()
 //                .antMatchers("/v3/api-docs/**").anonymous()
                 .antMatchers("/opassWebSocket/**").anonymous()
                 .antMatchers(ApiUrls.subscriptionPlan_EP + "/**").authenticated()

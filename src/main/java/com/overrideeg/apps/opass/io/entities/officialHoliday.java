@@ -24,7 +24,10 @@ public class officialHoliday extends OEntity {
     private translatedField name;
     @Temporal(TemporalType.DATE)
     @JsonFormat(shape = JsonFormat.Shape.STRING)
-    private Date date;
+    private Date fromDate;
+    @Temporal(TemporalType.DATE)
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    private Date toDate;
 
     public translatedField getName () {
         return name;
@@ -34,11 +37,19 @@ public class officialHoliday extends OEntity {
         this.name = name;
     }
 
-    public Date getDate () {
-        return date;
+    public Date getFromDate () {
+        return fromDate;
     }
 
-    public void setDate ( Date date ) {
-        this.date = date;
+    public void setFromDate ( Date fromDate ) {
+        this.fromDate = fromDate;
+    }
+
+    public Date getToDate () {
+        return toDate;
+    }
+
+    public void setToDate ( Date toDate ) {
+        this.toDate = toDate;
     }
 }

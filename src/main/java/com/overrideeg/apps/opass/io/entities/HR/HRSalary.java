@@ -19,8 +19,14 @@ public class HRSalary extends OEntity {
     @Temporal(TemporalType.DATE)
     @JsonFormat(pattern = "dd/MM/yyyy", timezone = "Africa/Cairo")
     private Date fromDate;
+    @Temporal(TemporalType.DATE)
     @JsonFormat(pattern = "dd/MM/yyyy", timezone = "Africa/Cairo")
     private Date toDate;
+    private Integer totalHours;
+    private Integer overTimeHours;
+    private Integer lateMinutes;
+    private Integer absenceDays;
+    private Integer earlyGoMinutes;
     private Double salary;
     private Double addition;
     private Double deduction;
@@ -99,5 +105,46 @@ public class HRSalary extends OEntity {
 
     public void setTotal ( Double total ) {
         this.total = total;
+    }
+
+
+    public Integer getTotalHours () {
+        return totalHours;
+    }
+
+    public void setTotalHours ( Integer totalHours ) {
+        this.totalHours = totalHours;
+    }
+
+    public Integer getOverTimeHours () {
+        return overTimeHours;
+    }
+
+    public void setOverTimeHours ( Integer overTimeHours ) {
+        this.overTimeHours = overTimeHours;
+    }
+
+    public Integer getLateMinutes () {
+        return lateMinutes;
+    }
+
+    public void setLateMinutes ( Integer lateMinutes ) {
+        this.lateMinutes = lateMinutes;
+    }
+
+    public Integer getAbsenceDays () {
+        return absenceDays;
+    }
+
+    public void setAbsenceDays ( Integer absenceDays ) {
+        this.absenceDays = absenceDays;
+    }
+
+    public Integer getEarlyGoMinutes () {
+        return earlyGoMinutes;
+    }
+
+    public void setEarlyGoMinutes ( Integer earlyGoMinutes ) {
+        this.earlyGoMinutes = earlyGoMinutes;
     }
 }

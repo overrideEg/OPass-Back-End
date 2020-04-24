@@ -59,7 +59,9 @@ public class employeeUtilsService {
 
     public boolean checkIfOfficialHoliday ( List<officialHoliday> holidays, LocalDate currentDate ) {
         Date date = dateUtils.convertToDateViaInstant(currentDate, TimeZone.getTimeZone("Africa,Cairo"));
-        return holidays.stream().anyMatch(officialHoliday -> officialHoliday.getDate().equals(date));
+
+        return holidays.stream().anyMatch(officialHoliday ->
+                officialHoliday.getFromDate().compareTo(date) >= 0 && officialHoliday.getToDate().compareTo(date) <= 0);
     }
 
     public workShift getWorkShiftAtDate ( employee employee, Long id, Date date ) {

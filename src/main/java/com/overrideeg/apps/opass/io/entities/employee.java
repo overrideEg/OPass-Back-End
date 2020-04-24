@@ -9,6 +9,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.overrideeg.apps.opass.enums.attType;
 import com.overrideeg.apps.opass.enums.employeeStatus;
+import com.overrideeg.apps.opass.enums.gender;
+import com.overrideeg.apps.opass.enums.userType;
 import com.overrideeg.apps.opass.exceptions.NoRecordFoundException;
 import com.overrideeg.apps.opass.io.entities.system.OEntity;
 import com.overrideeg.apps.opass.io.valueObjects.attendanceRules;
@@ -74,14 +76,23 @@ public class employee extends OEntity {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long createdUserId;
     @Enumerated(EnumType.STRING)
-    private com.overrideeg.apps.opass.enums.userType userType;
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Fetch(FetchMode.SUBSELECT)
+    private List<userType> userType;
     private Double salary;
     @ElementCollection(fetch = FetchType.EAGER)
     @Fetch(FetchMode.SUBSELECT)
     private List<Integer> daysOff;
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "employee_optional_branches",
+            joinColumns = @JoinColumn(name = "employee_id"),
+            inverseJoinColumns = @JoinColumn(name = "branch_id")
+            , uniqueConstraints = {@UniqueConstraint(columnNames = {"employee_id", "branch_id"})})
     @Fetch(FetchMode.SUBSELECT)
     private List<branch> optionalBranches;
+    @Enumerated(EnumType.STRING)
+    private gender gender;
     // todo add in service @amr ahmed
 
     @Override
@@ -193,11 +204,12 @@ public class employee extends OEntity {
         this.createdUserId = createdUserId;
     }
 
-    public com.overrideeg.apps.opass.enums.userType getUserType () {
+
+    public List<com.overrideeg.apps.opass.enums.userType> getUserType () {
         return userType;
     }
 
-    public void setUserType ( com.overrideeg.apps.opass.enums.userType userType ) {
+    public void setUserType ( List<com.overrideeg.apps.opass.enums.userType> userType ) {
         this.userType = userType;
     }
 
@@ -223,6 +235,14 @@ public class employee extends OEntity {
 
     public void setOptionalBranches ( List<branch> optionalBranches ) {
         this.optionalBranches = optionalBranches;
+    }
+
+    public com.overrideeg.apps.opass.enums.gender getGender () {
+        return gender;
+    }
+
+    public void setGender ( com.overrideeg.apps.opass.enums.gender gender ) {
+        this.gender = gender;
     }
 
     /**

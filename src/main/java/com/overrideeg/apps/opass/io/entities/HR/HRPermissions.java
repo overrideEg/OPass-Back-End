@@ -27,8 +27,8 @@ public class HRPermissions extends OEntity {
     @Temporal(TemporalType.DATE)
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Date date;
-    private Integer hoursLate;
-    private Integer hoursEarlyGo;
+    private Integer minutesLate;
+    private Integer minutesEarlyGo;
     private Boolean absenceAllowed;
 
     public translatedLob getDescription () {
@@ -55,20 +55,20 @@ public class HRPermissions extends OEntity {
         this.date = date;
     }
 
-    public Integer getHoursLate () {
-        return hoursLate;
+    public Integer getMinutesLate () {
+        return minutesLate;
     }
 
-    public void setHoursLate ( Integer hoursLate ) {
-        this.hoursLate = hoursLate;
+    public void setMinutesLate ( Integer hoursLate ) {
+        this.minutesLate = hoursLate;
     }
 
-    public Integer getHoursEarlyGo () {
-        return hoursEarlyGo;
+    public Integer getMinutesEarlyGo () {
+        return minutesEarlyGo;
     }
 
-    public void setHoursEarlyGo ( Integer hoursEarlyGo ) {
-        this.hoursEarlyGo = hoursEarlyGo;
+    public void setMinutesEarlyGo ( Integer hoursEarlyGo ) {
+        this.minutesEarlyGo = hoursEarlyGo;
     }
 
     public Boolean getAbsenceAllowed () {

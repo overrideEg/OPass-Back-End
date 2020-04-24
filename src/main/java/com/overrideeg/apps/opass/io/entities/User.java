@@ -6,6 +6,7 @@ package com.overrideeg.apps.opass.io.entities;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.overrideeg.apps.opass.io.valueObjects.translatedField;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,6 +21,11 @@ import static java.util.stream.Collectors.toList;
 
 @Entity
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@AttributeOverrides({
+        @AttributeOverride(name = "fullName.ar", column = @Column(name = "fullName_ar")),
+        @AttributeOverride(name = "fullName.en", column = @Column(name = "fullName_en")),
+        @AttributeOverride(name = "fullName.tr", column = @Column(name = "fullName_tr")),
+})
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -27,6 +33,7 @@ public class User implements UserDetails {
     @Column(nullable = false, unique = true)
     @NotEmpty
     private String username;
+    private translatedField fullName;
     @NotEmpty
     @Column(unique = true)
     private String email;
@@ -148,11 +155,19 @@ public class User implements UserDetails {
         this.token = token;
     }
 
-    public Long getEmployee_id() {
+    public Long getEmployee_id () {
         return employee_id;
     }
 
-    public void setEmployee_id(Long employee_id) {
+    public void setEmployee_id ( Long employee_id ) {
         this.employee_id = employee_id;
+    }
+
+    public translatedField getFullName () {
+        return fullName;
+    }
+
+    public void setFullName ( translatedField fullName ) {
+        this.fullName = fullName;
     }
 }
