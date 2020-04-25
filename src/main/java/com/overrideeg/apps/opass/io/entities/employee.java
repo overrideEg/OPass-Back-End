@@ -27,6 +27,8 @@ import javax.persistence.*;
 import java.sql.Time;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Entity
 @AttributeOverrides({
@@ -313,4 +315,12 @@ public class employee extends OEntity {
     }
 
 
+    public Double calculateTotalMinutesShifts () {
+        AtomicReference<Double> totalMinutes = new AtomicReference<>(0D);
+        shifts.forEach(shift -> {
+            long duration = shift.getShiftHours().getToHour().getTime() - shift.getShiftHours().getFromHour().getTime();
+            totalMinutes.updateAndGet(v -> v + TimeUnit.MINUTES.convert(duration, TimeUnit.MILLISECONDS));
+        });
+        return totalMinutes.get();
+    }
 }
