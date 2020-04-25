@@ -6,10 +6,7 @@ package com.overrideeg.apps.opass.io.entities.system;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.overrideeg.apps.opass.io.entities.User;
-import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -28,27 +25,24 @@ public abstract class OEntity implements Serializable {
     private Long id;
 
     @CreatedDate
-    @Column(columnDefinition = "DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3)", insertable = false, updatable = false)
+    @Column(name = "creation_date", columnDefinition = "DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3)", insertable = false, updatable = false)
     protected Date createdAt;
 
     @LastModifiedDate
-    @Column(columnDefinition = "DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3)", insertable = false, updatable = false)
+    @Column(name = "last_update_date", columnDefinition = "DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3)", insertable = false, updatable = false)
     protected Date updatedAt;
 
+//
+//    @ManyToOne
+//    @JoinColumn(name = "creator_id")
+//    @CreatedBy
+//    protected User creator;
+//
+//    @ManyToOne
+//    @JoinColumn(name = "modifier_id")
+//    @LastModifiedBy
+//    protected User modifier;
 
-    @ManyToOne
-    @JoinColumn(name = "creator_id")
-    @CreatedBy
-    protected User creator;
-
-    @ManyToOne
-    @JoinColumn(name = "modifier_id")
-    @LastModifiedBy
-    protected User modifier;
-
-    public static long getSerialVersionUID () {
-        return serialVersionUID;
-    }
 
     @JsonIgnore
     public boolean isValid () {
@@ -79,19 +73,19 @@ public abstract class OEntity implements Serializable {
         this.updatedAt = updatedAt;
     }
 
-    public User getCreator () {
-        return creator;
-    }
-
-    public void setCreator ( User creator ) {
-        this.creator = creator;
-    }
-
-    public User getModifier () {
-        return modifier;
-    }
-
-    public void setModifier ( User modifier ) {
-        this.modifier = modifier;
-    }
+//    public User getCreator () {
+//        return creator;
+//    }
+//
+//    public void setCreator ( User creator ) {
+//        this.creator = creator;
+//    }
+//
+//    public User getModifier () {
+//        return modifier;
+//    }
+//
+//    public void setModifier ( User modifier ) {
+//        this.modifier = modifier;
+//    }
 }
