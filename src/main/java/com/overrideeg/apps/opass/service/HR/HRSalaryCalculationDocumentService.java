@@ -9,6 +9,7 @@ import com.overrideeg.apps.opass.exceptions.DateWrongException;
 import com.overrideeg.apps.opass.exceptions.MissingRequiredFieldException;
 import com.overrideeg.apps.opass.exceptions.NoRecordFoundException;
 import com.overrideeg.apps.opass.io.entities.HR.HRPermissions;
+import com.overrideeg.apps.opass.io.entities.HR.HRSalary;
 import com.overrideeg.apps.opass.io.entities.HR.HRSalaryCalculationDocument;
 import com.overrideeg.apps.opass.io.entities.HR.HRSettings;
 import com.overrideeg.apps.opass.io.entities.employee;
@@ -40,13 +41,17 @@ public class HRSalaryCalculationDocumentService extends AbstractService<HRSalary
     @Autowired
     employeeUtilsService employeeUtilsService;
 
-    List<attendanceReport> attendances = new ArrayList<>();
 
-    private HRSettings hrSetting;
+    List<attendanceReport> attendances = new ArrayList<>();
 
     public HRSalaryCalculationDocumentService ( final HRSalaryCalculationDocumentRepo inRepository ) {
         super(inRepository);
     }
+
+    /**
+     * hr settings for this company
+     */
+    HRSettings hrSetting;
 
     /**
      * method that filter attendance report with in and out values;
@@ -58,6 +63,7 @@ public class HRSalaryCalculationDocumentService extends AbstractService<HRSalary
     private static List<attendanceReport> findInAndOutRecordsOnly ( employee employee, List<attendanceReport> attendances ) {
         return attendances.stream()
                 .filter(attendanceReport -> attendanceReport.getInType() != null && attendanceReport.getOutType() != null)
+                .filter(attendanceReport -> attendanceReport.getEmployee().getId().equals(employee.getId()))
                 .collect(Collectors.toList());
     }
 
@@ -82,7 +88,7 @@ public class HRSalaryCalculationDocumentService extends AbstractService<HRSalary
         // find HR Settings
         findHRSettings();
         // find attendances in twoDates
-        findAttendances(inEntity.getFromDate(), inEntity.getToDate());
+        findAttendances(inEntity, inEntity.getFromDate(), inEntity.getToDate());
         // calculate salaries;
         calculateSalaries(attendances, inEntity.getFromDate(), inEntity.getToDate());
 
@@ -92,11 +98,21 @@ public class HRSalaryCalculationDocumentService extends AbstractService<HRSalary
     /**
      * method that found attendance logs between two dates
      *
+     * @param inEntity
      * @param fromDate from date to search
      * @param toDate   to date to search
      */
-    private void findAttendances ( Date fromDate, Date toDate ) {
+    private void findAttendances ( HRSalaryCalculationDocument inEntity, Date fromDate, Date toDate ) {
         attendances = attendanceService.findAttendanceReportBetweenTwoDates(fromDate, toDate);
+        if (inEntity.getEmployee() != null)
+            attendances = attendances.stream().filter(attendanceReport -> attendanceReport.getEmployee().getId().equals(inEntity.getEmployee().getId())).collect(Collectors.toList());
+        else if (inEntity.getBranch() != null && inEntity.getDepartment() != null)
+            attendances = attendances.stream()
+                    .filter(attendanceReport -> attendanceReport.getEmployee().getBranch().getId().equals(inEntity.getBranch().getId()))
+                    .filter(attendanceReport -> attendanceReport.getEmployee().getDepartment().getId().equals(inEntity.getDepartment().getId()))
+                    .collect(Collectors.toList());
+        else if (inEntity.getDepartment() == null && inEntity.getBranch() == null && inEntity.getEmployee() == null)
+            throw new MissingRequiredFieldException("Department and Branch or Employee are required");
         if (attendances.isEmpty()) {
             throw new NoRecordFoundException("No Attendance Logs Found in this duration");
         }
@@ -107,29 +123,41 @@ public class HRSalaryCalculationDocumentService extends AbstractService<HRSalary
         Map<employee, List<attendanceReport>> listMapped = new HashMap<>();
         attendancesList.forEach(list -> {
             employee employee = list.getEmployee();
-            List<attendanceReport> listOFAttendances = attendancesList.stream().filter(attendanceReport -> attendanceReport.getEmployee().getId().equals(employee.getId())).collect(Collectors.toList());
+            List<attendanceReport> listOFAttendances = attendancesList
+                    .stream()
+                    .filter(attendanceReport -> attendanceReport.getEmployee().getId().equals(employee.getId()))
+                    .filter(report -> report.getScanDate().getTime() <= toDate.getTime() && report.getScanDate().getTime() >= fromDate.getTime())
+                    .collect(Collectors.toList());
             listMapped.put(employee, listOFAttendances);
         });
 
 
         listMapped.forEach(( employee, attendanceReports ) -> {
+            // get in and out reports only
             List<attendanceReport> inAndOutRecords = findInAndOutRecordsOnly(employee, attendanceReports);
-            Integer totalMinutes = 0;
-            Integer totalOverTimeMinutes = 0;
-            Integer totalLateMinutes = 0;
-            Integer totalAbsenceDays = 0;
-            Integer totalWorkOnDayOffMinutes = 0;
 
-            totalAbsenceDays = calculateAbsenceDays(employee, attendanceReports, fromDate, toDate);
-            totalLateMinutes = calculateLateMinutes(employee, attendanceReports);
+            // get absence days
+            Integer totalAbsenceDays = calculateAbsenceDays(employee, inAndOutRecords, fromDate, toDate);
+            // get total late minutes
+            Integer totalLateMinutes = calculateLateMinutes(employee, inAndOutRecords);
+            // get total early go minutes
+            Integer totalEarlyGoMinutes = calculateEarlyGoMinutes(employee, inAndOutRecords);
+            // get total work on day off minutes
+            Integer totalWorkOnDayOffMinutes = calcWorkOnDayOffMinutes(employee, inAndOutRecords);
+            // get total overtime minutes
+            Integer totalOverTimeMinutes = calcOverTimeMinutes(employee, inAndOutRecords);
+            // get total minutes
+            Integer totalMinutes = calcTotalMinutes(inAndOutRecords);
 
+            HRSalary salary = calculateSalary(employee, totalMinutes, totalOverTimeMinutes, totalWorkOnDayOffMinutes, totalEarlyGoMinutes, totalLateMinutes, totalAbsenceDays);
+            salary.setFromDate(fromDate);
+            salary.setToDate(toDate);
+            salary.setEmployee(employee);
 
-            System.out.println(totalAbsenceDays);
-            System.out.println(totalLateMinutes);
-
-
+            salaryService.save(salary);
         });
     }
+
 
     public List<Date> calculateDatesToBeAttend ( employee employee, Date fromDate, Date toDate ) {
         DateUtils dateUtils = new DateUtils();
@@ -160,6 +188,15 @@ public class HRSalaryCalculationDocumentService extends AbstractService<HRSalary
     }
 
 
+    /**
+     * method that calculate absence days for one employee
+     *
+     * @param employee          employee
+     * @param attendanceReports att reports
+     * @param fromDate          from date to search in
+     * @param toDate            to date to search in
+     * @return integer contain absence days
+     */
     public Integer calculateAbsenceDays ( employee employee, List<attendanceReport> attendanceReports, Date fromDate, Date toDate ) {
         List<Date> dateList = calculateDatesToBeAttend(employee, fromDate, toDate);
         Integer AbsenceDays = dateList.size();
@@ -177,21 +214,23 @@ public class HRSalaryCalculationDocumentService extends AbstractService<HRSalary
     /**
      * method tha calculate late minutes in duration
      *
-     * @param employee
+     * @param employee          employee
      * @param attendanceReports attendance Reports to search in
      * @return integer of calculated late minutes
      */
     public Integer calculateLateMinutes ( employee employee, List<attendanceReport> attendanceReports ) {
-        List<attendanceReport> lateRecords = attendanceReports.stream().filter(attendanceReport -> attendanceReport.getInStatus()
-                .equals(attStatus.lateEntrance.name())).collect(Collectors.toList());
+        List<attendanceReport> lateRecords = attendanceReports.stream()
+                .filter(attendanceReport -> attendanceReport.getInStatus().equals(attStatus.lateEntrance.name()))
+                .filter(report -> report.getEmployee().getId().equals(employee.getId()))
+                .collect(Collectors.toList());
+
         DateUtils dateUtils = new DateUtils();
         AtomicReference<Long> returnValue = new AtomicReference<>(0L);
 
         lateRecords.forEach(report -> {
-            Long id = report.getWorkShift().getId();
             Date inTime = report.getInTime();
             Date shiftAtDate = dateUtils.copyTimeToDate(report.getScanDate(), inTime);
-            workShift workShiftAtDate = employeeUtilsService.getWorkShiftAtDate(employee, id, shiftAtDate);
+            workShift workShiftAtDate = employeeUtilsService.getWorkShiftAtDate(employee, report.getWorkShift().getId(), shiftAtDate);
             report.setWorkShift(workShiftAtDate);
             Date fromHour = dateUtils.copyTimeToDate(report.getScanDate(), report.getWorkShift().getShiftHours().getFromHour());
             long allowedLate = TimeUnit.MILLISECONDS.convert(employee.fetchEmployeeAttRules().getAllowedLateMinutes(), TimeUnit.MINUTES);
@@ -201,4 +240,174 @@ public class HRSalaryCalculationDocumentService extends AbstractService<HRSalary
 
         return Math.toIntExact(returnValue.get());
     }
+
+    /**
+     * method that calculate early go minutes
+     *
+     * @param employee          employee to search in
+     * @param attendanceReports attendance reports to search in
+     * @return total early go minutes
+     */
+    private Integer calculateEarlyGoMinutes ( employee employee, List<attendanceReport> attendanceReports ) {
+        List<attendanceReport> earlyGoRecords = attendanceReports.stream()
+                .filter(attendanceReport -> attendanceReport.getOutStatus().equals(attStatus.earlyGo.name()))
+                .filter(report -> report.getEmployee().getId().equals(employee.getId()))
+                .collect(Collectors.toList());
+
+        DateUtils dateUtils = new DateUtils();
+        AtomicReference<Long> returnValue = new AtomicReference<>(0L);
+
+        earlyGoRecords.forEach(report -> {
+            Date outTime = report.getOutTime();
+            Date shiftAtDate = dateUtils.copyTimeToDate(report.getScanDate(), outTime);
+            workShift workShiftAtDate = employeeUtilsService.getWorkShiftAtDate(employee, report.getWorkShift().getId(), shiftAtDate);
+            report.setWorkShift(workShiftAtDate);
+            Date toHour = dateUtils.copyTimeToDate(report.getScanDate(), report.getWorkShift().getShiftHours().getToHour());
+            long allowedEarlyGo = TimeUnit.MILLISECONDS.convert(employee.fetchEmployeeAttRules().getAllowedEarlyLeaveMinutes(), TimeUnit.MINUTES);
+            long totalLate = (toHour.getTime() - shiftAtDate.getTime()) - allowedEarlyGo;
+            returnValue.updateAndGet(v -> v + TimeUnit.MINUTES.convert(totalLate, TimeUnit.MILLISECONDS));
+        });
+
+        return Math.toIntExact(returnValue.get());
+    }
+
+    /**
+     * method that calculate work on dayoff minutes
+     *
+     * @param employee          employee
+     * @param attendanceReports att reports
+     * @return minutes worked in day off
+     */
+    private Integer calcWorkOnDayOffMinutes ( employee employee, List<attendanceReport> attendanceReports ) {
+        attendanceReports = attendanceReports
+                .stream()
+                .filter(report -> report.getInStatus().equals(attStatus.workOnDayOff.name()) && report.getOutStatus()
+                        .equals(attStatus.workOnDayOff.name()))
+                .filter(report -> report.getEmployee().getId().equals(employee.getId()))
+                .collect(Collectors.toList());
+
+        DateUtils dateUtils = new DateUtils();
+        AtomicReference<Long> returnValue = new AtomicReference<>(0L);
+        attendanceReports.forEach(report -> {
+            Date inTime = dateUtils.copyTimeToDate(report.getScanDate(), report.getInTime());
+            Date outTime = dateUtils.copyTimeToDate(report.getScanDate(), report.getOutTime());
+            long totalTime = outTime.getTime() - inTime.getTime();
+            returnValue.updateAndGet(v -> v + TimeUnit.MINUTES.convert(totalTime, TimeUnit.MILLISECONDS));
+        });
+        return Math.toIntExact(returnValue.get());
+    }
+
+
+    /**
+     * method that calculate over time for one employee
+     *
+     * @param employee          employee
+     * @param attendanceReports to search in
+     * @return integer of total hours overtime
+     */
+    private Integer calcOverTimeMinutes ( employee employee, List<attendanceReport> attendanceReports ) {
+        attendanceReports = attendanceReports
+                .stream()
+                .filter(report -> report.getEmployee().getId().equals(employee.getId()))
+                .filter(report -> report.getOutStatus().equals(attStatus.overTime.name())).collect(Collectors.toList());
+
+
+        DateUtils dateUtils = new DateUtils();
+        AtomicReference<Long> returnValue = new AtomicReference<>(0L);
+
+        attendanceReports.forEach(report -> {
+            Date inTime = report.getInTime();
+            Date shiftAtDate = dateUtils.copyTimeToDate(report.getScanDate(), inTime);
+            workShift workShiftAtDate = employeeUtilsService.getWorkShiftAtDate(employee, report.getWorkShift().getId(), shiftAtDate);
+            report.setWorkShift(workShiftAtDate);
+            Date toHour = dateUtils.copyTimeToDate(report.getScanDate(), report.getWorkShift().getShiftHours().getToHour());
+            long totalOverTimeHours = toHour.getTime() - shiftAtDate.getTime();
+            returnValue.updateAndGet(v -> v + TimeUnit.HOURS.convert(totalOverTimeHours, TimeUnit.MILLISECONDS));
+        });
+        return Math.toIntExact(returnValue.get());
+    }
+
+    /**
+     * method calculate total minutes of records
+     *
+     * @param attendanceReports attendance reports for one employee
+     * @return integer of total minutes
+     */
+    private Integer calcTotalMinutes ( List<attendanceReport> attendanceReports ) {
+        DateUtils dateUtils = new DateUtils();
+        AtomicReference<Long> returnValue = new AtomicReference<>(0L);
+
+        attendanceReports.forEach(report -> {
+            Date inTime = dateUtils.copyTimeToDate(report.getScanDate(), report.getInTime());
+            Date outTime = dateUtils.copyTimeToDate(report.getScanDate(), report.getOutTime());
+            long totalMinutes = outTime.getTime() - inTime.getTime();
+            returnValue.updateAndGet(v -> v + TimeUnit.MINUTES.convert(totalMinutes, TimeUnit.MILLISECONDS));
+        });
+        return Math.toIntExact(returnValue.get());
+    }
+
+    /**
+     * method that calculate salary with all fields
+     *
+     * @param employee                 employee
+     * @param totalMinutes             totalMinutes
+     * @param totalOverTimeMinutes     totalOverTimeMinutes
+     * @param totalWorkOnDayOffMinutes totalWorkOnDayOffMinutes
+     * @param totalEarlyGoMinutes      totalEarlyGoMinutes
+     * @param totalLateMinutes         totalLateMinutes
+     * @param totalAbsenceDays         totalAbsenceDays
+     * @return hr salary document
+     */
+    private HRSalary calculateSalary ( employee employee, Integer totalMinutes, Integer totalOverTimeMinutes, Integer totalWorkOnDayOffMinutes, Integer totalEarlyGoMinutes, Integer totalLateMinutes, Integer totalAbsenceDays ) {
+        HRSalary returnValue = new HRSalary();
+
+        // salary bases
+        Double baseSalaryInHour = employee.getSalary();
+        Double totalShiftMinutes = employee.calculateTotalMinutesShifts();
+        Double salaryInDay = baseSalaryInHour * (totalShiftMinutes / 60);
+        Double totalShiftHours = totalShiftMinutes / 60;
+        Double salaryInMinute = (salaryInDay / totalShiftHours) / 60;
+
+        // absence
+        returnValue.setAbsenceDays(totalAbsenceDays);
+        double AbsenceDeduction = 0D;
+        AbsenceDeduction = totalAbsenceDays * salaryInDay * hrSetting.getAbsenceDayDeduction();
+
+        // early go
+        returnValue.setEarlyGoMinutes(totalEarlyGoMinutes);
+        double earlyGoDeduction = 0D;
+        earlyGoDeduction = salaryInMinute * totalEarlyGoMinutes * hrSetting.getDelayHourDeduction();
+
+        // late entrance
+        returnValue.setLateMinutes(totalLateMinutes);
+        double lateDeduction = 0D;
+        lateDeduction = salaryInMinute * totalLateMinutes * hrSetting.getDelayHourDeduction();
+
+        // work on day off
+        int overTimeTotalDuration = 0;
+        overTimeTotalDuration = (totalWorkOnDayOffMinutes + totalOverTimeMinutes) / 60;
+
+        returnValue.setOverTimeHours(overTimeTotalDuration);
+
+        Double overTimeAddition = (totalOverTimeMinutes / 60) * hrSetting.getOverTimeAddition();
+
+        Double workOnDayOffAddition = (totalWorkOnDayOffMinutes / 60) * hrSetting.getWorkOnDayOffAddition();
+
+
+        // salary
+        returnValue.setTotalHours(totalMinutes / 60);
+        Double totalSalary = totalMinutes * salaryInMinute;
+        returnValue.setSalary(totalSalary);
+
+        // addition
+        returnValue.setAddition(overTimeAddition + workOnDayOffAddition);
+
+        // deduction
+        returnValue.setDeduction(lateDeduction + earlyGoDeduction + AbsenceDeduction);
+
+
+        return returnValue;
+    }
+
+
 }

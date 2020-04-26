@@ -33,6 +33,7 @@ public class User implements UserDetails {
     @Column(nullable = false, unique = true)
     @NotEmpty
     private String username;
+    @Embedded
     private translatedField fullName;
     @NotEmpty
     @Column(unique = true)

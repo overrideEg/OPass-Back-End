@@ -30,9 +30,9 @@ public class HRSalaryCalculationDocument extends OEntity {
     private branch branch;
     @ManyToOne(fetch = FetchType.EAGER)
     private employee employee;
-    @JsonFormat(pattern = "dd/MM/yyyy", timezone = "Africa/Cairo")
+    @JsonFormat(timezone = "Africa/Cairo")
     private Date fromDate;
-    @JsonFormat(pattern = "dd/MM/yyyy", timezone = "Africa/Cairo")
+    @JsonFormat(timezone = "Africa/Cairo")
     private Date toDate;
 
     public translatedLob getDescription () {

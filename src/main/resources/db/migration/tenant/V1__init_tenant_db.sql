@@ -2,8 +2,8 @@
 create table app_setting
 (
     id               bigint not null auto_increment,
-    creation_date    datetime(6),
-    last_update_date datetime(6),
+    creation_date    DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3),
+    last_update_date DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3),
     about_ar         varchar(255),
     about_en         varchar(255),
     about_tr         varchar(255),
@@ -18,8 +18,8 @@ create table app_setting
 create table attendance
 (
     id               bigint not null auto_increment,
-    creation_date    datetime(6),
-    last_update_date datetime(6),
+    creation_date    DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3),
+    last_update_date DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3),
     att_status       varchar(255),
     att_type         varchar(255),
     scan_date        date,
@@ -32,8 +32,8 @@ create table attendance
 create table branch
 (
     id                          bigint not null auto_increment,
-    creation_date               datetime(6),
-    last_update_date            datetime(6),
+    creation_date               DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3),
+    last_update_date            DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3),
     allowed_early_leave_minutes integer,
     allowed_late_leave_minutes  integer,
     allowed_late_minutes        integer,
@@ -54,8 +54,8 @@ create table branch_days_off
 create table city
 (
     id               bigint not null auto_increment,
-    creation_date    datetime(6),
-    last_update_date datetime(6),
+    creation_date    DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3),
+    last_update_date DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3),
     name_ar          varchar(255),
     name_en          varchar(255),
     name_tr          varchar(255),
@@ -66,8 +66,8 @@ create table city
 create table company
 (
     id               bigint not null auto_increment,
-    creation_date    datetime(6),
-    last_update_date datetime(6),
+    creation_date    DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3),
+    last_update_date DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3),
     database_name    varchar(255),
     description_ar   varchar(255),
     description_en   varchar(255),
@@ -86,8 +86,8 @@ create table company
 create table country
 (
     id               bigint not null auto_increment,
-    creation_date    datetime(6),
-    last_update_date datetime(6),
+    creation_date    DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3),
+    last_update_date DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3),
     name_ar          varchar(255),
     name_en          varchar(255),
     name_tr          varchar(255),
@@ -97,8 +97,8 @@ create table country
 create table currency
 (
     id               bigint not null auto_increment,
-    creation_date    datetime(6),
-    last_update_date datetime(6),
+    creation_date    DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3),
+    last_update_date DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3),
     default_currency bit,
     fraction_name_ar varchar(255),
     fraction_name_en varchar(255),
@@ -124,8 +124,8 @@ create table custom_shift_hours_aud
 create table custom_shift_hours
 (
     id               bigint not null auto_increment,
-    creation_date    datetime(6),
-    last_update_date datetime(6),
+    creation_date    DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3),
+    last_update_date DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3),
     day              integer,
     from_hour        time,
     to_hour          time,
@@ -135,8 +135,8 @@ create table custom_shift_hours
 create table department
 (
     id                          bigint not null auto_increment,
-    creation_date               datetime(6),
-    last_update_date            datetime(6),
+    creation_date               DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3),
+    last_update_date            DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3),
     allowed_early_leave_minutes integer,
     allowed_late_leave_minutes  integer,
     allowed_late_minutes        integer,
@@ -157,8 +157,8 @@ create table department_days_off
 create table employee
 (
     id                   bigint not null auto_increment,
-    creation_date        datetime(6),
-    last_update_date     datetime(6),
+    creation_date        DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3),
+    last_update_date     DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3),
     attendance_exception bit,
     birth_date           datetime(6),
     address1             varchar(255),
@@ -172,23 +172,23 @@ create table employee
     state                varchar(255),
     street               varchar(255),
     telephone1           varchar(255),
-    telephone2          varchar(255),
-    website             varchar(255),
-    contract_end_date   datetime(6),
-    contract_start_date datetime(6),
-    created_user_id     bigint,
-    firing_date         datetime(6),
-    name_ar             varchar(255),
-    name_en             varchar(255),
-    name_tr             varchar(255),
-    salary              double precision,
-    ssn                 varchar(255),
-    status              varchar(255),
-    user_type           varchar(255),
-    branch_id           bigint,
-    city_id             bigint,
-    country_id          bigint,
-    department_id       bigint,
+    telephone2           varchar(255),
+    website              varchar(255),
+    contract_end_date    datetime(6),
+    contract_start_date  datetime(6),
+    created_user_id      bigint,
+    firing_date          datetime(6),
+    gender               varchar(255),
+    name_ar              varchar(255),
+    name_en              varchar(255),
+    name_tr              varchar(255),
+    salary               double precision,
+    ssn                  varchar(255),
+    status               varchar(255),
+    branch_id            bigint,
+    city_id              bigint,
+    country_id           bigint,
+    department_id        bigint,
     primary key (id)
 ) engine = InnoDB
 ;
@@ -198,17 +198,29 @@ create table employee_days_off
     days_off    integer
 ) engine = InnoDB
 ;
-create table employee_shifts
+create table employee_optional_branches
 (
     employee_id bigint not null,
-    shift_id    bigint not null
+    branch_id   bigint not null
+) engine = InnoDB
+;
+create table employee_shifts
+(
+    employee_id  bigint not null,
+    workshift_id bigint not null
+) engine = InnoDB
+;
+create table employee_user_type
+(
+    employee_id bigint not null,
+    user_type   varchar(255)
 ) engine = InnoDB
 ;
 create table faq
 (
     id               bigint not null auto_increment,
-    creation_date    datetime(6),
-    last_update_date datetime(6),
+    creation_date    DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3),
+    last_update_date DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3),
     answer_ar        varchar(255),
     answer_en        varchar(255),
     answer_tr        varchar(255),
@@ -221,23 +233,22 @@ create table faq
 create table hibernate_sequence
 (
     next_val bigint
-) engine = InnoDB
-;
+) engine = InnoDB;
 insert into hibernate_sequence
 values (1)
 ;
 create table hr_permissions
 (
     id               bigint not null auto_increment,
-    creation_date    datetime(6),
-    last_update_date datetime(6),
+    creation_date    DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3),
+    last_update_date DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3),
     absence_allowed  bit,
     date             date,
     description_ar   longtext,
     description_en   longtext,
     description_tr   longtext,
-    hours_early_go   integer,
-    hours_late       integer,
+    minutes_early_go integer,
+    minutes_late     integer,
     employee_id      bigint,
     primary key (id)
 ) engine = InnoDB
@@ -245,8 +256,8 @@ create table hr_permissions
 create table hr_settins
 (
     id                       bigint not null auto_increment,
-    creation_date            datetime(6),
-    last_update_date         datetime(6),
+    creation_date            DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3),
+    last_update_date         DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3),
     absence_day_deduction    double precision,
     delay_hour_deduction     double precision,
     over_time_addition       double precision,
@@ -257,20 +268,21 @@ create table hr_settins
 create table official_holiday
 (
     id               bigint not null auto_increment,
-    creation_date    datetime(6),
-    last_update_date datetime(6),
-    date             date,
+    creation_date    DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3),
+    last_update_date DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3),
+    from_date        date,
     name_ar          varchar(255),
     name_en          varchar(255),
     name_tr          varchar(255),
+    to_date          date,
     primary key (id)
 ) engine = InnoDB
 ;
 create table plan_details
 (
     id               bigint not null auto_increment,
-    creation_date    datetime(6),
-    last_update_date datetime(6),
+    creation_date    DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3),
+    last_update_date DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3),
     price            double precision,
     currency_id      bigint,
     primary key (id)
@@ -279,8 +291,8 @@ create table plan_details
 create table qr_machine
 (
     id               bigint not null auto_increment,
-    creation_date    datetime(6),
-    last_update_date datetime(6),
+    creation_date    DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3),
+    last_update_date DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3),
     change_duration  bigint,
     is_static        bit,
     mac_address      varchar(255),
@@ -295,8 +307,8 @@ create table qr_machine
 create table report_category
 (
     id               bigint not null auto_increment,
-    creation_date    datetime(6),
-    last_update_date datetime(6),
+    creation_date    DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3),
+    last_update_date DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3),
     name_ar          varchar(255),
     name_en          varchar(255),
     name_tr          varchar(255),
@@ -306,8 +318,8 @@ create table report_category
 create table report_definition
 (
     id                 bigint not null auto_increment,
-    creation_date      datetime(6),
-    last_update_date   datetime(6),
+    creation_date      DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3),
+    last_update_date   DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3),
     file_name          varchar(255),
     file_path          varchar(255),
     jasper_file_name   varchar(255),
@@ -330,8 +342,8 @@ create table report_definition_params
 create table rest_log
 (
     id               bigint not null auto_increment,
-    creation_date    datetime(6),
-    last_update_date datetime(6),
+    creation_date    DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3),
+    last_update_date DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3),
     date             datetime(6),
     from_ip_address  varchar(255),
     name             varchar(255),
@@ -352,14 +364,19 @@ create table revinfo
 create table salary
 (
     id               bigint not null auto_increment,
-    creation_date    datetime(6),
-    last_update_date datetime(6),
+    creation_date    DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3),
+    last_update_date DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3),
+    absence_days     integer,
     addition         double precision,
     deduction        double precision,
+    early_go_minutes integer,
     from_date        date,
+    late_minutes     integer,
+    over_time_hours  integer,
     salary           double precision,
-    to_date          datetime(6),
+    to_date          date,
     total            double precision,
+    total_hours      integer,
     employee_id      bigint,
     primary key (id)
 ) engine = InnoDB
@@ -367,18 +384,24 @@ create table salary
 create table salary_calculation
 (
     id               bigint not null auto_increment,
-    creation_date    datetime(6),
-    last_update_date datetime(6),
+    creation_date    DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3),
+    last_update_date DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3),
+    description_ar   longtext,
+    description_en   longtext,
+    description_tr   longtext,
     from_date        datetime(6),
     to_date          datetime(6),
+    branch_id        bigint,
+    department_id    bigint,
+    employee_id      bigint,
     primary key (id)
 ) engine = InnoDB
 ;
 create table subscription
 (
     id                   bigint not null auto_increment,
-    creation_date        datetime(6),
-    last_update_date     datetime(6),
+    creation_date        DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3),
+    last_update_date     DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3),
     from_date            datetime(6),
     to_date              datetime(6),
     company_id           bigint,
@@ -389,8 +412,8 @@ create table subscription
 create table subscription_plan
 (
     id                   bigint not null auto_increment,
-    creation_date        datetime(6),
-    last_update_date     datetime(6),
+    creation_date        DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3),
+    last_update_date     DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3),
     duration_days        integer,
     from_no_of_employees integer,
     name_ar              varchar(255),
@@ -409,8 +432,8 @@ create table subscription_plan_plan_details
 create table terms_and_conditions
 (
     id               bigint not null auto_increment,
-    creation_date    datetime(6),
-    last_update_date datetime(6),
+    creation_date    DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3),
+    last_update_date DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3),
     body_ar          longtext,
     body_en          longtext,
     body_tr          longtext,
@@ -422,14 +445,17 @@ create table terms_and_conditions
 ;
 create table user
 (
-    id          bigint       not null,
-    company_id  bigint,
-    email       varchar(255),
-    employee_id bigint,
-    image       varchar(255),
-    mac_address varchar(255),
-    password    varchar(255) not null,
-    username    varchar(255) not null,
+    id           bigint       not null,
+    company_id   bigint,
+    email        varchar(255),
+    employee_id  bigint,
+    full_name_ar varchar(255),
+    full_name_en varchar(255),
+    full_name_tr varchar(255),
+    image        varchar(255),
+    mac_address  varchar(255),
+    password     varchar(255) not null,
+    username     varchar(255) not null,
     primary key (id)
 ) engine = InnoDB
 ;
@@ -441,14 +467,15 @@ create table user_roles
 ;
 create table work_shift_aud
 (
-    id        bigint  not null,
-    rev       integer not null,
-    revtype   tinyint,
-    name_ar   varchar(255),
-    name_en   varchar(255),
-    name_tr   varchar(255),
-    from_hour time,
-    to_hour   time,
+    id               bigint  not null,
+    rev              integer not null,
+    revtype          tinyint,
+    name_ar          varchar(255),
+    name_en          varchar(255),
+    name_tr          varchar(255),
+    from_hour        time,
+    to_hour          time,
+    update_date_time bigint,
     primary key (id, rev)
 ) engine = InnoDB
 ;
@@ -464,13 +491,14 @@ create table work_shift_custom_shift_hours_aud
 create table work_shift
 (
     id               bigint not null auto_increment,
-    creation_date    datetime(6),
-    last_update_date datetime(6),
+    creation_date    DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3),
+    last_update_date DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3),
     name_ar          varchar(255),
     name_en          varchar(255),
     name_tr          varchar(255),
     from_hour        time,
     to_hour          time,
+    update_date_time bigint,
     primary key (id)
 ) engine = InnoDB
 ;
@@ -488,6 +516,12 @@ alter table employee
 ;
 alter table employee
     add constraint UK_f35rkopwr25n69dtp946lt3rh unique (ssn)
+;
+alter table employee_optional_branches
+    add constraint UK2oqns5tujd685w36dyyi06a24 unique (employee_id, branch_id)
+;
+alter table employee_shifts
+    add constraint UKi3s1x6lxlq5wcmrn1vx27trmm unique (employee_id, workshift_id)
 ;
 alter table qr_machine
     add constraint UK_6jigeaaed0soa2suvrph78och unique (mac_address)
@@ -543,11 +577,20 @@ alter table employee
 alter table employee_days_off
     add constraint FKbtnrafos5kppyrf3d4a0fe11g foreign key (employee_id) references employee (id)
 ;
+alter table employee_optional_branches
+    add constraint FKen18yi8vumfpwfidw15b06665 foreign key (branch_id) references branch (id)
+;
+alter table employee_optional_branches
+    add constraint FKnath5xu6xtuey30gjbqsmwyuc foreign key (employee_id) references employee (id)
+;
 alter table employee_shifts
-    add constraint FKf3sver1ayrxow0ekmx0ynr28a foreign key (shift_id) references work_shift (id)
+    add constraint FK8yghl6sh7ou8wy4jwueo6xu4r foreign key (workshift_id) references work_shift (id)
 ;
 alter table employee_shifts
     add constraint FKpa5cdc7udnmyis0lh91m7qfb foreign key (employee_id) references employee (id)
+;
+alter table employee_user_type
+    add constraint FK3ssl0vg1bkoqa575606k35qmq foreign key (employee_id) references employee (id)
 ;
 alter table hr_permissions
     add constraint FK3gifnd8hobuhejyguqfjrvy8a foreign key (employee_id) references employee (id)
@@ -569,6 +612,15 @@ alter table report_definition_params
 ;
 alter table salary
     add constraint FKnlnv3jbyvbiu8ci59r3btlk00 foreign key (employee_id) references employee (id)
+;
+alter table salary_calculation
+    add constraint FKkplb4c70e3o3rbkolf1c6j2y2 foreign key (branch_id) references branch (id)
+;
+alter table salary_calculation
+    add constraint FK7uxytcrisxrxpgf8ue166l9ir foreign key (department_id) references department (id)
+;
+alter table salary_calculation
+    add constraint FK79ja34bct8v93daheht4dmhj7 foreign key (employee_id) references employee (id)
 ;
 alter table subscription
     add constraint FK45i0k0ls0erwl77ei45ds25t8 foreign key (company_id) references company (id)

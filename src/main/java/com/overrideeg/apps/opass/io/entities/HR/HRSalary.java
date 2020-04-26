@@ -14,13 +14,14 @@ import java.util.Date;
 @Entity
 @Table(name = "salary")
 public class HRSalary extends OEntity {
+
     @ManyToOne(fetch = FetchType.EAGER)
     private employee employee;
     @Temporal(TemporalType.DATE)
-    @JsonFormat(pattern = "dd/MM/yyyy", timezone = "Africa/Cairo")
+    @JsonFormat(timezone = "Africa/Cairo")
     private Date fromDate;
     @Temporal(TemporalType.DATE)
-    @JsonFormat(pattern = "dd/MM/yyyy", timezone = "Africa/Cairo")
+    @JsonFormat(timezone = "Africa/Cairo")
     private Date toDate;
     private Integer totalHours;
     private Integer overTimeHours;
@@ -147,4 +148,5 @@ public class HRSalary extends OEntity {
     public void setEarlyGoMinutes ( Integer earlyGoMinutes ) {
         this.earlyGoMinutes = earlyGoMinutes;
     }
+
 }
