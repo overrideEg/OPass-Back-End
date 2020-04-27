@@ -16,15 +16,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class attendanceService extends AbstractService<attendance> {
 
-    public attendanceService ( final attendanceRepo inRepository ) {
+    public attendanceService(final attendanceRepo inRepository) {
         super(inRepository);
     }
 
@@ -32,21 +29,21 @@ public class attendanceService extends AbstractService<attendance> {
     attendanceRepoImpl attendanceRepo;
 
     @Override
-    public List<attendance> findAll ( int start, int limit ) {
+    public List<attendance> findAll(int start, int limit) {
         return attendanceRepo.findAll(start, limit);
     }
 
-    public List<attendanceReport> findAttendanceReport ( int start, int limit ) {
+    public List<attendanceReport> findAttendanceReport(int start, int limit) {
         List<attendance> all = attendanceRepo.findAll(start, limit);
         return getAttendanceReports(all);
     }
 
-    public List<attendanceReport> findAttendanceReportBetweenTwoDates ( Date fromDate, Date toDate ) {
+    public List<attendanceReport> findAttendanceReportBetweenTwoDates(Date fromDate, Date toDate) {
         List<attendance> all = attendanceRepo.findAttendanceBetweenTwoDates(fromDate, toDate);
         return getAttendanceReports(all);
     }
 
-    private List<attendanceReport> getAttendanceReports ( List<attendance> all ) {
+    private List<attendanceReport> getAttendanceReports(List<attendance> all) {
         List<attendanceReport> dayByDays = new ArrayList<>();
         all.forEach(attendance -> {
             attendanceReport dayByDay = new attendanceReport();
@@ -121,25 +118,39 @@ public class attendanceService extends AbstractService<attendance> {
     }
 
 
-    private Optional<attendanceReport> findRecord ( List<attendanceReport> dayByDays, attendance attendance ) {
+    private Optional<attendanceReport> findRecord(List<attendanceReport> dayByDays, attendance attendance) {
         return dayByDays.stream()
                 .filter(day -> day.getEmployee() != null && day.getEmployee().getId().equals(attendance.getEmployee().getId()))
                 .filter(day -> day.getScanDate().equals(attendance.getScanDate())).findFirst();
     }
 
-    public List<attendance> employeeTodaysShitLogs ( employee employee, Date currentDate, workShift currentShift ) {
+    public List<attendance> employeeTodaysLogs(employee employee, Date currentDate, boolean sortByreverse) {
+        List<attendance> employeeTodaysLogs = attendanceRepo.findEmployeeTodaysLogs(employee, currentDate);
+
+        if (sortByreverse) {
+
+            employeeTodaysLogs.sort(Comparator.comparing(attendance::getScanTime).reversed());
+
+            return employeeTodaysLogs;
+
+        }
+
+        return employeeTodaysLogs;
+    }
+
+    public List<attendance> employeeTodaysShitLogs(employee employee, Date currentDate, workShift currentShift) {
         return attendanceRepo.findEmployeeTodaysShitLogs(employee, currentDate, currentShift);
     }
 
-    public List<attendance> createAttendanceHistoryReport ( Long employee, Integer page, Integer pageSize ) {
+    public List<attendance> createAttendanceHistoryReport(Long employee, Integer page, Integer pageSize) {
         return attendanceRepo.createAttendanceHistoryReport(employee, page, pageSize);
     }
 
-    public Long findAbsenceDays ( Long employee ) {
+    public Long findAbsenceDays(Long employee) {
         return attendanceRepo.findAbsenceDays(employee);
     }
 
-    public List<countAttendanceInDate> findTotalEmployeeAttendanceFromFirstMonth ( Date fromDate, Date toDate ) {
+    public List<countAttendanceInDate> findTotalEmployeeAttendanceFromFirstMonth(Date fromDate, Date toDate) {
         List result = attendanceRepo.findTotalEmployeeAttendanceFromFirstMonth(fromDate, toDate);
         List<countAttendanceInDate> returnValue = new ArrayList<>();
         result.forEach(res -> {
