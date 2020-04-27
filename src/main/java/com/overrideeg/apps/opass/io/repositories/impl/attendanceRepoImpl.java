@@ -39,6 +39,21 @@ public class attendanceRepoImpl {
         return attendanceTypedQuery.getResultList();
     }
 
+    public List<attendance> findEmployeeTodaysLogs ( employee employee, Date currentDate) {
+        CriteriaBuilder cb = mEntityManager.getCriteriaBuilder();
+        CriteriaQuery<attendance> query = cb.createQuery(attendance.class);
+        Root<attendance> root = query.from(attendance.class);
+        query.select(root);
+        Predicate[] predicates = new Predicate[2];
+        predicates[0] = cb.equal(root.get("scanDate"), currentDate);
+        predicates[1] = cb.equal(root.get("employee").get("id"), employee.getId());
+
+        query.select(root).where(cb.and(predicates));
+
+        return mEntityManager.createQuery(query).getResultList();
+
+    }
+
     public List<attendance> findEmployeeTodaysShitLogs ( employee employee, Date currentDate, workShift currentShift ) {
         CriteriaBuilder cb = mEntityManager.getCriteriaBuilder();
         CriteriaQuery<attendance> query = cb.createQuery(attendance.class);
