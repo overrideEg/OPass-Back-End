@@ -110,10 +110,10 @@ public class workShift extends OEntity {
             }
 
             if (customShiftHour.getId() == null) {
-                lateArriveTime = dateUtils.addOrSubtractMinutes(dateUtils.newTime(getShiftHours().getFromHour()), attendanceRules.getAllowedLateMinutes());
                 maxOverTime = dateUtils.addOrSubtractHours(dateUtils.newTime(getShiftHours().getToHour()), attendanceRules.getMaxOverTimeHours());
-                minNormalLeaveTime = dateUtils.addOrSubtractMinutes(dateUtils.newTime(getShiftHours().getToHour()), -attendanceRules.getAllowedEarlyLeaveMinutes());
+                lateArriveTime = dateUtils.addOrSubtractMinutes(dateUtils.newTime(getShiftHours().getFromHour()), attendanceRules.getAllowedLateMinutes());
                 maxNormalLeaveTime = dateUtils.addOrSubtractMinutes(dateUtils.newTime(getShiftHours().getToHour()), attendanceRules.getAllowedEarlyLeaveMinutes());
+                minNormalLeaveTime = dateUtils.addOrSubtractMinutes(dateUtils.newTime(getShiftHours().getToHour()), -attendanceRules.getAllowedEarlyLeaveMinutes());
             } else {
                 maxOverTime = dateUtils.addOrSubtractHours(dateUtils.newTime(customShiftHour.getToHour()), attendanceRules.getMaxOverTimeHours());
                 lateArriveTime = dateUtils.addOrSubtractMinutes(dateUtils.newTime(customShiftHour.getFromHour()), attendanceRules.getAllowedLateMinutes());
@@ -121,11 +121,9 @@ public class workShift extends OEntity {
                 minNormalLeaveTime = dateUtils.addOrSubtractMinutes(dateUtils.newTime(customShiftHour.getToHour()), -attendanceRules.getAllowedEarlyLeaveMinutes());
             }
 
-
             if(hrPermissions!=null){
-//                lateArriveTime = dateUtils.addOrSubtractMinutes(lateArriveTime, hrPermissions.getMinutesLate());
-//                maxNormalLeaveTime = dateUtils.addOrSubtractMinutes(dateUtils.newTime(customShiftHour.getToHour()), attendanceRules.getAllowedEarlyLeaveMinutes());
-//                minNormalLeaveTime = dateUtils.addOrSubtractMinutes(dateUtils.newTime(customShiftHour.getToHour()), -attendanceRules.getAllowedEarlyLeaveMinutes());
+                lateArriveTime = dateUtils.addOrSubtractMinutes(lateArriveTime, hrPermissions.getMinutesLate());
+                minNormalLeaveTime = dateUtils.addOrSubtractMinutes(minNormalLeaveTime, -hrPermissions.getMinutesEarlyGo());
             }
 
             boolean in = false;
