@@ -25,6 +25,7 @@ import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.sql.Time;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -296,6 +297,9 @@ public class employee extends OEntity {
 
     /**
      * helper method to determine employee current Attendance Rules
+     * priorities as follow
+     * 1 department attendanceRules
+     * 2 branch attendanceRules
      */
     public attendanceRules fetchEmployeeAttRules () {
 
@@ -307,10 +311,28 @@ public class employee extends OEntity {
             return getDepartment().getAttendanceRules();
         }
 
-//        if (getBranch().getAttendanceRules() != null) {
-//            return getDepartment().getAttendanceRules();
-//        }
         throw new NoRecordFoundException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage()); //TODO better naming for exceptions
+
+    }
+
+    /**
+     * helper method to determine employee current DaysOff
+     * priorities as follow
+     * 1 custom employee daysOff
+     * 2 department daysOff
+     * 3 branch daysOff
+     */
+    public List<Integer> fetchEmployeeDaysOff () {
+
+        if (!daysOff.isEmpty()) {
+            return daysOff;
+        }
+
+        if (fetchEmployeeAttRules() != null) {
+            return fetchEmployeeAttRules().getDaysOff();
+        }
+
+        return new ArrayList<>();
 
     }
 
