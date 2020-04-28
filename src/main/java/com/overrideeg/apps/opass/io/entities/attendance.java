@@ -32,7 +32,6 @@ public class attendance extends OEntity {
     private attStatus attStatus;
 
     public attendance() {
-
     }
 
 
