@@ -11,6 +11,7 @@ import com.overrideeg.apps.opass.io.entities.company;
 import com.overrideeg.apps.opass.io.entities.employee;
 import com.overrideeg.apps.opass.io.repositories.UserRepo;
 import com.overrideeg.apps.opass.io.repositories.employeeRepo;
+import com.overrideeg.apps.opass.io.repositories.impl.employeeRepoImpl;
 import com.overrideeg.apps.opass.system.Connection.ResolveTenant;
 import com.overrideeg.apps.opass.system.Connection.TenantResolver;
 import com.overrideeg.apps.opass.ui.sys.ResponseModel;
@@ -20,9 +21,10 @@ import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -36,10 +38,11 @@ public class employeeService extends AbstractService<employee> {
     UserRepo users;
     @Autowired
     ResolveTenant resolveTenant;
+    @Autowired
+    employeeRepoImpl employeeRepo;
 
 
-
-    public employeeService(final employeeRepo inRepository) {
+    public employeeService ( final employeeRepo inRepository ) {
         super(inRepository);
     }
 
@@ -47,6 +50,8 @@ public class employeeService extends AbstractService<employee> {
     PasswordEncoder passwordEncoder;
 
     public employee save(employee inEntity, Long companyId) throws SQLException {
+
+        inEntity.updateDateTime = new Date().getTime();
         // check user for employee in master database
         checkUserForEmployee(inEntity);
         // resolve tenant to company database to check exists employee
@@ -55,7 +60,7 @@ public class employeeService extends AbstractService<employee> {
         // create user for employee
         User createdUser = new User();
         this.resolveTenant.resolve(0L, null);
-        createdUser = createUser(inEntity,companyId);
+        createdUser = createUser(inEntity, companyId);
         // set created user
         inEntity.setCreatedUserId(createdUser.getId());
         // return back saved employee
@@ -112,17 +117,18 @@ public class employeeService extends AbstractService<employee> {
      *
      */
     private void checkExistsEmployee(employee inEntity) {
-        String employeeQuery= "select e from employee e \n" +
-                "where e.contactInfo.mobile=:mobile or e.contactInfo.email=:email or e.ssn=:ssn";
-        List<String> attributeNames = new ArrayList<>(Arrays.asList("mobile","email","ssn"));
-        List attributeValues = new ArrayList(Arrays.asList(inEntity.getContactInfo().getMobile(),inEntity.getContactInfo().getEmail(),inEntity.getSsn()));
-        List<employee> employees = createQuery(employeeQuery, attributeNames, attributeValues);
-        employee exitsEmployee = new employee();
-        if (employees.size()>0) {
-            exitsEmployee = employees.get(0);
-        }
-        if (exitsEmployee.isValid()) {
-            throw new CouldNotCreateRecordException("Employee username and SSN and email must be unique, employee exist: "+exitsEmployee.getName().getEn());
+        employee employee = find("mobile", inEntity.getContactInfo().getMobile());
+//        String employeeQuery= "select e from employee e \n" +
+//                "where e.contactInfo.mobile=:mobile or e.contactInfo.email=:email or e.ssn=:ssn";
+//        List<String> attributeNames = new ArrayList<>(Arrays.asList("mobile","email","ssn"));
+//        List attributeValues = new ArrayList(Arrays.asList(inEntity.getContactInfo().getMobile(),inEntity.getContactInfo().getEmail(),inEntity.getSsn()));
+//        List<employee> employees = createQuery(employeeQuery, attributeNames, attributeValues);
+//        employee exitsEmployee = new employee();
+//        if (employees.size()>0) {
+//            exitsEmployee = employees.get(0);
+//        }
+        if (employee.isValid()) {
+            throw new CouldNotCreateRecordException("Employee username and SSN and email must be unique, employee exist: " + employee.getName().getEn());
         }
     }
 
@@ -153,6 +159,12 @@ public class employeeService extends AbstractService<employee> {
     }
 
 
+    @Override
+    public ResponseModel update ( employee inEntity ) {
+        inEntity.updateDateTime = new Date().getTime();
+        return super.update(inEntity);
+    }
+
     public ResponseModel delete ( Long inId, Long companyId ) {
         this.resolveTenant.resolve(companyId, null);
         Optional<employee> employee = find(inId);
@@ -170,5 +182,21 @@ public class employeeService extends AbstractService<employee> {
             }
         }
         return delete;
+    }
+
+
+    public employee getEmployeeAtDate ( Long id, Date date ) {
+        long time = date.getTime();
+        List<employee> employees = employeeRepo.auditEmployee(id);
+
+        List<employee> collect = employees
+                .stream()
+                .filter(employee -> employee.updateDateTime.compareTo(time) > 0).collect(Collectors.toList());
+        employee returnValue = new employee();
+        if (collect.size() > 0) {
+            return collect.get(collect.size() - 1);
+        } else {
+            return find(id).get();
+        }
     }
 }

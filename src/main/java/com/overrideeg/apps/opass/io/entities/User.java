@@ -36,7 +36,6 @@ public class User implements UserDetails {
     @Embedded
     private translatedField fullName;
     @NotEmpty
-    @Column(unique = true)
     private String email;
     private Long company_id;
     private Long employee_id;
@@ -51,6 +50,7 @@ public class User implements UserDetails {
     private List<String> roles = new ArrayList<>();
     @Transient
     private String token;
+
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @Override

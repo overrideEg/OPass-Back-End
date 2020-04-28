@@ -230,7 +230,7 @@ public class HRSalaryCalculationDocumentService extends AbstractService<HRSalary
         lateRecords.forEach(report -> {
             Date inTime = report.getInTime();
             Date shiftAtDate = dateUtils.copyTimeToDate(report.getScanDate(), inTime);
-            workShift workShiftAtDate = employeeUtilsService.getWorkShiftAtDate(employee, report.getWorkShift().getId(), shiftAtDate);
+            workShift workShiftAtDate = employeeUtilsService.getWorkShiftAtDate(report.getWorkShift().getId(), shiftAtDate);
             report.setWorkShift(workShiftAtDate);
             Date fromHour = dateUtils.copyTimeToDate(report.getScanDate(), report.getWorkShift().getShiftHours().getFromHour());
             long allowedLate = TimeUnit.MILLISECONDS.convert(employee.fetchEmployeeAttRules().getAllowedLateMinutes(), TimeUnit.MINUTES);
@@ -260,7 +260,7 @@ public class HRSalaryCalculationDocumentService extends AbstractService<HRSalary
         earlyGoRecords.forEach(report -> {
             Date outTime = report.getOutTime();
             Date shiftAtDate = dateUtils.copyTimeToDate(report.getScanDate(), outTime);
-            workShift workShiftAtDate = employeeUtilsService.getWorkShiftAtDate(employee, report.getWorkShift().getId(), shiftAtDate);
+            workShift workShiftAtDate = employeeUtilsService.getWorkShiftAtDate(report.getWorkShift().getId(), shiftAtDate);
             report.setWorkShift(workShiftAtDate);
             Date toHour = dateUtils.copyTimeToDate(report.getScanDate(), report.getWorkShift().getShiftHours().getToHour());
             long allowedEarlyGo = TimeUnit.MILLISECONDS.convert(employee.fetchEmployeeAttRules().getAllowedEarlyLeaveMinutes(), TimeUnit.MINUTES);
@@ -316,12 +316,12 @@ public class HRSalaryCalculationDocumentService extends AbstractService<HRSalary
         AtomicReference<Long> returnValue = new AtomicReference<>(0L);
 
         attendanceReports.forEach(report -> {
-            Date inTime = report.getInTime();
-            Date shiftAtDate = dateUtils.copyTimeToDate(report.getScanDate(), inTime);
-            workShift workShiftAtDate = employeeUtilsService.getWorkShiftAtDate(employee, report.getWorkShift().getId(), shiftAtDate);
+            Date shiftAtDate = dateUtils.copyTimeToDate(report.getScanDate(), report.getOutTime());
+            workShift workShiftAtDate = employeeUtilsService.getWorkShiftAtDate(report.getWorkShift().getId(), shiftAtDate);
             report.setWorkShift(workShiftAtDate);
             Date toHour = dateUtils.copyTimeToDate(report.getScanDate(), report.getWorkShift().getShiftHours().getToHour());
-            long totalOverTimeHours = toHour.getTime() - shiftAtDate.getTime();
+            long allowedLate = TimeUnit.MILLISECONDS.convert(employee.fetchEmployeeAttRules().getAllowedLateLeaveMinutes(), TimeUnit.MINUTES);
+            long totalOverTimeHours = shiftAtDate.getTime() - toHour.getTime() - allowedLate;
             returnValue.updateAndGet(v -> v + TimeUnit.HOURS.convert(totalOverTimeHours, TimeUnit.MILLISECONDS));
         });
         return Math.toIntExact(returnValue.get());
@@ -351,14 +351,14 @@ public class HRSalaryCalculationDocumentService extends AbstractService<HRSalary
      *
      * @param employee                 employee
      * @param totalMinutes             totalMinutes
-     * @param totalOverTimeMinutes     totalOverTimeMinutes
+     * @param totalOverTimeHours       totalOverTimeMinutes
      * @param totalWorkOnDayOffMinutes totalWorkOnDayOffMinutes
      * @param totalEarlyGoMinutes      totalEarlyGoMinutes
      * @param totalLateMinutes         totalLateMinutes
      * @param totalAbsenceDays         totalAbsenceDays
      * @return hr salary document
      */
-    private HRSalary calculateSalary ( employee employee, Integer totalMinutes, Integer totalOverTimeMinutes, Integer totalWorkOnDayOffMinutes, Integer totalEarlyGoMinutes, Integer totalLateMinutes, Integer totalAbsenceDays ) {
+    private HRSalary calculateSalary ( employee employee, Integer totalMinutes, Integer totalOverTimeHours, Integer totalWorkOnDayOffMinutes, Integer totalEarlyGoMinutes, Integer totalLateMinutes, Integer totalAbsenceDays ) {
         HRSalary returnValue = new HRSalary();
 
         // salary bases
@@ -372,26 +372,30 @@ public class HRSalaryCalculationDocumentService extends AbstractService<HRSalary
         returnValue.setAbsenceDays(totalAbsenceDays);
         double AbsenceDeduction = 0D;
         AbsenceDeduction = totalAbsenceDays * salaryInDay * hrSetting.getAbsenceDayDeduction();
-
+        if (AbsenceDeduction < 0)
+            AbsenceDeduction = 0D;
         // early go
         returnValue.setEarlyGoMinutes(totalEarlyGoMinutes);
         double earlyGoDeduction = 0D;
         earlyGoDeduction = salaryInMinute * totalEarlyGoMinutes * hrSetting.getDelayHourDeduction();
+        if (earlyGoDeduction < 0)
+            earlyGoDeduction = 0D;
 
         // late entrance
         returnValue.setLateMinutes(totalLateMinutes);
         double lateDeduction = 0D;
         lateDeduction = salaryInMinute * totalLateMinutes * hrSetting.getDelayHourDeduction();
-
+        if (lateDeduction < 0)
+            lateDeduction = 0D;
         // work on day off
         int overTimeTotalDuration = 0;
-        overTimeTotalDuration = (totalWorkOnDayOffMinutes + totalOverTimeMinutes) / 60;
+        overTimeTotalDuration = totalWorkOnDayOffMinutes + (totalOverTimeHours * 60);
 
         returnValue.setOverTimeHours(overTimeTotalDuration);
 
-        Double overTimeAddition = (totalOverTimeMinutes / 60) * hrSetting.getOverTimeAddition();
+        Double overTimeAddition = (totalOverTimeHours * 60) * hrSetting.getOverTimeAddition() * salaryInMinute;
 
-        Double workOnDayOffAddition = (totalWorkOnDayOffMinutes / 60) * hrSetting.getWorkOnDayOffAddition();
+        Double workOnDayOffAddition = totalWorkOnDayOffMinutes * hrSetting.getWorkOnDayOffAddition() * salaryInMinute;
 
 
         // salary

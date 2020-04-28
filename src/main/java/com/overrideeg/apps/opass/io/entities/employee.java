@@ -5,6 +5,7 @@
 package com.overrideeg.apps.opass.io.entities;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.overrideeg.apps.opass.enums.attType;
@@ -22,6 +23,8 @@ import com.overrideeg.apps.opass.ui.sys.ErrorMessages;
 import com.overrideeg.apps.opass.utils.DateUtils;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.hibernate.envers.Audited;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.sql.Time;
@@ -38,6 +41,8 @@ import java.util.concurrent.atomic.AtomicReference;
         @AttributeOverride(name = "name.tr", column = @Column(name = "name_tr")),
 })
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@Audited
+@EntityListeners(AuditingEntityListener.class)
 public class employee extends OEntity {
     @Embedded
     @JsonProperty(required = true)
@@ -48,7 +53,6 @@ public class employee extends OEntity {
     @ManyToOne
     @JsonProperty(required = true)
     private branch branch;
-    @Column(unique = true)
     @JsonProperty(required = true, access = JsonProperty.Access.READ_WRITE)
     private String ssn;
     @Temporal(TemporalType.TIMESTAMP)
@@ -96,7 +100,9 @@ public class employee extends OEntity {
     private List<branch> optionalBranches;
     @Enumerated(EnumType.STRING)
     private gender gender;
-    // todo add in service @amr ahmed
+    @JsonIgnore
+    public Long updateDateTime;
+    private String jobTitle;
 
     @Override
     public boolean isValid () {
@@ -246,6 +252,14 @@ public class employee extends OEntity {
 
     public void setGender ( com.overrideeg.apps.opass.enums.gender gender ) {
         this.gender = gender;
+    }
+
+    public String getJobTitle () {
+        return jobTitle;
+    }
+
+    public void setJobTitle ( String jobTitle ) {
+        this.jobTitle = jobTitle;
     }
 
     /**
