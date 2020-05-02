@@ -13,6 +13,7 @@ import com.overrideeg.apps.opass.enums.employeeStatus;
 import com.overrideeg.apps.opass.enums.gender;
 import com.overrideeg.apps.opass.enums.userType;
 import com.overrideeg.apps.opass.exceptions.NoRecordFoundException;
+import com.overrideeg.apps.opass.io.details.customShiftHours;
 import com.overrideeg.apps.opass.io.entities.system.OEntity;
 import com.overrideeg.apps.opass.io.valueObjects.attendanceRules;
 import com.overrideeg.apps.opass.io.valueObjects.contactInfo;
@@ -31,8 +32,11 @@ import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+
+import static java.util.stream.Collectors.toList;
 
 @Entity
 @AttributeOverrides({
@@ -105,160 +109,160 @@ public class employee extends OEntity {
     private String jobTitle;
 
     @Override
-    public boolean isValid () {
+    public boolean isValid() {
         return super.isValid();
     }
 
-    public translatedField getName () {
+    public translatedField getName() {
         return name;
     }
 
-    public void setName ( translatedField name ) {
+    public void setName(translatedField name) {
         this.name = name;
     }
 
-    public department getDepartment () {
+    public department getDepartment() {
         return department;
     }
 
-    public void setDepartment ( department department ) {
+    public void setDepartment(department department) {
         this.department = department;
     }
 
-    public branch getBranch () {
+    public branch getBranch() {
         return branch;
     }
 
-    public void setBranch ( branch branch ) {
+    public void setBranch(branch branch) {
         this.branch = branch;
     }
 
-    public String getSsn () {
+    public String getSsn() {
         return ssn;
     }
 
-    public void setSsn ( String ssn ) {
+    public void setSsn(String ssn) {
         this.ssn = ssn;
     }
 
-    public Date getBirthDate () {
+    public Date getBirthDate() {
         return birthDate;
     }
 
-    public void setBirthDate ( Date birthDate ) {
+    public void setBirthDate(Date birthDate) {
         this.birthDate = birthDate;
     }
 
-    public contactInfo getContactInfo () {
+    public contactInfo getContactInfo() {
         return contactInfo;
     }
 
-    public void setContactInfo ( contactInfo contactInfo ) {
+    public void setContactInfo(contactInfo contactInfo) {
         this.contactInfo = contactInfo;
     }
 
-    public Boolean getAttendanceException () {
+    public Boolean getAttendanceException() {
         return attendanceException;
     }
 
-    public void setAttendanceException ( Boolean attendanceException ) {
+    public void setAttendanceException(Boolean attendanceException) {
         this.attendanceException = attendanceException;
     }
 
-    public Date getContractStartDate () {
+    public Date getContractStartDate() {
         return contractStartDate;
     }
 
-    public void setContractStartDate ( Date contractStartDate ) {
+    public void setContractStartDate(Date contractStartDate) {
         this.contractStartDate = contractStartDate;
     }
 
-    public Date getContractEndDate () {
+    public Date getContractEndDate() {
         return contractEndDate;
     }
 
-    public void setContractEndDate ( Date contractEndDate ) {
+    public void setContractEndDate(Date contractEndDate) {
         this.contractEndDate = contractEndDate;
     }
 
-    public Date getFiringDate () {
+    public Date getFiringDate() {
         return firingDate;
     }
 
-    public void setFiringDate ( Date firingDate ) {
+    public void setFiringDate(Date firingDate) {
         this.firingDate = firingDate;
     }
 
-    public List<workShift> getShifts () {
+    public List<workShift> getShifts() {
         return shifts;
     }
 
-    public void setShifts ( List<workShift> shifts ) {
+    public void setShifts(List<workShift> shifts) {
         this.shifts = shifts;
     }
 
-    public employeeStatus getStatus () {
+    public employeeStatus getStatus() {
         return status;
     }
 
-    public void setStatus ( employeeStatus status ) {
+    public void setStatus(employeeStatus status) {
         this.status = status;
     }
 
-    public Long getCreatedUserId () {
+    public Long getCreatedUserId() {
         return createdUserId;
     }
 
-    public void setCreatedUserId ( Long createdUserId ) {
+    public void setCreatedUserId(Long createdUserId) {
         this.createdUserId = createdUserId;
     }
 
 
-    public List<com.overrideeg.apps.opass.enums.userType> getUserType () {
+    public List<com.overrideeg.apps.opass.enums.userType> getUserType() {
         return userType;
     }
 
-    public void setUserType ( List<com.overrideeg.apps.opass.enums.userType> userType ) {
+    public void setUserType(List<com.overrideeg.apps.opass.enums.userType> userType) {
         this.userType = userType;
     }
 
-    public Double getSalary () {
+    public Double getSalary() {
         return salary;
     }
 
-    public void setSalary ( Double salary ) {
+    public void setSalary(Double salary) {
         this.salary = salary;
     }
 
-    public List<Integer> getDaysOff () {
+    public List<Integer> getDaysOff() {
         return daysOff;
     }
 
-    public void setDaysOff ( List<Integer> daysOff ) {
+    public void setDaysOff(List<Integer> daysOff) {
         this.daysOff = daysOff;
     }
 
-    public List<branch> getOptionalBranches () {
+    public List<branch> getOptionalBranches() {
         return optionalBranches;
     }
 
-    public void setOptionalBranches ( List<branch> optionalBranches ) {
+    public void setOptionalBranches(List<branch> optionalBranches) {
         this.optionalBranches = optionalBranches;
     }
 
-    public com.overrideeg.apps.opass.enums.gender getGender () {
+    public com.overrideeg.apps.opass.enums.gender getGender() {
         return gender;
     }
 
-    public void setGender ( com.overrideeg.apps.opass.enums.gender gender ) {
+    public void setGender(com.overrideeg.apps.opass.enums.gender gender) {
         this.gender = gender;
     }
 
-    public String getJobTitle () {
+    public String getJobTitle() {
         return jobTitle;
     }
 
-    public void setJobTitle ( String jobTitle ) {
+    public void setJobTitle(String jobTitle) {
         this.jobTitle = jobTitle;
     }
 
@@ -270,41 +274,76 @@ public class employee extends OEntity {
      * TODO resolve TwoDays shift (11pm-7am)
      * TODO resolve holidays
      */
-    public workShift getCurrentWorkShift ( attendanceService attendanceService, Date scanDate, List<workShift> workShifts, attendanceRules attendanceRules ) {
+    public workShift getCurrentWorkShift(List<attendance> todayLogs, Date scanDate, List<workShift> workShifts, attendanceRules attendanceRules) {
 
         final DateUtils dateUtils = new DateUtils();
 
+        //loop through work shifts to detect current
         for (workShift workShift : workShifts) {
+            Date fromHour;
+            Date toHour;
 
-            final shiftHours shiftTime = workShift.getShiftHours();
+            //check if this days have custom attending hours
+            final Optional<customShiftHours> customShiftTime = workShift.getCustomShiftHours().stream()
+                    .filter(c -> c.getDay().equals(dateUtils.getDateWeekDay(scanDate))).findFirst();
 
+            //if custom attending hours exist on this weekday set hours rage from it
+            if (customShiftTime.isPresent()) {
 
-            final Time shiftStartLeavingTime = dateUtils.addOrSubtractMinutes(dateUtils.newTime(shiftTime.getToHour()), -attendanceRules.getAllowedEarlyLeaveMinutes());
-            final Time shiftEndTimeWithAllowedMinuets = dateUtils.addOrSubtractMinutes(dateUtils.newTime(shiftTime.getToHour()), attendanceRules.getAllowedLateLeaveMinutes());
+                fromHour = customShiftTime.get().getFromHour();
+                toHour = customShiftTime.get().getToHour();
 
+            } else {
+                //if not existing set hours rage from normal shitTime
 
-            final boolean currentShift = dateUtils.isBetweenTwoTimes(dateUtils.newTime(shiftTime.getFromHour()), shiftEndTimeWithAllowedMinuets, dateUtils.newTime(scanDate));
+                fromHour = workShift.getShiftHours().getFromHour();
+                toHour = workShift.getShiftHours().getToHour();
+
+            }
+
+            //calculate shift boundaries
+            final Time shiftStartLeavingTime = dateUtils.addOrSubtractMinutes(dateUtils.newTime(toHour), -attendanceRules.getAllowedEarlyLeaveMinutes());
+            final Time shiftEndTimeWithAllowedMinuets = dateUtils.addOrSubtractMinutes(dateUtils.newTime(toHour), attendanceRules.getAllowedLateLeaveMinutes());
+
+            //check if scan time between allowed boundaries
+            final boolean currentShift = dateUtils.isBetweenTwoTimes(dateUtils.newTime(fromHour), shiftEndTimeWithAllowedMinuets, dateUtils.newTime(scanDate));
 
             if (currentShift) {
 
                 boolean left = false;
                 boolean attended = false;
-                final List<attendance> todayShiftLogs = attendanceService.employeeTodaysShitLogs(this, scanDate, workShift);
+
+                /*
+                *TODO test refactored from final List<attendance> todayShiftLogs = attendanceService.employeeTodaysShitLogs(this, scanDate, workShift);
+                *get today's current shift logs to determine state
+                * */
+                final List<attendance> todayShiftLogs = todayLogs.stream().filter(a -> a.getWorkShift().getId()
+                        .equals(workShift.getId())).collect(toList());
+
 
                 for (attendance shiftLog : todayShiftLogs) {
+
+                    //check if employee already registered his attendance
                     if (shiftLog.getAttType() == attType.IN) {
                         attended = true;
+
                     } else if (shiftLog.getAttType() == attType.OUT) {
+                        //check if employee already registered his departure
                         left = true;
                     }
                 }
 
+                /*
+                *return this work shift if user didn't register his attendance and time is before departure time
+                *or if user didn't register his departure
+                */
                 if ((!attended && dateUtils.timeBefore(shiftStartLeavingTime, dateUtils.newTime(scanDate), false)) || !left) {
                     return workShift;
                 }
 
             }
         }
+        //if non of the conditions above met.. then return null (no work shift available for this current scan time) !!
         return null;
 
     }
@@ -315,7 +354,7 @@ public class employee extends OEntity {
      * 1 department attendanceRules
      * 2 branch attendanceRules
      */
-    public attendanceRules fetchEmployeeAttRules () {
+    public attendanceRules fetchEmployeeAttRules() {
 
         if (getDepartment().getAttendanceRules() != null) {
             return getDepartment().getAttendanceRules();
@@ -336,7 +375,7 @@ public class employee extends OEntity {
      * 2 department daysOff
      * 3 branch daysOff
      */
-    public List<Integer> fetchEmployeeDaysOff () {
+    public List<Integer> fetchEmployeeDaysOff() {
 
         if (!daysOff.isEmpty()) {
             return daysOff;
@@ -351,7 +390,7 @@ public class employee extends OEntity {
     }
 
 
-    public Double calculateTotalMinutesShifts () {
+    public Double calculateTotalMinutesShifts() {
         AtomicReference<Double> totalMinutes = new AtomicReference<>(0D);
         shifts.forEach(shift -> {
             long duration = shift.getShiftHours().getToHour().getTime() - shift.getShiftHours().getFromHour().getTime();

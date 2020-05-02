@@ -27,6 +27,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.*;
 
 //todo bimbo work here
 @Service
@@ -110,6 +113,7 @@ public class readerService {
 
     }
 
+    ///TODO 🔥CRITICAL🔥 separate ins and outs for every branch on day level
     private attendance processWorkShifts(readerRequest request, employee employee) {
         //get all employee work shifts
         final List<workShift> workShifts = employee.getShifts();
@@ -129,12 +133,15 @@ public class readerService {
         //get employee's hr permissions in current date if exist
         final HRPermissions hrPermissions = hrPermissionsService.getHRPermissionsInCurrentDate(scanDate);
 
+        //get today's current logs
+        final List<attendance> todayLogs = attendanceService.employeeTodaysLogs(employee, scanDate, true);
+
         //throw exception if rules dont exist
         if (attendanceRules == null) {
             throw new NoRecordFoundException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
         }
 
-        final attendance dayOffAttendance = processDaysOffAndHolidays(employee, attendanceRules, scanDate, scanWeekDay, scanTime);
+        final attendance dayOffAttendance = processDaysOffAndHolidaysAndAbsenceAllowed(employee,hrPermissions, todayLogs, scanDate, scanWeekDay, scanTime);
 
         if (dayOffAttendance != null) {
             return dayOffAttendance;
@@ -142,13 +149,17 @@ public class readerService {
 
         if (!workShifts.isEmpty()) {
 
-            final workShift currentWorkShift = employee.getCurrentWorkShift(attendanceService, scanDate, workShifts, attendanceRules);
+            final workShift currentWorkShift = employee.getCurrentWorkShift(todayLogs, scanDate, workShifts, attendanceRules);
 
             if (currentWorkShift == null) {
                 return new attendance(employee, null, scanDate, scanTime, attType.LOG, attStatus.normal);
             }
 
-            final List<attendance> todayShiftLogs = attendanceService.employeeTodaysShitLogs(employee, scanDate, currentWorkShift);
+
+            final List<attendance> todayShiftLogs = todayLogs.stream().filter(a -> a.getWorkShift().getId()
+                    .equals(currentWorkShift.getId())).collect(toList());
+
+            final List<attendance> todayShiftLogsX = attendanceService.employeeTodaysShitLogs(employee, scanDate, currentWorkShift);
 
             return currentWorkShift.createAttLog(employee, scanDate, scanWeekDay, attendanceRules, hrPermissions, todayShiftLogs);
 
@@ -159,34 +170,32 @@ public class readerService {
 
     }
 
-    //TODO TEST 👀
     //TODO refactor with stream
-    private attendance processDaysOffAndHolidays(employee employee, attendanceRules attendanceRules, Date scanDate, int scanWeekDay, Time scanTime) {
+    private attendance processDaysOffAndHolidaysAndAbsenceAllowed(employee employee, HRPermissions hrPermissions, List<attendance> todayShiftLogs, Date scanDate, int scanWeekDay, Time scanTime) {
 
         //check if today is a holiday
         final List<officialHoliday> officialHolidays = officialHolidayService.getOfficialHollidaysInCurrentDate(scanDate);
-        boolean todayIsHoliday=!officialHolidays.isEmpty();
-        boolean todayIsDayOff=employee.fetchEmployeeDaysOff().contains(scanWeekDay);
+
+        //prepare check conditions
+        boolean todayIsHoliday = !officialHolidays.isEmpty();
+        boolean todayIsDayOff = employee.fetchEmployeeDaysOff().contains(scanWeekDay);
+        boolean todayIsAbsenceAllowed = hrPermissions != null && hrPermissions.getAbsenceAllowed();
 
 
-        if (todayIsHoliday || todayIsDayOff) {
+        if (todayIsHoliday || todayIsDayOff || todayIsAbsenceAllowed) {
 
-            //get today's current logs
-            final List<attendance> todayShiftLogs = attendanceService.employeeTodaysLogs(employee, scanDate, true);
 
-            if (!todayShiftLogs.isEmpty()) {
+            if (!todayShiftLogs.isEmpty() && todayShiftLogs.get(0).getAttType() == attType.IN) {
 
-                if (todayShiftLogs.get(0).getAttType() == attType.IN) {
+                return new attendance(employee, null, scanDate, scanTime, attType.OUT, attStatus.workOnDayOff);
 
-                    return new attendance(employee, null, scanDate, scanTime, attType.OUT, attStatus.workOnDayOff);
+            } else if (todayShiftLogs.isEmpty() || todayShiftLogs.get(0).getAttType() == attType.OUT) {
 
-                } else {
-
-                    return new attendance(employee, null, scanDate, scanTime, attType.IN, attStatus.workOnDayOff);
-                }
+                return new attendance(employee, null, scanDate, scanTime, attType.IN, attStatus.workOnDayOff);
             }
-
         }
+
+
         return null;
     }
 
