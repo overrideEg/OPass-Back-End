@@ -117,7 +117,7 @@ public class employeeService extends AbstractService<employee> {
      *
      */
     private void checkExistsEmployee(employee inEntity) {
-        employee employee = find("mobile", inEntity.getContactInfo().getMobile());
+        employee employee = find("contactInfo.mobile", inEntity.getContactInfo().getMobile());
 //        String employeeQuery= "select e from employee e \n" +
 //                "where e.contactInfo.mobile=:mobile or e.contactInfo.email=:email or e.ssn=:ssn";
 //        List<String> attributeNames = new ArrayList<>(Arrays.asList("mobile","email","ssn"));
