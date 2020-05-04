@@ -22,10 +22,7 @@ import com.overrideeg.apps.opass.utils.EntityUtils;
 import org.springframework.stereotype.Service;
 
 import java.sql.Time;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -91,8 +88,9 @@ public class readerService {
                         break;
                     }
                 }
+
             } catch (Exception e) {
-                //TODO show me logger please 🍉🍉
+                System.err.println(e.getMessage());
             }
 
             if (!related) {
@@ -141,7 +139,7 @@ public class readerService {
             throw new NoRecordFoundException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
         }
 
-        final attendance dayOffAttendance = processDaysOffAndHolidaysAndAbsenceAllowed(employee,hrPermissions, todayLogs, scanDate, scanWeekDay, scanTime);
+        final attendance dayOffAttendance = processDaysOffAndHolidaysAndAbsenceAllowed(employee, hrPermissions, todayLogs, scanDate, scanWeekDay, scanTime);
 
         if (dayOffAttendance != null) {
             return dayOffAttendance;
@@ -149,23 +147,20 @@ public class readerService {
 
         if (!workShifts.isEmpty()) {
 
-            final workShift currentWorkShift = employee.getCurrentWorkShift(todayLogs, scanDate, workShifts, attendanceRules);
+            final workShift currentWorkShift = employee.getCurrentWorkShift(todayLogs, scanDate, scanTime, workShifts, attendanceRules);
 
             if (currentWorkShift == null) {
                 return new attendance(employee, null, scanDate, scanTime, attType.LOG, attStatus.normal);
             }
 
 
-            final List<attendance> todayShiftLogs = todayLogs.stream().filter(a -> a.getWorkShift().getId()
-                    .equals(currentWorkShift.getId())).collect(toList());
-
-            final List<attendance> todayShiftLogsX = attendanceService.employeeTodaysShitLogs(employee, scanDate, currentWorkShift);
+            final List<attendance> todayShiftLogs = todayLogs.stream().filter(Objects::nonNull).filter(a -> a.getWorkShift()!=null)
+                    .filter(a -> a.getWorkShift().getId().equals(currentWorkShift.getId())).collect(toList());
 
             return currentWorkShift.createAttLog(employee, scanDate, scanWeekDay, attendanceRules, hrPermissions, todayShiftLogs);
 
         } else {
             return new attendance(employee, null, scanDate, scanTime, attType.LOG, attStatus.normal);
-
         }
 
     }

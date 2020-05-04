@@ -27,6 +27,7 @@ import javax.persistence.*;
 import java.sql.Time;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Entity
@@ -91,10 +92,9 @@ public class workShift extends OEntity {
         Time maxNormalLeaveTime;
 
         try {
-//
             //check if today is a custom shift day
-            final Optional<customShiftHours> customShiftTime = getCustomShiftHours().stream()
-                    .filter(c -> c.getDay().equals(scanWeekDay)).findFirst();
+            final Optional<customShiftHours> customShiftTime = getCustomShiftHours()
+                    .stream().filter(c -> c.getDay().equals(scanWeekDay)).findFirst();
 
             //if custom shift day exist, calculate conditions from it
             if (customShiftTime.isPresent()) {
@@ -116,20 +116,21 @@ public class workShift extends OEntity {
                 minNormalLeaveTime = dateUtils.addOrSubtractMinutes(minNormalLeaveTime, -hrPermissions.getMinutesEarlyGo());
             }
 
-            boolean in = false;
-            boolean out = false;
 
-            //loop through work shift logs to check in and out states
-            for (attendance shiftLog : todayShiftLogs) {
-                if (shiftLog.getAttType() == attType.IN) {
-                    in = true;
-                } else if (shiftLog.getAttType() == attType.OUT) {
-                    out = true;
-                }
-            }
+            //check if the user registered his attendance in this work shift
+            boolean userAttendedInThisWorkShift = todayShiftLogs.stream()
+                    .filter(Objects::nonNull)
+                    .map(attendance::getAttType).anyMatch(attType.IN::equals);
+
+            //check if the user registered his departure in this work shift
+            boolean userDepartureInThisWorkShift = todayShiftLogs.stream()
+                    .filter(Objects::nonNull)
+                    .map(attendance::getAttType).anyMatch(attType.OUT::equals);
+
+
 
             //attending state
-            if (!in) {
+            if (!userAttendedInThisWorkShift) {
 
                 //check attending at normal time
                 if (dateUtils.timeAfter(dateUtils.newTime(shiftHours.getFromHour()), scanTime, true) && dateUtils.timeBefore(lateArriveTime, scanTime, true)) {
@@ -144,7 +145,7 @@ public class workShift extends OEntity {
                 //else throw FORBIDDEN
                 throw new CouldNotAttendException(ErrorMessages.COULD_NOT_ATTEND.getErrorMessage());
 
-            } else if (!out) {//leaving state
+            } else if (!userDepartureInThisWorkShift) {//leaving state
 
                 //check leaving at normal time
                 if (dateUtils.timeAfter(minNormalLeaveTime, scanTime, true) && dateUtils.timeBefore(maxNormalLeaveTime, scanTime, true)) {

@@ -29,10 +29,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.sql.Time;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -270,77 +267,86 @@ public class employee extends OEntity {
      * helper method to determine employee current work shift
      * loops through emp work shifts.. and filter shifts that meet the scanTime
      * drop current shift and look for the second one that meet the current time if user attended and left in this current shift
-     * TODO resolve two continuous shifts (add overtime)
      * TODO resolve TwoDays shift (11pm-7am)
-     * TODO resolve holidays
      */
-    public workShift getCurrentWorkShift(List<attendance> todayLogs, Date scanDate, List<workShift> workShifts, attendanceRules attendanceRules) {
+    public workShift getCurrentWorkShift(List<attendance> todayLogs, Date scanDate, Time scanTime, List<workShift> workShifts, attendanceRules attendanceRules) {
 
         final DateUtils dateUtils = new DateUtils();
 
         //loop through work shifts to detect current
         for (workShift workShift : workShifts) {
-            Date fromHour;
-            Date toHour;
 
-            //check if this days have custom attending hours
-            final Optional<customShiftHours> customShiftTime = workShift.getCustomShiftHours().stream()
-                    .filter(c -> c.getDay().equals(dateUtils.getDateWeekDay(scanDate))).findFirst();
+            //holder variable that indicates if scan time between allowed boundaries
+            boolean currentShift;
 
-            //if custom attending hours exist on this weekday set hours rage from it
-            if (customShiftTime.isPresent()) {
-
-                fromHour = customShiftTime.get().getFromHour();
-                toHour = customShiftTime.get().getToHour();
-
-            } else {
-                //if not existing set hours rage from normal shitTime
-
-                fromHour = workShift.getShiftHours().getFromHour();
-                toHour = workShift.getShiftHours().getToHour();
-
-            }
-
-            //calculate shift boundaries
-            final Time shiftStartLeavingTime = dateUtils.addOrSubtractMinutes(dateUtils.newTime(toHour), -attendanceRules.getAllowedEarlyLeaveMinutes());
-            final Time shiftEndTimeWithAllowedMinuets = dateUtils.addOrSubtractMinutes(dateUtils.newTime(toHour), attendanceRules.getAllowedLateLeaveMinutes());
-
-            //check if scan time between allowed boundaries
-            final boolean currentShift = dateUtils.isBetweenTwoTimes(dateUtils.newTime(fromHour), shiftEndTimeWithAllowedMinuets, dateUtils.newTime(scanDate));
-
-            if (currentShift) {
-
-                boolean left = false;
-                boolean attended = false;
-
-                /*
-                *TODO test refactored from final List<attendance> todayShiftLogs = attendanceService.employeeTodaysShitLogs(this, scanDate, workShift);
-                *get today's current shift logs to determine state
-                * */
-                final List<attendance> todayShiftLogs = todayLogs.stream().filter(a -> a.getWorkShift().getId()
-                        .equals(workShift.getId())).collect(toList());
+            /*
+             * TODO test refactored from final List<attendance> todayShiftLogs = attendanceService.employeeTodaysShitLogs(this, scanDate, workShift);
+             * filter current work shift logs to determine state
+             * */
+            try {
 
 
-                for (attendance shiftLog : todayShiftLogs) {
+                final List<attendance> workShiftLogs = todayLogs.stream()
+                        .filter(Objects::nonNull).filter(a -> a.getWorkShift()!=null)
+                        .filter(a -> a.getWorkShift().getId().equals(workShift.getId())).collect(toList());
 
-                    //check if employee already registered his attendance
-                    if (shiftLog.getAttType() == attType.IN) {
-                        attended = true;
 
-                    } else if (shiftLog.getAttType() == attType.OUT) {
-                        //check if employee already registered his departure
-                        left = true;
-                    }
+                //check if this days have custom attending hours
+                final Optional<customShiftHours> customShiftTime = workShift.getCustomShiftHours().stream()
+                        .filter(Objects::nonNull)
+                        .filter(c -> c.getDay().equals(dateUtils.getDateWeekDay(scanDate))).findFirst();
+
+
+                //check if the user registered his attendance in this work shift
+                boolean userAttendedInThisWorkShift = workShiftLogs.stream()
+                        .filter(Objects::nonNull)
+                        .map(attendance::getAttType).anyMatch(attType.IN::equals);
+
+                //check if the user registered his departure in this work shift
+                boolean userDepartureInThisWorkShift = workShiftLogs.stream()
+                        .filter(Objects::nonNull)
+                        .map(attendance::getAttType).anyMatch(attType.OUT::equals);
+
+                Time fromHour;
+                Time toHour;
+
+                //if custom attending hours exist on this weekday set hours rage from it
+                if (customShiftTime.isPresent()) {
+
+                    fromHour = dateUtils.newTime(customShiftTime.get().getFromHour());
+                    toHour = dateUtils.newTime(customShiftTime.get().getToHour());
+
+                } else {
+                    //if not existing set hours rage from normal shitTime
+
+                    fromHour = dateUtils.newTime(workShift.getShiftHours().getFromHour());
+                    toHour = dateUtils.newTime(workShift.getShiftHours().getToHour());
+
                 }
 
-                /*
-                *return this work shift if user didn't register his attendance and time is before departure time
-                *or if user didn't register his departure
-                */
-                if ((!attended && dateUtils.timeBefore(shiftStartLeavingTime, dateUtils.newTime(scanDate), false)) || !left) {
+                //calculate shift boundaries
+                final Time shiftStartLeavingTime = dateUtils.addOrSubtractMinutes(toHour, -attendanceRules.getAllowedEarlyLeaveMinutes());
+                final Time maxOverTime = dateUtils.addOrSubtractHours(toHour, attendanceRules.getMaxOverTimeHours());
+
+                //check if user didn't attend yet, limit shit boundaries to start&StartLeaving time
+                if (!userAttendedInThisWorkShift) {
+                    currentShift = dateUtils.isBetweenTwoTimes(dateUtils.newTime(fromHour), shiftStartLeavingTime, scanTime);
+
+                    //check if user attended but didn't departure yet, limit shit boundaries to start&maxOverTime time
+                } else if (!userDepartureInThisWorkShift) {
+                    currentShift = dateUtils.isBetweenTwoTimes(dateUtils.newTime(fromHour), maxOverTime, scanTime);
+
+                    //if user attended and departure then ignore this shift
+                } else {
+                    currentShift = false;
+
+                }
+
+                if (currentShift) {
                     return workShift;
                 }
-
+            } catch (Exception e) {
+                System.err.println(e.getMessage());
             }
         }
         //if non of the conditions above met.. then return null (no work shift available for this current scan time) !!
