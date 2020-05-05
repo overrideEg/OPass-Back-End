@@ -50,23 +50,15 @@ public class DateUtils {
 
 
 
-    public boolean isBetweenTwoDate(Date startDate, Date stopDate, Date currentDate) {
-        //Start Date
-        Calendar StartDate = newCalender(startDate);
+    public boolean isBetweenTwoDates(Date fromDate, Date toDate, Date currentDate, Boolean orEqual) {
+        if(orEqual != null && orEqual){
 
-        //Current Date
-        Calendar CurrentDate = newCalender(currentDate);
+            return ((currentDate.before(toDate) || currentDate.equals(toDate)) && (currentDate.after(fromDate) || currentDate.equals(fromDate)));
+        }else {
 
-        //Stop Date
-        Calendar StopDate = newCalender(stopDate);
-
-        if (stopDate.compareTo(startDate) < 0) {
-            if (CurrentDate.compareTo(StopDate) < 0) {
-                CurrentDate.add(Calendar.DATE, 1);
-            }
-            StopDate.add(Calendar.DATE, 1);
+            return (currentDate.before(toDate) &&currentDate.after(fromDate));
         }
-        return CurrentDate.compareTo(StartDate) >= 0 && CurrentDate.compareTo(StopDate) < 0;
+
     }
 
     public boolean isBetweenTwoTimes(Time startTime, Time stopTime, Time currentTime) {
@@ -144,83 +136,12 @@ public class DateUtils {
 
 
 
-    public boolean dateBefore(Date date, Date currentDate, Boolean onlyHours, Boolean orEqual) {
-
-        Calendar startCalendar = newCalender(date);
-        Calendar currentTimeCalendar = newCalender(currentDate);
-
-        int timeStart;
-        int startHour = startCalendar.get(Calendar.HOUR_OF_DAY);
-
-        if (onlyHours != null && onlyHours) {
-
-            int startMin = startCalendar.get(Calendar.MINUTE);
-            timeStart = startHour * 60 + startMin;  //this
-
-        } else {
-            timeStart = startHour;
-        }
-
-        int timeCurrent;
-        int currentHour = currentTimeCalendar.get(Calendar.HOUR_OF_DAY);
-
-        if (onlyHours != null && onlyHours) {
-
-            int currentMin = currentTimeCalendar.get(Calendar.MINUTE);
-            timeCurrent = currentHour * 60 + currentMin;  //this
-
-        } else {
-            timeCurrent = currentHour;
-        }
-
-        if (orEqual != null && orEqual) {
-
-            return timeStart >= timeCurrent;
-
-        } else {
-
-            return timeStart > timeCurrent;
-
-        }
-
+    public boolean dateBefore(Date date, Date currentDate, Boolean orEqual) {
+        return (currentDate.before(date) || (orEqual != null && orEqual && currentDate.equals(date)));
     }
 
-    public boolean dateAfter(Date date, Date currentDate, Boolean onlyHours, Boolean orEqual) {
-
-        Calendar startCalendar = newCalender(date);
-        Calendar currentTimeCalendar = newCalender(currentDate);
-
-        int timeStart;
-        int startHour = startCalendar.get(Calendar.HOUR_OF_DAY);
-
-        if (onlyHours != null && onlyHours) {
-
-            int startMin = startCalendar.get(Calendar.MINUTE);
-            timeStart = startHour * 60 + startMin;  //this
-
-        } else {
-            timeStart = startHour;
-        }
-
-        int timeCurrent;
-        int currentHour = currentTimeCalendar.get(Calendar.HOUR_OF_DAY);
-
-        if (onlyHours != null && onlyHours) {
-
-            int currentMin = currentTimeCalendar.get(Calendar.MINUTE);
-            timeCurrent = currentHour * 60 + currentMin;  //this
-
-        } else {
-            timeCurrent = currentHour;
-        }
-        if (orEqual != null && orEqual) {
-
-            return timeStart <= timeCurrent;
-        } else {
-            return timeStart < timeCurrent;
-
-        }
-
+    public boolean dateAfter(Date date, Date currentDate, Boolean orEqual) {
+        return (currentDate.after(date) || (orEqual != null && orEqual && currentDate.equals(date)));
     }
 
     public boolean timeAfter(Time time, Time currentTime, Boolean orEqual) {
