@@ -81,33 +81,43 @@ public class workShift extends OEntity {
         this.customShiftHours = customShiftHours;
     }
 
+    //TODO add maxOvertime departure time allowance🔥 🔥
     public attendance createAttLog(employee employee, Date scanDate, int scanWeekDay, attendanceRules attendanceRules, HRPermissions hrPermissions, List<attendance> todayShiftLogs) {
         final DateUtils dateUtils = new DateUtils();
         final Time scanTime = dateUtils.newTime(scanDate);
         final attendance attendanceLog = new attendance(employee, this, scanDate, scanTime, attType.LOG, attStatus.normal);
 
-        Time maxOverTime;
-        Time lateArriveTime;
-        Time minNormalLeaveTime;
-        Time maxNormalLeaveTime;
+        Date toHour;
+        Date fromHour;
+        Date maxOverTime;
+        Date lateArriveTime;
+        Date minNormalLeaveTime;
+        Date maxNormalLeaveTime;
 
         try {
             //check if today is a custom shift day
             final Optional<customShiftHours> customShiftTime = getCustomShiftHours()
                     .stream().filter(c -> c.getDay().equals(scanWeekDay)).findFirst();
 
-            //if custom shift day exist, calculate conditions from it
             if (customShiftTime.isPresent()) {
-                maxOverTime = dateUtils.addOrSubtractHours(dateUtils.newTime(customShiftTime.get().getToHour()), attendanceRules.getMaxOverTimeHours());
-                lateArriveTime = dateUtils.addOrSubtractMinutes(dateUtils.newTime(customShiftTime.get().getFromHour()), attendanceRules.getAllowedLateMinutes());
-                maxNormalLeaveTime = dateUtils.addOrSubtractMinutes(dateUtils.newTime(customShiftTime.get().getToHour()), attendanceRules.getAllowedEarlyLeaveMinutes());
-                minNormalLeaveTime = dateUtils.addOrSubtractMinutes(dateUtils.newTime(customShiftTime.get().getToHour()), -attendanceRules.getAllowedEarlyLeaveMinutes());
+                //if custom shift day exist, calculate conditions from it
+                fromHour = dateUtils.copyTimeToDate(scanDate, customShiftTime.get().getFromHour());
+                toHour = dateUtils.copyTimeToDate(scanDate, customShiftTime.get().getToHour());
+
+                maxOverTime = dateUtils.addOrSubtractHours(toHour, attendanceRules.getMaxOverTimeHours());
+                lateArriveTime = dateUtils.addOrSubtractMinutes(fromHour, attendanceRules.getAllowedLateMinutes());
+                maxNormalLeaveTime = dateUtils.addOrSubtractMinutes(toHour, attendanceRules.getAllowedEarlyLeaveMinutes());
+                minNormalLeaveTime = dateUtils.addOrSubtractMinutes(toHour, -attendanceRules.getAllowedEarlyLeaveMinutes());
+
             } else {
                 //if custom shift day dont exist, calculate conditions from normal work shift time
-                maxOverTime = dateUtils.addOrSubtractHours(dateUtils.newTime(getShiftHours().getToHour()), attendanceRules.getMaxOverTimeHours());
-                lateArriveTime = dateUtils.addOrSubtractMinutes(dateUtils.newTime(getShiftHours().getFromHour()), attendanceRules.getAllowedLateMinutes());
-                maxNormalLeaveTime = dateUtils.addOrSubtractMinutes(dateUtils.newTime(getShiftHours().getToHour()), attendanceRules.getAllowedEarlyLeaveMinutes());
-                minNormalLeaveTime = dateUtils.addOrSubtractMinutes(dateUtils.newTime(getShiftHours().getToHour()), -attendanceRules.getAllowedEarlyLeaveMinutes());
+                fromHour = dateUtils.copyTimeToDate(scanDate, shiftHours.getFromHour());
+                toHour = dateUtils.copyTimeToDate(scanDate, shiftHours.getToHour());
+
+                maxOverTime = dateUtils.addOrSubtractHours(toHour, attendanceRules.getMaxOverTimeHours());
+                lateArriveTime = dateUtils.addOrSubtractMinutes(fromHour, attendanceRules.getAllowedLateMinutes());
+                maxNormalLeaveTime = dateUtils.addOrSubtractMinutes(toHour, attendanceRules.getAllowedEarlyLeaveMinutes());
+                minNormalLeaveTime = dateUtils.addOrSubtractMinutes(toHour, -attendanceRules.getAllowedEarlyLeaveMinutes());
             }
 
             //if user have an hrPermission, update the shift boundaries
@@ -118,26 +128,22 @@ public class workShift extends OEntity {
 
 
             //check if the user registered his attendance in this work shift
-            boolean userAttendedInThisWorkShift = todayShiftLogs.stream()
-                    .filter(Objects::nonNull)
+            boolean userAttendedInThisWorkShift = todayShiftLogs.stream().filter(Objects::nonNull)
                     .map(attendance::getAttType).anyMatch(attType.IN::equals);
-
             //check if the user registered his departure in this work shift
-            boolean userDepartureInThisWorkShift = todayShiftLogs.stream()
-                    .filter(Objects::nonNull)
+            boolean userDepartureInThisWorkShift = todayShiftLogs.stream().filter(Objects::nonNull)
                     .map(attendance::getAttType).anyMatch(attType.OUT::equals);
-
 
 
             //attending state
             if (!userAttendedInThisWorkShift) {
 
                 //check attending at normal time
-                if (dateUtils.timeAfter(dateUtils.newTime(shiftHours.getFromHour()), scanTime, true) && dateUtils.timeBefore(lateArriveTime, scanTime, true)) {
+                if (dateUtils.isBetweenTwoDates(fromHour, lateArriveTime, scanDate, true)) {
                     attendanceLog.setAttType(attType.IN);
                     return attendanceLog;
                     //check attending at late time
-                } else if (dateUtils.timeAfter(lateArriveTime, scanTime, false) && dateUtils.timeBefore(minNormalLeaveTime, scanTime, false)) {
+                } else if (dateUtils.isBetweenTwoDates(lateArriveTime, minNormalLeaveTime, scanDate, true)) {
                     attendanceLog.setAttStatus(attStatus.lateEntrance);
                     attendanceLog.setAttType(attType.IN);
                     return attendanceLog;
@@ -148,18 +154,18 @@ public class workShift extends OEntity {
             } else if (!userDepartureInThisWorkShift) {//leaving state
 
                 //check leaving at normal time
-                if (dateUtils.timeAfter(minNormalLeaveTime, scanTime, true) && dateUtils.timeBefore(maxNormalLeaveTime, scanTime, true)) {
+                if (dateUtils.isBetweenTwoDates(minNormalLeaveTime, maxNormalLeaveTime, scanDate, true)) {
                     attendanceLog.setAttType(attType.OUT);
                     return attendanceLog;
 
+                } else if (dateUtils.isBetweenTwoDates(fromHour ,minNormalLeaveTime, scanDate, false)) {
                     //check leaving early
-                } else if (dateUtils.timeAfter(dateUtils.newTime(shiftHours.getFromHour()), scanTime, true) && dateUtils.timeBefore(minNormalLeaveTime, scanTime, false)) {
                     attendanceLog.setAttStatus(attStatus.earlyGo);
                     attendanceLog.setAttType(attType.OUT);
                     return attendanceLog;
 
                     //check leaving at over time
-                } else if (dateUtils.timeAfter(maxNormalLeaveTime, scanTime, false) && dateUtils.timeBefore(maxOverTime, scanTime, true)) {
+                } else if (dateUtils.isBetweenTwoDates(maxNormalLeaveTime, maxOverTime, scanDate, true)) {
                     attendanceLog.setAttStatus(attStatus.overTime);
                     attendanceLog.setAttType(attType.OUT);
                     return attendanceLog;
@@ -167,7 +173,7 @@ public class workShift extends OEntity {
                 //else throw FORBIDDEN
                 throw new CouldNotAttendException(ErrorMessages.COULD_NOT_ATTEND.getErrorMessage());
 
-            }else {
+            } else {
 
                 //user registered his attendance and departure, throw not allowed exception!!
                 throw new CouldNotAttendException(ErrorMessages.COULD_NOT_ATTEND.getErrorMessage());
@@ -177,8 +183,8 @@ public class workShift extends OEntity {
 
         } catch (Exception e) {
             //in case of internal error save the attendance log and call the logger
-            System.err.println("error processing work shift:"+getId()+" attendance for employee:"
-                    +employee.getId()+" "+e.getMessage());
+            System.err.println("error processing work shift:" + getId() + " attendance for employee:"
+                    + employee.getId() + " " + e.getMessage());
 
             return attendanceLog;
         }

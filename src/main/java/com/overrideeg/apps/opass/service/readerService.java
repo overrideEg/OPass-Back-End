@@ -147,7 +147,7 @@ public class readerService {
 
         if (!workShifts.isEmpty()) {
 
-            final workShift currentWorkShift = employee.getCurrentWorkShift(todayLogs, scanDate, scanTime, workShifts, attendanceRules);
+            final workShift currentWorkShift = employee.getCurrentWorkShift(todayLogs, scanDate, workShifts, attendanceRules);
 
             if (currentWorkShift == null) {
                 return new attendance(employee, null, scanDate, scanTime, attType.LOG, attStatus.normal);
