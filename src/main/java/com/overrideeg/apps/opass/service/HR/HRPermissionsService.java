@@ -32,8 +32,8 @@ public class HRPermissionsService extends AbstractService<HRPermissions> {
     }
 
 
-    public HRPermissions getHRPermissionsInCurrentDate (Date currentDate ) {
-        return hrPermissionsRepoImpl.employeeTodaysHRPermissions(currentDate);
+    public List<HRPermissions> getHRPermissionsInCurrentDate (Date currentDate , Long employee_id) {
+        return hrPermissionsRepoImpl.employeeTodaysHRPermissions(currentDate, employee_id);
     }
 
 
