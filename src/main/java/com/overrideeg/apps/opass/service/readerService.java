@@ -129,7 +129,8 @@ public class readerService {
         final attendanceRules attendanceRules = employee.fetchEmployeeAttRules();
 
         //get employee's hr permissions in current date if exist
-        final HRPermissions hrPermissions = hrPermissionsService.getHRPermissionsInCurrentDate(scanDate);
+        final List<HRPermissions> hrPermissions = hrPermissionsService.getHRPermissionsInCurrentDate(scanDate, employee.getId());
+
 
         //get today's current logs
         final List<attendance> todayLogs = attendanceService.employeeTodaysLogs(employee, scanDate, true);
@@ -166,7 +167,7 @@ public class readerService {
     }
 
     //TODO refactor with stream
-    private attendance processDaysOffAndHolidaysAndAbsenceAllowed(employee employee, HRPermissions hrPermissions, List<attendance> todayShiftLogs, Date scanDate, int scanWeekDay, Time scanTime) {
+    private attendance processDaysOffAndHolidaysAndAbsenceAllowed(employee employee, List<HRPermissions> hrPermissions, List<attendance> todayShiftLogs, Date scanDate, int scanWeekDay, Time scanTime) {
 
         //check if today is a holiday
         final List<officialHoliday> officialHolidays = officialHolidayService.getOfficialHollidaysInCurrentDate(scanDate);
@@ -174,7 +175,7 @@ public class readerService {
         //prepare check conditions
         boolean todayIsHoliday = !officialHolidays.isEmpty();
         boolean todayIsDayOff = employee.fetchEmployeeDaysOff().contains(scanWeekDay);
-        boolean todayIsAbsenceAllowed = hrPermissions != null && hrPermissions.getAbsenceAllowed();
+        boolean todayIsAbsenceAllowed = hrPermissions != null && hrPermissions.stream().anyMatch(HRPermissions::getAbsenceAllowed);
 
 
         if (todayIsHoliday || todayIsDayOff || todayIsAbsenceAllowed) {

@@ -82,7 +82,7 @@ public class workShift extends OEntity {
     }
 
     //TODO add maxOvertime departure time allowance🔥 🔥
-    public attendance createAttLog(employee employee, Date scanDate, int scanWeekDay, attendanceRules attendanceRules, HRPermissions hrPermissions, List<attendance> todayShiftLogs) {
+    public attendance createAttLog(employee employee, Date scanDate, int scanWeekDay, attendanceRules attendanceRules, List<HRPermissions> hrPermissions, List<attendance> todayShiftLogs) {
         final DateUtils dateUtils = new DateUtils();
         final Time scanTime = dateUtils.newTime(scanDate);
         final attendance attendanceLog = new attendance(employee, this, scanDate, scanTime, attType.LOG, attStatus.normal);
@@ -121,9 +121,12 @@ public class workShift extends OEntity {
             }
 
             //if user have an hrPermission, update the shift boundaries
-            if (hrPermissions != null) {
-                lateArriveTime = dateUtils.addOrSubtractMinutes(lateArriveTime, hrPermissions.getMinutesLate());
-                minNormalLeaveTime = dateUtils.addOrSubtractMinutes(minNormalLeaveTime, -hrPermissions.getMinutesEarlyGo());
+            if (hrPermissions!=null&&!hrPermissions.isEmpty()) {
+                int allowedEarlyGoMinutes = hrPermissions.stream().mapToInt(HRPermissions::getMinutesEarlyGo).sum();
+                int allowedLateMinutes = hrPermissions.stream().mapToInt(HRPermissions::getMinutesLate).sum();
+
+                lateArriveTime = dateUtils.addOrSubtractMinutes(lateArriveTime, allowedLateMinutes);
+                minNormalLeaveTime = dateUtils.addOrSubtractMinutes(minNormalLeaveTime, -allowedEarlyGoMinutes);
             }
 
 

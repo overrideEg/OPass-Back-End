@@ -24,19 +24,15 @@ public class HRPermissionsRepoImpl {
     protected EntityManager mEntityManager;
 
 
-    public HRPermissions employeeTodaysHRPermissions(Date currentDate) {
+    public List<HRPermissions> employeeTodaysHRPermissions(Date currentDate, Long employee_id) {
         try {
-            CriteriaBuilder cb = mEntityManager.getCriteriaBuilder();
-            CriteriaQuery<HRPermissions> query = cb.createQuery(HRPermissions.class);
-            Root<HRPermissions> root = query.from(HRPermissions.class);
+            String query = "select pr from HRPermissions pr \n" +
+                    "where pr.date<= :date and pr.employee.id=:employee_id";
+            return mEntityManager.createQuery(query, HRPermissions.class).setParameter("date", currentDate)
+                    .setParameter("employee_id", employee_id).getResultList();
 
-            cb.equal(root.get("fromDate"), cb.literal(currentDate));
-            query.select(root);
-
-            TypedQuery<HRPermissions> officialHolidayTypedQuery = mEntityManager.createQuery(query);
-
-            return officialHolidayTypedQuery.getSingleResult();
         } catch (Exception e) {
+            System.err.println("error getting hr permissions"+e.getMessage());
             return null;
         }
 
