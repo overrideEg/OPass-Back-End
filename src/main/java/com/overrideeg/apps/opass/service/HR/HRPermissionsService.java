@@ -5,10 +5,8 @@
 package com.overrideeg.apps.opass.service.HR;
 
 import com.overrideeg.apps.opass.io.entities.HR.HRPermissions;
-import com.overrideeg.apps.opass.io.entities.officialHoliday;
 import com.overrideeg.apps.opass.io.repositories.HRPermissionsRepo;
 import com.overrideeg.apps.opass.io.repositories.impl.HRPermissionsRepoImpl;
-import com.overrideeg.apps.opass.io.repositories.impl.officialHolidayRepoImpl;
 import com.overrideeg.apps.opass.service.AbstractService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,7 +31,7 @@ public class HRPermissionsService extends AbstractService<HRPermissions> {
 
 
     public List<HRPermissions> getHRPermissionsInCurrentDate (Date currentDate , Long employee_id) {
-        return hrPermissionsRepoImpl.employeeTodaysHRPermissions(currentDate, employee_id);
+        return hrPermissionsRepoImpl.employeeTodayHRPermissions(currentDate, employee_id);
     }
 
 
