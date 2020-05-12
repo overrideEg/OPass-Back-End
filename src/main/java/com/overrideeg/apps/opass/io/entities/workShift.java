@@ -85,7 +85,7 @@ public class workShift extends OEntity {
     public attendance createAttLog(employee employee, Date scanDate, int scanWeekDay, attendanceRules attendanceRules, List<HRPermissions> hrPermissions, List<attendance> todayShiftLogs) {
         final DateUtils dateUtils = new DateUtils();
         final Time scanTime = dateUtils.newTime(scanDate);
-        final attendance attendanceLog = new attendance(employee, this, scanDate, scanTime, attType.LOG, attStatus.logOnly);
+        final attendance attendanceLog = new attendance(employee, this, scanDate, scanTime, attType.LOG, attStatus.onTime);
 
         Date toHour;
         Date fromHour;
