@@ -89,7 +89,7 @@ public class employeeUtilsService {
     }
 
     public List<HRPermissions> getPermissions ( employee employee ) {
-        return permissionsService.findAll().stream()
+        return permissionsService.findListBy("employee.id", employee.getId()).stream()
                 .filter(hrPermissions -> hrPermissions.getEmployee().getId().equals(employee.getId())).collect(Collectors.toList());
     }
 

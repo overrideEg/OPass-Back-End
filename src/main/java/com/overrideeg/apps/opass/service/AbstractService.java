@@ -134,15 +134,19 @@ public abstract class AbstractService<E extends OEntity> {
     }
 
 
-    public E find(String by, Object value) {
+    public E find ( String by, Object value ) {
         return mRepository.findByField(by, value);
+    }
+
+    public List<E> findListBy ( String by, Object value ) {
+        return mRepository.findListByField(by, value);
     }
 
     public Optional<E> find ( List<String> names, List values ) {
         return mRepository.findBySomeFields(names, values);
     }
 
-    public List<E> findWhere(List<String> names, List values) {
+    public List<E> findWhere ( List<String> names, List values ) {
         return mRepository.findWhere(names, values);
     }
 
