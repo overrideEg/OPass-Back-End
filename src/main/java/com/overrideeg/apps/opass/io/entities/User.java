@@ -28,7 +28,7 @@ import static java.util.stream.Collectors.toList;
 })
 public class User implements UserDetails {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     @Column(nullable = false, unique = true)
     @NotEmpty
