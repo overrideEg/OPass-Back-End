@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @RestController
 @RequestMapping(ApiUrls.qrMachine_EP)
@@ -30,7 +31,7 @@ public class qrMachineEntryPoint extends RestEntryPoint<qrMachine> {
 
     @GetMapping("/findByDepAndBr")
     public @ResponseBody
-    qrMachine qrMachineForDepAndBranch(@RequestParam("departmentId") Long departmentId, @RequestParam("branchId") Long branchId, @RequestHeader Long tenantId, HttpServletRequest request) {
+    List<qrMachine> qrMachineForDepAndBranch ( @RequestParam("departmentId") Long departmentId, @RequestParam("branchId") Long branchId, @RequestHeader Long tenantId, HttpServletRequest request ) {
         resolveTenant.resolve(tenantId, request);
         return qrMachineService.findQrMachineForDepartmentAndBranch(departmentId, branchId);
     }
