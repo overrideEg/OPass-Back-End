@@ -21,6 +21,7 @@ import com.overrideeg.apps.opass.service.AbstractService;
 import com.overrideeg.apps.opass.service.attendanceService;
 import com.overrideeg.apps.opass.service.employeeUtilsService;
 import com.overrideeg.apps.opass.utils.DateUtils;
+import com.overrideeg.apps.opass.utils.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -322,7 +323,7 @@ public class HRSalaryCalculationDocumentService extends AbstractService<HRSalary
             Date toHour = dateUtils.copyTimeToDate(report.getScanDate(), report.getWorkShift().getShiftHours().getToHour());
             long allowedLate = TimeUnit.MILLISECONDS.convert(employee.fetchEmployeeAttRules().getAllowedLateLeaveMinutes(), TimeUnit.MINUTES);
             long totalOverTimeHours = shiftAtDate.getTime() - toHour.getTime() - allowedLate;
-            returnValue.updateAndGet(v -> v + TimeUnit.HOURS.convert(totalOverTimeHours, TimeUnit.MILLISECONDS));
+            returnValue.updateAndGet(v -> v + TimeUnit.MINUTES.convert(totalOverTimeHours, TimeUnit.MILLISECONDS));
         });
         return Math.toIntExact(returnValue.get());
     }
@@ -351,14 +352,14 @@ public class HRSalaryCalculationDocumentService extends AbstractService<HRSalary
      *
      * @param employee                 employee
      * @param totalMinutes             totalMinutes
-     * @param totalOverTimeHours       totalOverTimeMinutes
+     * @param totalOverTimeMinutes     totalOverTimeMinutes
      * @param totalWorkOnDayOffMinutes totalWorkOnDayOffMinutes
      * @param totalEarlyGoMinutes      totalEarlyGoMinutes
      * @param totalLateMinutes         totalLateMinutes
      * @param totalAbsenceDays         totalAbsenceDays
      * @return hr salary document
      */
-    private HRSalary calculateSalary ( employee employee, Integer totalMinutes, Integer totalOverTimeHours, Integer totalWorkOnDayOffMinutes, Integer totalEarlyGoMinutes, Integer totalLateMinutes, Integer totalAbsenceDays ) {
+    private HRSalary calculateSalary ( employee employee, Integer totalMinutes, Integer totalOverTimeMinutes, Integer totalWorkOnDayOffMinutes, Integer totalEarlyGoMinutes, Integer totalLateMinutes, Integer totalAbsenceDays ) {
         HRSalary returnValue = new HRSalary();
 
         // salary bases
@@ -389,25 +390,25 @@ public class HRSalaryCalculationDocumentService extends AbstractService<HRSalary
             lateDeduction = 0D;
         // work on day off
         int overTimeTotalDuration = 0;
-        overTimeTotalDuration = totalWorkOnDayOffMinutes + (totalOverTimeHours * 60);
+        overTimeTotalDuration = totalWorkOnDayOffMinutes + totalOverTimeMinutes;
 
         returnValue.setOverTimeHours(overTimeTotalDuration);
 
-        Double overTimeAddition = (totalOverTimeHours * 60) * hrSetting.getOverTimeAddition() * salaryInMinute;
+        Double overTimeAddition = totalOverTimeMinutes * hrSetting.getOverTimeAddition() * salaryInMinute;
 
         Double workOnDayOffAddition = totalWorkOnDayOffMinutes * hrSetting.getWorkOnDayOffAddition() * salaryInMinute;
 
 
         // salary
         returnValue.setTotalHours(totalMinutes / 60);
-        Double totalSalary = totalMinutes * salaryInMinute;
+        Double totalSalary = EntityUtils.round(totalMinutes * salaryInMinute, 2);
         returnValue.setSalary(totalSalary);
 
         // addition
-        returnValue.setAddition(overTimeAddition + workOnDayOffAddition);
+        returnValue.setAddition(EntityUtils.round(overTimeAddition + workOnDayOffAddition, 2));
 
         // deduction
-        returnValue.setDeduction(lateDeduction + earlyGoDeduction + AbsenceDeduction);
+        returnValue.setDeduction(EntityUtils.round(lateDeduction + earlyGoDeduction + AbsenceDeduction, 2));
 
 
         return returnValue;

@@ -31,17 +31,21 @@ public interface JpaRepositoryCustomisations<T> extends JpaRepository<T, Long> {
      */
 
 
-    T persist(T inEntity) throws NoSuchMethodException;
+    T persist ( T inEntity ) throws NoSuchMethodException;
 
-    T findByField(String name, Object value);
+    T findByField ( String name, Object value );
+
+
+    List<T> findListByField ( String name, Object value );
+
 
     Optional<T> findBySomeFields ( List<String> names, List values );
 
-    List<T> findWhere(List<String> names, List values);
+    List<T> findWhere ( List<String> names, List values );
 
-    List<T> createQuery(String queryString, List<String> whereNames, List whereValues);
+    List<T> createQuery ( String queryString, List<String> whereNames, List whereValues );
 
-    List createGeneralQuery(String queryString, List<String> whereNames, List whereValues);
+    List createGeneralQuery ( String queryString, List<String> whereNames, List whereValues );
 
     List<T> createQuery(String queryString);
 

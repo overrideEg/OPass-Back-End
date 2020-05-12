@@ -9,8 +9,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.overrideeg.apps.opass.enums.attStatus;
 import com.overrideeg.apps.opass.enums.attType;
 import com.overrideeg.apps.opass.exceptions.*;
-import com.overrideeg.apps.opass.io.entities.*;
 import com.overrideeg.apps.opass.io.entities.HR.HRPermissions;
+import com.overrideeg.apps.opass.io.entities.*;
 import com.overrideeg.apps.opass.io.valueObjects.attendanceRules;
 import com.overrideeg.apps.opass.service.HR.HRPermissionsService;
 import com.overrideeg.apps.opass.ui.entrypoint.reader.qrData;
@@ -24,9 +24,8 @@ import org.springframework.stereotype.Service;
 import java.sql.Time;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.toList;
 
 //todo bimbo work here
 @Service
@@ -151,7 +150,7 @@ public class readerService {
             final workShift currentWorkShift = employee.getCurrentWorkShift(todayLogs, scanDate, workShifts, attendanceRules);
 
             if (currentWorkShift == null) {
-                return new attendance(employee, null, scanDate, scanTime, attType.LOG, attStatus.normal);
+                return new attendance(employee, null, scanDate, scanTime, attType.LOG, attStatus.logOnly);
             }
 
 
@@ -161,7 +160,7 @@ public class readerService {
             return currentWorkShift.createAttLog(employee, scanDate, scanWeekDay, attendanceRules, hrPermissions, todayShiftLogs);
 
         } else {
-            return new attendance(employee, null, scanDate, scanTime, attType.LOG, attStatus.normal);
+            return new attendance(employee, null, scanDate, scanTime, attType.LOG, attStatus.logOnly);
         }
 
     }

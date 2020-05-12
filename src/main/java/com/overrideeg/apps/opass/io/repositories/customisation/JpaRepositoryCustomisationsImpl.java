@@ -151,6 +151,36 @@ public class JpaRepositoryCustomisationsImpl<T> extends SimpleJpaRepository<T, L
         return Entity;
     }
 
+    public List<T> findListByField ( final String name, final Object value ) {
+        T Entity = null;
+        try {
+            Entity = this.inEntityType.getDeclaredConstructor().newInstance();
+        } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException | InstantiationException e) {
+            e.printStackTrace();
+        }
+
+        CriteriaBuilder cb = mEntityManager.getCriteriaBuilder();
+        CriteriaQuery<T> criteria = cb.createQuery(this.inEntityType);
+        Root<T> root = criteria.from(this.inEntityType);
+        criteria.select(root);
+        if (!name.contains("."))
+            criteria.where(cb.equal(root.get(name), value));
+        else {
+            String firstObject = name.substring(0, name.indexOf("."));
+            String secondObject = name.substring(name.indexOf(".") + 1);
+            criteria.where(cb.equal(root.get(firstObject).get(secondObject), value));
+        }
+        // Fetch single result
+        Query query = mEntityManager.createQuery(criteria);
+        List<T> returnValue = new ArrayList<>();
+        try {
+            returnValue = query.getResultList();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return returnValue;
+    }
+
     @Override
     public Optional<T> findBySomeFields ( final List<String> names, final List values ) {
         CriteriaBuilder cb = mEntityManager.getCriteriaBuilder();
