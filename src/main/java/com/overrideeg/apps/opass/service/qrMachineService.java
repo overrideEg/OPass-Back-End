@@ -10,6 +10,8 @@ import com.overrideeg.apps.opass.io.repositories.qrMachineRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class qrMachineService extends AbstractService<qrMachine> {
 
@@ -20,7 +22,7 @@ public class qrMachineService extends AbstractService<qrMachine> {
         super(inRepository);
     }
 
-    public qrMachine findQrMachineForDepartmentAndBranch(Long departmentId, Long branchId) {
+    public List<qrMachine> findQrMachineForDepartmentAndBranch ( Long departmentId, Long branchId ) {
         return qrMachineRepo.findQrMachineForDepartmentAndBranch(departmentId, branchId);
     }
 }
