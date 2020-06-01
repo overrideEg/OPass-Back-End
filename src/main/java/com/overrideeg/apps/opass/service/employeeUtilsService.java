@@ -72,8 +72,10 @@ public class employeeUtilsService {
     }
 
     public boolean checkIfHaveAbsencePermission ( List<HRPermissions> permission, LocalDate currentDate ) {
-        Date date = dateUtils.convertToDateViaInstant(currentDate, TimeZone.getTimeZone("Africa,Cairo"));
-        return permission.stream().anyMatch(hrPermissions -> hrPermissions.getDate().equals(date));
+        return permission.stream().anyMatch(hrPermissions ->
+
+                dateUtils.convertToLocalDateViaInstant(hrPermissions.getDate()).equals(currentDate)
+        );
 
     }
 
