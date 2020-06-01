@@ -40,13 +40,13 @@ import javax.servlet.ServletException;
 public class opassApplication extends SpringBootServletInitializer implements WebMvcConfigurer {
 
 
-    public static void main(String[] args) {
+    public static void main ( String[] args ) {
         SpringApplication.run(opassApplication.class, args);
     }
 
 
     @Override
-    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+    protected SpringApplicationBuilder configure ( SpringApplicationBuilder application ) {
         return application.sources(opassApplication.class);
     }
 
@@ -66,5 +66,6 @@ public class opassApplication extends SpringBootServletInitializer implements We
     public PasswordEncoder passwordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
+
 
 }
