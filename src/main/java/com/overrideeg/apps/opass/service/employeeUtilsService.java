@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
@@ -73,16 +75,21 @@ public class employeeUtilsService {
 
     public boolean checkIfHaveAbsencePermission ( List<HRPermissions> permission, LocalDate currentDate ) {
         return permission.stream().anyMatch(hrPermissions ->
-
-                dateUtils.convertToLocalDateViaInstant(hrPermissions.getDate()).equals(currentDate)
+                dateUtils.convertToLocalDateViaInstant(hrPermissions.getDate()).equals(currentDate) && hrPermissions.getAbsenceAllowed()
         );
 
     }
-
     public boolean checkIfOfficialHoliday ( List<officialHoliday> holidays, LocalDate currentDate ) {
         Date date = dateUtils.convertToDateViaInstant(currentDate, TimeZone.getTimeZone("Africa,Cairo"));
         holidays = holidays.stream()
-                .filter(holiday -> holiday.getToDate().getTime() >= date.getTime() && holiday.getFromDate().getTime() <= date.getTime()).collect(Collectors.toList());
+                .filter(
+                        holiday ->
+                        {
+                            LocalDateTime toDate = dateUtils.convertToLocalDateViaInstant(holiday.getToDate()).atTime(LocalTime.MAX);
+                            holiday.setToDate(dateUtils.convertToDateViaInstant(toDate, TimeZone.getTimeZone("Africa,Cairo")));
+                            return holiday.getToDate().getTime() >= date.getTime() && holiday.getFromDate().getTime() <= date.getTime();
+                        }
+                ).collect(Collectors.toList());
         return holidays.size() > 0;
     }
 

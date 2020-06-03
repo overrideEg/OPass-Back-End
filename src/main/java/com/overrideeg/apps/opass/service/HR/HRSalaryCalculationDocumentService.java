@@ -80,7 +80,7 @@ public class HRSalaryCalculationDocumentService extends AbstractService<HRSalary
         else
             hrSetting = hrSettings.get(0);
     }
-
+DateUtils dateUtils = new DateUtils();
     @Override
     public HRSalaryCalculationDocument save ( HRSalaryCalculationDocument inEntity ) {
         if (inEntity.getToDate().before(inEntity.getFromDate()) || inEntity.getFromDate().equals(inEntity.getToDate())) {
@@ -203,11 +203,14 @@ public class HRSalaryCalculationDocumentService extends AbstractService<HRSalary
         Integer AbsenceDays = dateList.size();
         DateUtils dateUtils = new DateUtils();
         for (attendanceReport attendanceReport : attendanceReports) {
-            Date scanDate = dateUtils.convertToDateViaInstant(dateUtils.convertToLocalDateViaInstantAtStartOfDate(attendanceReport.getScanDate()), TimeZone.getTimeZone("Africa/Cairo"));
+            Date scanDate = dateUtils.convertToDateViaInstant(
+                    dateUtils.convertToLocalDateViaInstantAtStartOfDate(attendanceReport.getScanDate()), TimeZone.getTimeZone("Africa/Cairo"));
             if (dateList.contains(scanDate)) {
                 AbsenceDays--;
             }
         }
+        // TODO fix it i added it because return alwayes one day absences
+//        AbsenceDays--;
         return AbsenceDays;
     }
 
