@@ -8,7 +8,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.overrideeg.apps.opass.io.entities.employee;
 import com.overrideeg.apps.opass.io.entities.system.OEntity;
 import com.overrideeg.apps.opass.io.valueObjects.translatedLob;
-import org.springframework.boot.context.properties.bind.DefaultValue;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -28,9 +27,7 @@ public class HRPermissions extends OEntity {
     @Temporal(TemporalType.DATE)
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Date date;
-    @Column(columnDefinition = "default 0")
     private Integer minutesLate;
-    @Column(columnDefinition = "default 0")
     private Integer minutesEarlyGo;
     private Boolean absenceAllowed;
 
