@@ -33,7 +33,7 @@ public class UserEntryPoint {
     @PostMapping
     public @ResponseBody
     User addUser(@RequestBody User userRequest, @RequestHeader Long tenantId) {
-        userRequest.setCompany_id(tenantId);
+//        userRequest.setCompany_id(tenantId);
         return userService.save(userRequest);
     }
 
@@ -46,7 +46,7 @@ public class UserEntryPoint {
     @PutMapping
     public @ResponseBody
     ResponseModel updateUser(@RequestBody User userRequest, @RequestHeader Long tenantId) {
-        userRequest.setCompany_id(tenantId);
+//        userRequest.setCompany_id(tenantId);
         User updatedUser = userService.update(userRequest);
         ResponseModel update = new ResponseModel(updatedUser, RequestOperation.DELETE, ResponseStatus.SUCCESS);
         return update;
@@ -55,7 +55,7 @@ public class UserEntryPoint {
     @PutMapping("/image/{id}")
     public @ResponseBody
     ResponseModel updateUserImage(@PathVariable(value = "id") Long inEntityId, @RequestBody User userRequest, @RequestHeader Long tenantId) {
-        userRequest.setCompany_id(tenantId);
+//        userRequest.setCompany_id(tenantId);
         userRequest.setId(inEntityId);
         User updatedUser = userService.updateUserImage(userRequest);
         ResponseModel update = new ResponseModel(updatedUser, RequestOperation.DELETE, ResponseStatus.SUCCESS);

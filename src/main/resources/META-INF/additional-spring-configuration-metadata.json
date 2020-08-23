@@ -4,6 +4,11 @@
       "name": "org.springframework.web",
       "type": "java.lang.String",
       "description": "Description for org.springframework.web."
+    },
+    {
+      "name": "database.host",
+      "type": "java.lang.String",
+      "description": "Description for database.host."
     }
   ]
 }

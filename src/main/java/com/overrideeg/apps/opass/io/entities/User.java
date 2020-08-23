@@ -38,7 +38,10 @@ public class User implements UserDetails {
     @NotEmpty
     private String email;
     private Long company_id;
-    private Long employee_id;
+    @OneToOne(fetch = FetchType.EAGER, mappedBy = "user", targetEntity = employee.class)
+    private employee employee;
+    private String temporaryCode;
+    private Long tenant;
     @NotEmpty
     @Column(nullable = false)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY, required = true)
@@ -50,7 +53,7 @@ public class User implements UserDetails {
     private List<String> roles = new ArrayList<>();
     @Transient
     private String token;
-
+    private String fcmToken;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @Override
@@ -58,20 +61,28 @@ public class User implements UserDetails {
         return this.roles.stream().map(SimpleGrantedAuthority::new).collect(toList());
     }
 
-    public Long getId() {
+    public Long getId () {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId ( Long id ) {
         this.id = id;
     }
 
+    public String getFcmToken () {
+        return fcmToken;
+    }
+
+    public void setFcmToken ( String fcmToken ) {
+        this.fcmToken = fcmToken;
+    }
+
     @Override
-    public String getUsername() {
+    public String getUsername () {
         return username;
     }
 
-    public void setUsername(String username) {
+    public void setUsername ( String username ) {
         this.username = username;
     }
 
@@ -156,13 +167,6 @@ public class User implements UserDetails {
         this.token = token;
     }
 
-    public Long getEmployee_id () {
-        return employee_id;
-    }
-
-    public void setEmployee_id ( Long employee_id ) {
-        this.employee_id = employee_id;
-    }
 
     public translatedField getFullName () {
         return fullName;
@@ -170,5 +174,29 @@ public class User implements UserDetails {
 
     public void setFullName ( translatedField fullName ) {
         this.fullName = fullName;
+    }
+
+    public com.overrideeg.apps.opass.io.entities.employee getEmployee () {
+        return employee;
+    }
+
+    public void setEmployee ( com.overrideeg.apps.opass.io.entities.employee employee ) {
+        this.employee = employee;
+    }
+
+    public String getTemporaryCode () {
+        return temporaryCode;
+    }
+
+    public void setTemporaryCode ( String temporaryCode ) {
+        this.temporaryCode = temporaryCode;
+    }
+
+    public Long getTenant () {
+        return tenant;
+    }
+
+    public void setTenant ( Long tenant ) {
+        this.tenant = tenant;
     }
 }

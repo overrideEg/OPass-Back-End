@@ -8,8 +8,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.overrideeg.apps.opass.io.entities.system.OEntity;
 import com.overrideeg.apps.opass.io.valueObjects.translatedField;
+import com.overrideeg.apps.opass.io.valueObjects.translatedLob;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.TimeZone;
 
 @Entity
@@ -23,86 +25,109 @@ import java.util.TimeZone;
 })
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class company extends OEntity {
+
     @Embedded
     @JsonProperty(required = true)
     private translatedField name;
     @Embedded
     @JsonProperty(required = true)
-    private translatedField description;
+    private translatedLob description;
     private String website;
     private String phoneNumber;
-    @ManyToOne
-    private country country;
+    @Column(unique = true, nullable = false)
     private String database_name;
     private Boolean enabled;
+    private String image;
+    @ElementCollection(fetch = FetchType.EAGER)
+    private List<String> subscriptions;
+    @ManyToOne
+    private country country;
     private TimeZone timeZone;
 
     @Override
-    public boolean isValid() {
+    public boolean isValid () {
         return super.isValid();
     }
 
-    public translatedField getName() {
+
+    public translatedField getName () {
         return name;
     }
 
-    public void setName(translatedField name) {
+    public void setName ( translatedField name ) {
         this.name = name;
     }
 
-    public translatedField getDescription() {
+    public translatedLob getDescription () {
         return description;
     }
 
-    public void setDescription(translatedField description) {
+    public void setDescription ( translatedLob description ) {
         this.description = description;
     }
 
-    public String getWebsite() {
+    public String getWebsite () {
         return website;
     }
 
-    public void setWebsite(String website) {
+    public void setWebsite ( String website ) {
         this.website = website;
     }
 
-    public String getPhoneNumber() {
+    public String getPhoneNumber () {
         return phoneNumber;
     }
 
-    public void setPhoneNumber(String phoneNumber) {
+    public void setPhoneNumber ( String phoneNumber ) {
         this.phoneNumber = phoneNumber;
     }
 
-    public com.overrideeg.apps.opass.io.entities.country getCountry() {
+    public com.overrideeg.apps.opass.io.entities.country getCountry () {
         return country;
     }
 
-    public void setCountry(com.overrideeg.apps.opass.io.entities.country country) {
+    public void setCountry ( com.overrideeg.apps.opass.io.entities.country country ) {
         this.country = country;
     }
 
-    public String getDatabase_name() {
+    public String getDatabase_name () {
         return database_name;
     }
 
-    public void setDatabase_name(String database_name) {
+    public void setDatabase_name ( String database_name ) {
         this.database_name = database_name;
     }
 
-    public Boolean getEnabled() {
+    public Boolean getEnabled () {
         return enabled;
     }
 
-    public void setEnabled(Boolean enabled) {
+    public void setEnabled ( Boolean enabled ) {
         this.enabled = enabled;
     }
 
-    public TimeZone getTimeZone() {
+
+    public String getImage () {
+        return image;
+    }
+
+    public void setImage ( String image ) {
+        this.image = image;
+    }
+
+    public List<String> getSubscriptions () {
+        return subscriptions;
+    }
+
+    public void setSubscriptions ( List<String> subscriptions ) {
+        this.subscriptions = subscriptions;
+    }
+
+    public TimeZone getTimeZone () {
         return timeZone;
     }
 
-    public void setTimeZone(TimeZone timeZone) {
+    public void setTimeZone ( TimeZone timeZone ) {
         this.timeZone = timeZone;
     }
 }

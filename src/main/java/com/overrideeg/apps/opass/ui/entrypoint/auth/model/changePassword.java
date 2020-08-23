@@ -8,6 +8,7 @@ public class changePassword {
     private String username;
     private String oldPassword;
     private String newPassword;
+    private String tempCode;
 
     public String getUsername() {
         return username;
@@ -25,11 +26,19 @@ public class changePassword {
         this.oldPassword = oldPassword;
     }
 
-    public String getNewPassword() {
+    public String getNewPassword () {
         return newPassword;
     }
 
-    public void setNewPassword(String newPassword) {
+    public void setNewPassword ( String newPassword ) {
         this.newPassword = newPassword;
+    }
+
+    public String getTempCode () {
+        return tempCode;
+    }
+
+    public void setTempCode ( String tempCode ) {
+        this.tempCode = tempCode;
     }
 }

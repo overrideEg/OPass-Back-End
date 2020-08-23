@@ -17,18 +17,16 @@ import com.overrideeg.apps.opass.io.details.customShiftHours;
 import com.overrideeg.apps.opass.io.entities.system.OEntity;
 import com.overrideeg.apps.opass.io.valueObjects.attendanceRules;
 import com.overrideeg.apps.opass.io.valueObjects.contactInfo;
-import com.overrideeg.apps.opass.io.valueObjects.shiftHours;
 import com.overrideeg.apps.opass.io.valueObjects.translatedField;
-import com.overrideeg.apps.opass.service.attendanceService;
 import com.overrideeg.apps.opass.ui.sys.ErrorMessages;
 import com.overrideeg.apps.opass.utils.DateUtils;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.envers.Audited;
+import org.hibernate.envers.RelationTargetAuditMode;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
-import java.sql.Time;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
@@ -42,7 +40,7 @@ import static java.util.stream.Collectors.toList;
         @AttributeOverride(name = "name.tr", column = @Column(name = "name_tr")),
 })
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@Audited
+@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
 @EntityListeners(AuditingEntityListener.class)
 public class employee extends OEntity {
     @Embedded
@@ -104,13 +102,17 @@ public class employee extends OEntity {
     @JsonIgnore
     public Long updateDateTime;
     private String jobTitle;
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JsonIgnore
+    private User user;
+    private Long tenant;
 
     @Override
-    public boolean isValid() {
+    public boolean isValid () {
         return super.isValid();
     }
 
-    public translatedField getName() {
+    public translatedField getName () {
         return name;
     }
 
@@ -206,24 +208,47 @@ public class employee extends OEntity {
         this.status = status;
     }
 
-    public Long getCreatedUserId() {
+    public Long getCreatedUserId () {
         return createdUserId;
     }
 
-    public void setCreatedUserId(Long createdUserId) {
+    public void setCreatedUserId ( Long createdUserId ) {
         this.createdUserId = createdUserId;
     }
 
+    public Long getUpdateDateTime () {
+        return updateDateTime;
+    }
 
-    public List<com.overrideeg.apps.opass.enums.userType> getUserType() {
+    public void setUpdateDateTime ( Long updateDateTime ) {
+        this.updateDateTime = updateDateTime;
+    }
+
+    public User getUser () {
+        return user;
+    }
+
+    public void setUser ( User user ) {
+        this.user = user;
+    }
+
+    public Long getTenant () {
+        return tenant;
+    }
+
+    public void setTenant ( Long tenant ) {
+        this.tenant = tenant;
+    }
+
+    public List<com.overrideeg.apps.opass.enums.userType> getUserType () {
         return userType;
     }
 
-    public void setUserType(List<com.overrideeg.apps.opass.enums.userType> userType) {
+    public void setUserType ( List<com.overrideeg.apps.opass.enums.userType> userType ) {
         this.userType = userType;
     }
 
-    public Double getSalary() {
+    public Double getSalary () {
         return salary;
     }
 
