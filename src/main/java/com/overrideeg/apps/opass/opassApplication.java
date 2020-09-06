@@ -63,7 +63,7 @@ public class opassApplication extends SpringBootServletInitializer implements We
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
+    public PasswordEncoder passwordEncoder () {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
