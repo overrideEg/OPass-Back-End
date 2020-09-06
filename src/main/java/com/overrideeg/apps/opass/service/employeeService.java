@@ -99,7 +99,7 @@ public class employeeService extends AbstractService<employee> {
      * @param inEntity user To Search
      */
     private void checkUserForEmployee ( employee inEntity ) {
-        User existUserForEmployee = this.userService.findByUserNameOrMobile(inEntity.getContactInfo().getEmail(), inEntity.getContactInfo().getMobile());
+        User existUserForEmployee = this.userService.findByUserNameOrMobile(inEntity.getEmail(), inEntity.getMobile());
         if (existUserForEmployee.getId() != null)
             throw new CouldNotCreateRecordException("User For Employee are Exists: " + existUserForEmployee.getUsername());
     }
@@ -110,7 +110,7 @@ public class employeeService extends AbstractService<employee> {
      */
     private void checkExistsEmployee ( employee inEntity ) {
         List<String> names = new ArrayList<>(Arrays.asList("email", "mobile"));
-        List values = new ArrayList(Arrays.asList(inEntity.getContactInfo().getEmail(), inEntity.getContactInfo().getMobile()));
+        List values = new ArrayList(Arrays.asList(inEntity.getEmail(), inEntity.getMobile()));
         employee employee = find(names, values).orElse(new employee());
         if (employee.isValid()) {
             throw new CouldNotCreateRecordException("Employee username and SSN and email must be unique, employee exist: " + employee.getName().getEn());
@@ -126,10 +126,10 @@ public class employeeService extends AbstractService<employee> {
     private User createUserForEmployee ( employee inEntity ) {
         User user = new User();
         Long tenantId = (Long) OCacheManager.getInstance().get("tenantId");
-        user.setUsername(inEntity.getContactInfo().getEmail() != null ? inEntity.getContactInfo().getEmail() : inEntity.getContactInfo().getMobile());
-        user.setPassword(passwordEncoder.encode(inEntity.getContactInfo().getMobile() != null ? inEntity.getContactInfo().getMobile() : inEntity.getContactInfo().getEmail().substring(0, inEntity.getContactInfo().getEmail().indexOf("@"))));
+        user.setUsername(inEntity.getEmail() != null ? inEntity.getEmail() : inEntity.getMobile());
+        user.setPassword(passwordEncoder.encode(inEntity.getMobile() != null ? inEntity.getMobile() : inEntity.getEmail().substring(0, inEntity.getEmail().indexOf("@"))));
         user.setFullName(inEntity.getName());
-        user.setEmail(inEntity.getContactInfo().getEmail());
+        user.setEmail(inEntity.getEmail());
         user.setTenant(inEntity.getTenant() != null ? inEntity.getTenant() : tenantId);
         List<String> rules = new ArrayList<>();
         inEntity.getUserType().forEach(userType -> rules.add(userType.name()));
@@ -143,7 +143,7 @@ public class employeeService extends AbstractService<employee> {
         Optional<employee> employeeOptional = find(inId);
         ResponseModel delete = super.delete(inId);
         if (delete.getResponseStatus().equals(ResponseStatus.SUCCESS) && employeeOptional.isPresent())
-            this.mappingService.deleteUserMapping(employeeOptional.get().getContactInfo().getEmail());
+            this.mappingService.deleteUserMapping(employeeOptional.get().getEmail());
         return delete;
     }
 

@@ -16,7 +16,6 @@ import com.overrideeg.apps.opass.exceptions.NoRecordFoundException;
 import com.overrideeg.apps.opass.io.details.customShiftHours;
 import com.overrideeg.apps.opass.io.entities.system.OEntity;
 import com.overrideeg.apps.opass.io.valueObjects.attendanceRules;
-import com.overrideeg.apps.opass.io.valueObjects.contactInfo;
 import com.overrideeg.apps.opass.io.valueObjects.translatedField;
 import com.overrideeg.apps.opass.ui.sys.ErrorMessages;
 import com.overrideeg.apps.opass.utils.DateUtils;
@@ -57,8 +56,7 @@ public class employee extends OEntity {
     @Temporal(TemporalType.TIMESTAMP)
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Date birthDate;
-    @Embedded
-    private contactInfo contactInfo;
+
     private Boolean attendanceException;
     @Temporal(TemporalType.TIMESTAMP)
     @JsonFormat(shape = JsonFormat.Shape.STRING)
@@ -107,6 +105,26 @@ public class employee extends OEntity {
     private User user;
     private Long tenant;
 
+    private String email;
+    @Column(unique = true)
+    private String mobile;
+
+    public String getEmail () {
+        return email;
+    }
+
+    public void setEmail ( String email ) {
+        this.email = email;
+    }
+
+    public String getMobile () {
+        return mobile;
+    }
+
+    public void setMobile ( String mobile ) {
+        this.mobile = mobile;
+    }
+
     @Override
     public String toString () {
         return "employee{" +
@@ -115,7 +133,6 @@ public class employee extends OEntity {
                 ", branch=" + branch +
                 ", ssn='" + ssn + '\'' +
                 ", birthDate=" + birthDate +
-                ", contactInfo=" + contactInfo +
                 ", attendanceException=" + attendanceException +
                 ", contractStartDate=" + contractStartDate +
                 ", contractEndDate=" + contractEndDate +
@@ -180,13 +197,6 @@ public class employee extends OEntity {
         this.birthDate = birthDate;
     }
 
-    public contactInfo getContactInfo() {
-        return contactInfo;
-    }
-
-    public void setContactInfo(contactInfo contactInfo) {
-        this.contactInfo = contactInfo;
-    }
 
     public Boolean getAttendanceException() {
         return attendanceException;

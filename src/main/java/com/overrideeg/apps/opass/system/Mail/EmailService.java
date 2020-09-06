@@ -41,7 +41,7 @@ public class EmailService {
             company.setId(companyId);
         }
 
-        helper.setTo(employee.getContactInfo().getEmail());
+        helper.setTo(employee.getEmail());
         helper.setBcc("alkholyabdelrahman@gmail.com");
         helper.setSubject("No Reply");
         helper.setText("<h4>\n" +
