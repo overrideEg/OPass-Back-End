@@ -33,7 +33,7 @@ public class UserEntryPoint {
     @PostMapping
     public @ResponseBody
     User addUser(@RequestBody User userRequest, @RequestHeader Long tenantId) {
-//        userRequest.setCompany_id(tenantId);
+        userRequest.setCompany_id(tenantId);
         return userService.save(userRequest);
     }
 
