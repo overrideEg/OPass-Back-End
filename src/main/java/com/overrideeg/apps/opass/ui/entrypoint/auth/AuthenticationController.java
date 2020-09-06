@@ -80,8 +80,10 @@ public class AuthenticationController {
             String username = data.getUsername();
             TenantContext.setCurrentTenant(null);
             Long companyId = this.tenantResolver.findCompanyIdForUser(username);
+            System.out.println("Company" + companyId);
             this.resolveTenant.resolve(companyId, null);
             User user = this.userService.findByUserName(data.getUsername());
+            System.out.println("User" + user.getId());
             user = updateFCMToken(user, data.getFcmToken());
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, data.getPassword()));
             String token = jwtTokenProvider.createToken(username, user.getRoles());
