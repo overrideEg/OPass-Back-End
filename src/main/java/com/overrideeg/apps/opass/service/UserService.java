@@ -12,7 +12,6 @@ import com.overrideeg.apps.opass.exceptions.NoRecordFoundException;
 import com.overrideeg.apps.opass.io.entities.User;
 import com.overrideeg.apps.opass.io.entities.UserMapping;
 import com.overrideeg.apps.opass.io.repositories.UserRepo;
-import com.overrideeg.apps.opass.system.Caching.OCacheManager;
 import com.overrideeg.apps.opass.system.Connection.TenantContext;
 import com.overrideeg.apps.opass.system.Connection.TenantResolver;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +45,7 @@ public class UserService {
         String encode = this.passwordEncoder.encode(requestUser.getPassword());
         requestUser.setPassword(encode);
         User save = userRepo.save(requestUser);
-        Long tenantId = (Long) OCacheManager.getInstance().get("tenantId");
+        Long tenantId = requestUser.getCompany_id();
 
         Thread thread = new Thread(() -> {
             TenantContext.setCurrentTenant(null);

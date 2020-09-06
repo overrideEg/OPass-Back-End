@@ -34,6 +34,7 @@ public class UserEntryPoint {
     public @ResponseBody
     User addUser(@RequestBody User userRequest, @RequestHeader Long tenantId) {
         userRequest.setCompany_id(tenantId);
+        userRequest.setTenant(tenantId);
         return userService.save(userRequest);
     }
 
