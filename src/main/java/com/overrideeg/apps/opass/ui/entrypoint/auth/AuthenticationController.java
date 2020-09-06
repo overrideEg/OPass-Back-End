@@ -23,6 +23,7 @@ import com.overrideeg.apps.opass.utils.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -82,7 +83,7 @@ public class AuthenticationController {
             this.resolveTenant.resolve(companyId, null);
             User user = this.userService.findByUserName(data.getUsername());
             user = updateFCMToken(user, data.getFcmToken());
-//            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), data.getPassword()));
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), data.getPassword()));
             String token = jwtTokenProvider.createToken(username, user.getRoles());
             user.setToken(token);
             return ok(user);
