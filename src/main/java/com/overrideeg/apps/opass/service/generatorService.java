@@ -16,7 +16,7 @@ public class generatorService {
     @Autowired
     qrMachineService qrMachineService;
 
-    public qrMachine validate(generatorRequest request) throws NoSuchMethodException {
+    public qrMachine validate ( generatorRequest request ) throws NoSuchMethodException {
         qrMachine qrMachine = qrMachineService.find(request.getQrMachine().getId()).get();
         if (!qrMachine.getDepartment().getId().equals(request.getDepartment().getId())) {
             throw new QrIllegalException(ErrorMessages.DEPARTMENT_is_invalid.getErrorMessage());
@@ -24,9 +24,10 @@ public class generatorService {
         if (!qrMachine.getBranch().getId().equals(request.getBranch().getId())) {
             throw new QrIllegalException(ErrorMessages.Branch_is_invalid.getErrorMessage());
         }
-        if (qrMachine.getMacAddress() != null && !qrMachine.getMacAddress().equals(request.getMacAddress())) {
-            throw new QrIllegalException(ErrorMessages.MAC_ADDRESS_ILLEGAL.getErrorMessage());
-        }
+        if (qrMachine.getMacAddress() != null && !qrMachine.getMacAddress().equals(""))
+            if (!qrMachine.getMacAddress().equals(request.getMacAddress())) {
+                throw new QrIllegalException(ErrorMessages.MAC_ADDRESS_ILLEGAL.getErrorMessage());
+            }
 
         qrMachine.setMacAddress(request.getMacAddress());
         qrMachineService.update(qrMachine);
