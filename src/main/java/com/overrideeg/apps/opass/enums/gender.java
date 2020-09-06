@@ -5,5 +5,5 @@
 package com.overrideeg.apps.opass.enums;
 
 public enum gender {
-    male, female
+    male, female, EMPTY();
 }
