@@ -125,7 +125,7 @@ public class employeeService extends AbstractService<employee> {
      */
     private User createUserForEmployee ( employee inEntity ) {
         if (inEntity.getEmail() == null || inEntity.getEmail().equals("")) {
-            inEntity.setEmail(inEntity.getMobile() + "@o-pass.app");
+            inEntity.setEmail(inEntity.getMobile());
         }
         User user = new User();
         Long tenantId = (Long) OCacheManager.getInstance().get("tenantId");
