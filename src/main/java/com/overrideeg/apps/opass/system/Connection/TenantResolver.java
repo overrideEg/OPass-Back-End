@@ -38,7 +38,7 @@ public class TenantResolver {
         if (tenantId == null)
             return null;
         try {
-            return jdbcTemplate.queryForObject("SELECT database_name FROM company WHERE id = ? and enabled = 1", String.class, tenantId);
+            return jdbcTemplate.queryForObject("SELECT database_name FROM company WHERE id = ?", String.class, tenantId);
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
