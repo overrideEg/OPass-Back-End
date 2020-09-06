@@ -108,6 +108,34 @@ public class employee extends OEntity {
     private Long tenant;
 
     @Override
+    public String toString () {
+        return "employee{" +
+                "name=" + name +
+                ", department=" + department +
+                ", branch=" + branch +
+                ", ssn='" + ssn + '\'' +
+                ", birthDate=" + birthDate +
+                ", contactInfo=" + contactInfo +
+                ", attendanceException=" + attendanceException +
+                ", contractStartDate=" + contractStartDate +
+                ", contractEndDate=" + contractEndDate +
+                ", firingDate=" + firingDate +
+                ", shifts=" + shifts +
+                ", status=" + status +
+                ", createdUserId=" + createdUserId +
+                ", userType=" + userType +
+                ", salary=" + salary +
+                ", daysOff=" + daysOff +
+                ", optionalBranches=" + optionalBranches +
+                ", gender=" + gender +
+                ", updateDateTime=" + updateDateTime +
+                ", jobTitle='" + jobTitle + '\'' +
+                ", user=" + user +
+                ", tenant=" + tenant +
+                '}';
+    }
+
+    @Override
     public boolean isValid () {
         return super.isValid();
     }

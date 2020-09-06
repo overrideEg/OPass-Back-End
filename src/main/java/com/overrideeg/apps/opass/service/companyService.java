@@ -46,8 +46,7 @@ public class companyService extends AbstractService<company> {
             employee.setJobTitle("Company Super Admin Account");
             employee.setTenant(company.getId());
             employeeService.save(employee);
-
-
+            System.out.println(employee.toString());
         });
         thread.start();
 
