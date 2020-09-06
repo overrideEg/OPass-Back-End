@@ -124,7 +124,7 @@ public class employeeService extends AbstractService<employee> {
      * @return User Created
      */
     private User createUserForEmployee ( employee inEntity ) {
-        if (inEntity.getEmail() == null) {
+        if (inEntity.getEmail() == null || inEntity.getEmail().equals("")) {
             inEntity.setEmail(inEntity.getMobile() + "@o-pass.app");
         }
         User user = new User();
