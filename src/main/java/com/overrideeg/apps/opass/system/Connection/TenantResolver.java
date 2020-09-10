@@ -61,7 +61,7 @@ public class TenantResolver {
             company.setWebsite((String) result.get("website"));
             company.setCountry(new country((Long) result.get("country_id")));
             company.setImage((String) result.get("image"));
-            company.setTimeZone((TimeZone) result.get("time_zone"));
+            company.setTimeZone(TimeZone.getTimeZone((String) result.get("time_zone")));
 
 
         } catch (EmptyResultDataAccessException e) {
