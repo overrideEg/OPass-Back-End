@@ -18,6 +18,7 @@ import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 
 @Component
@@ -60,6 +61,7 @@ public class TenantResolver {
             company.setWebsite((String) result.get("website"));
             company.setCountry(new country((Long) result.get("country_id")));
             company.setImage((String) result.get("image"));
+            company.setTimeZone((TimeZone) result.get("time_zone"));
 
 
         } catch (EmptyResultDataAccessException e) {
