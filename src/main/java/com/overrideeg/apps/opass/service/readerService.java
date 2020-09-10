@@ -8,7 +8,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.overrideeg.apps.opass.enums.attStatus;
 import com.overrideeg.apps.opass.enums.attType;
-import com.overrideeg.apps.opass.exceptions.*;
+import com.overrideeg.apps.opass.exceptions.CouldNotCreateRecordException;
+import com.overrideeg.apps.opass.exceptions.NoRecordFoundException;
 import com.overrideeg.apps.opass.io.entities.HR.HRPermissions;
 import com.overrideeg.apps.opass.io.entities.*;
 import com.overrideeg.apps.opass.io.valueObjects.attendanceRules;
@@ -61,7 +62,7 @@ public class readerService {
         final Optional<employee> employee = employeeService.find(request.getEmployee_id());
 
         if (!employee.isPresent()) {
-            throw new EmployeeNotRelatedException(ErrorMessages.EMPLOYEE_NOT_RELATED.getErrorMessage());
+            throw new CouldNotCreateRecordException(ErrorMessages.EMPLOYEE_NOT_RELATED.getErrorMessage());
         }
 
         return employee.get();
@@ -73,7 +74,7 @@ public class readerService {
         final Optional<qrMachine> qrMachine = qrMachineService.find(qr.getQrMachine_id());
 
         if (!qrMachine.isPresent()) {
-            throw new NoRecordFoundException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
+            throw new CouldNotCreateRecordException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
         }
 
         if (!qrMachine.get().getBranch().getId().equals(employee.getBranch().getId()) || !qrMachine.get().getDepartment().getId().equals(employee.getDepartment().getId())) {
@@ -93,7 +94,7 @@ public class readerService {
             }
 
             if (!related) {
-                throw new EmployeeNotRelatedException(ErrorMessages.EMPLOYEE_NOT_RELATED.getErrorMessage());
+                throw new CouldNotCreateRecordException(ErrorMessages.EMPLOYEE_NOT_RELATED.getErrorMessage());
             }
 
         }
@@ -104,7 +105,7 @@ public class readerService {
 
         if (TimeUnit.MILLISECONDS.toSeconds(qr.getIssueDate()) > TimeUnit.MILLISECONDS.toSeconds(request.getScan_time())
                 || TimeUnit.MILLISECONDS.toSeconds(qr.getExpireDate()) < TimeUnit.MILLISECONDS.toSeconds(request.getScan_time())) {
-            throw new QRExpiredException(ErrorMessages.QR_EXPIRED.getErrorMessage());
+            throw new CouldNotCreateRecordException(ErrorMessages.QR_EXPIRED.getErrorMessage());
         }
 
 
@@ -205,7 +206,7 @@ public class readerService {
         String encodedOverride = EntityUtils.encode("OVERRIDE");
         String override = qr.substring(0, qr.indexOf(","));
         if (!override.equalsIgnoreCase(encodedOverride))
-            throw new AuthenticationException("Text Not Illegal Here");
+            throw new CouldNotCreateRecordException("Text Not Illegal Here");
         String qrBodyEncoded = qr.substring(qr.lastIndexOf(",") + 1);
         String decodedQr;
         try {

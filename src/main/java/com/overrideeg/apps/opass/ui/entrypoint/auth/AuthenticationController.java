@@ -86,6 +86,7 @@ public class AuthenticationController {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), data.getPassword()));
             String token = jwtTokenProvider.createToken(username, user.getRoles());
             user.setToken(token);
+
             return ok(user);
         } catch (Exception e) {
             throw new AuthenticationException("Invalid username/password supplied");

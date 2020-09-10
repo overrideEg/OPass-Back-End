@@ -22,10 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "*"
@@ -59,7 +56,6 @@ public class readerEntryPoint {
         //save attendance log in DB
         attendanceService.save(attendance);
         //return attendance log in request response
-
         TenantContext.setCurrentTenant(null);
         company company = tenantResolver.findCompanyForTenantId(request.getCompany_id());
         DateUtils dateUtils = new DateUtils();
@@ -72,8 +68,8 @@ public class readerEntryPoint {
         history.setStatus(attendance.getAttStatus().toString());
         history.setType(attendance.getAttType().toString());
         Date scanTime = attendance.getScanTime();
-        LocalDateTime date = dateUtils.convertToLocalDateTimeViaInstant(scanTime, company.getTimeZone());
-        Date scanTimeAtZone = dateUtils.convertToDateViaInstant(date, company.getTimeZone());
+        LocalDateTime date = dateUtils.convertToLocalDateTimeViaInstant(scanTime, company.getTimeZone() != null ? company.getTimeZone() : TimeZone.getDefault());
+        Date scanTimeAtZone = dateUtils.convertToDateViaInstant(date, company.getTimeZone() != null ? company.getTimeZone() : TimeZone.getDefault());
         history.setTimestamp(scanTimeAtZone.getTime());
         return history;
     }

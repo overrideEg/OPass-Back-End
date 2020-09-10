@@ -8,7 +8,7 @@ package com.overrideeg.apps.opass.exceptions;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(value = HttpStatus.FORBIDDEN)
+@ResponseStatus(value = HttpStatus.CHECKPOINT)
 public class CouldNotAttendException extends RuntimeException {
 
     public CouldNotAttendException() {

@@ -12,6 +12,7 @@ public class readerRequest {
     private Long employee_id;
     private String qr;
     private Long scan_time;
+    private Boolean online;
 
     public Long getEmployee_id() {
         return employee_id;
@@ -37,11 +38,19 @@ public class readerRequest {
         this.qr = qr;
     }
 
-    public Long getScan_time() {
+    public Long getScan_time () {
         return scan_time;
     }
 
-    public void setScan_time(Long scan_time) {
+    public void setScan_time ( Long scan_time ) {
         this.scan_time = scan_time;
+    }
+
+    public Boolean getOnline () {
+        return online;
+    }
+
+    public void setOnline ( Boolean online ) {
+        this.online = online;
     }
 }
