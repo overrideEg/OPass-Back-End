@@ -204,7 +204,7 @@ public class DateUtils {
 
     public LocalDateTime convertToLocalDateTimeViaInstant ( Date dateToConvert, TimeZone timeZone ) {
         return Instant.ofEpochMilli(dateToConvert.getTime())
-                .atZone(timeZone.toZoneId())
+                .atZone(timeZone != null ? timeZone.toZoneId() : TimeZone.getDefault().toZoneId())
                 .toLocalDateTime();
     }
 
