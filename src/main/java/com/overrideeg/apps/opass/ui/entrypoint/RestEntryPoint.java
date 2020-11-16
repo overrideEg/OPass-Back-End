@@ -62,8 +62,7 @@ public abstract class RestEntryPoint<E extends OEntity> {
     E postOne(@RequestBody E req, @RequestHeader Long tenantId, HttpServletRequest request) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, NoSuchFieldException, SQLException {
         validateFields(req);
         resolveTenant.resolve(tenantId, request);
-        E resp = mService.save(req);
-        return resp;
+        return mService.save(req);
     }
 
     public void validateFields(E req) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
@@ -77,7 +76,9 @@ public abstract class RestEntryPoint<E extends OEntity> {
                 case "Boolean":
                 case "boolean":
                 case "translatedField":
+                case "translatedLob":
                 case "Date":
+                case "TimeZone":
                 case "List":
                 case "Double":
                 case "double":
@@ -89,6 +90,7 @@ public abstract class RestEntryPoint<E extends OEntity> {
                 case "shiftHours":
                 case "attendanceRules":
                 case "contactInfo":
+                case "gender":
                     continue;
                 default:
                     Object result = EntityUtils.runGetter(field, req);
@@ -110,11 +112,7 @@ public abstract class RestEntryPoint<E extends OEntity> {
         inEntity.forEach(req -> {
             try {
                 validateFields(req);
-            } catch (NoSuchMethodException e) {
-                e.printStackTrace();
-            } catch (InvocationTargetException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
+            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
                 e.printStackTrace();
             }
         });
@@ -133,16 +131,14 @@ public abstract class RestEntryPoint<E extends OEntity> {
 
         if (start == null) start = 0;
         if (limit == null) limit = 25;
-        List<E> resp = mService.findAll(start, limit);
-        return resp;
+        return mService.findAll(start, limit);
     }
 
     @GetMapping("/{id}")
     public @ResponseBody
     Optional<E> getEntityById(@PathVariable(value = "id") Long inEntityId, @RequestHeader Long tenantId, HttpServletRequest request) {
         resolveTenant.resolve(tenantId, request);
-        Optional<E> response = mService.find(inEntityId);
-        return response;
+        return mService.find(inEntityId);
     }
 
     @DeleteMapping("/{id}")
@@ -170,11 +166,7 @@ public abstract class RestEntryPoint<E extends OEntity> {
         inEntity.forEach(req -> {
             try {
                 validateFields(req);
-            } catch (NoSuchMethodException e) {
-                e.printStackTrace();
-            } catch (InvocationTargetException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
+            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
                 e.printStackTrace();
             }
 

@@ -6,8 +6,6 @@ package com.overrideeg.apps.opass.io.repositories.customisation;
 
 
 import com.overrideeg.apps.opass.exceptions.NoRecordFoundException;
-import com.overrideeg.apps.opass.system.Caching.OCacheManager;
-import com.overrideeg.apps.opass.ui.sys.ErrorMessages;
 import com.overrideeg.apps.opass.utils.JPAUtils;
 import org.springframework.data.jpa.repository.support.JpaEntityInformation;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
@@ -109,16 +107,14 @@ public class JpaRepositoryCustomisationsImpl<T> extends SimpleJpaRepository<T, L
         CriteriaQuery<T> criteria = cb.createQuery(this.inEntityType);
         Root<T> root = criteria.from(this.inEntityType);
         criteria.select(root);
-        Long company = (Long) OCacheManager.getInstance().get("company");
-        if (company != null && company != 1)
-            criteria.where(cb.equal(root.get("company"), company));
         criteria.where(cb.equal(root.get("id"), aLong));
         Optional<T> searchResult = Optional.empty();
         try {
-            searchResult = Optional.ofNullable(mEntityManager.createQuery(criteria).
+            searchResult = Optional.of(mEntityManager.createQuery(criteria).
                     getSingleResult());
         } catch (Exception e) {
-            throw new NoRecordFoundException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
+            e.printStackTrace();
+            throw new NoRecordFoundException(e.getMessage());
         }
 
         return searchResult;
@@ -155,8 +151,38 @@ public class JpaRepositoryCustomisationsImpl<T> extends SimpleJpaRepository<T, L
         return Entity;
     }
 
+    public List<T> findListByField ( final String name, final Object value ) {
+        T Entity = null;
+        try {
+            Entity = this.inEntityType.getDeclaredConstructor().newInstance();
+        } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException | InstantiationException e) {
+            e.printStackTrace();
+        }
+
+        CriteriaBuilder cb = mEntityManager.getCriteriaBuilder();
+        CriteriaQuery<T> criteria = cb.createQuery(this.inEntityType);
+        Root<T> root = criteria.from(this.inEntityType);
+        criteria.select(root);
+        if (!name.contains("."))
+            criteria.where(cb.equal(root.get(name), value));
+        else {
+            String firstObject = name.substring(0, name.indexOf("."));
+            String secondObject = name.substring(name.indexOf(".") + 1);
+            criteria.where(cb.equal(root.get(firstObject).get(secondObject), value));
+        }
+        // Fetch single result
+        Query query = mEntityManager.createQuery(criteria);
+        List<T> returnValue = new ArrayList<>();
+        try {
+            returnValue = query.getResultList();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return returnValue;
+    }
+
     @Override
-    public T findBySomeFields(final List<String> names, final List values) {
+    public Optional<T> findBySomeFields ( final List<String> names, final List values ) {
         CriteriaBuilder cb = mEntityManager.getCriteriaBuilder();
         CriteriaQuery<T> criteria = cb.createQuery(this.inEntityType);
         Root<T> root = criteria.from(this.inEntityType);
@@ -172,10 +198,11 @@ public class JpaRepositoryCustomisationsImpl<T> extends SimpleJpaRepository<T, L
         Query query = mEntityManager.createQuery(criteria);
         List singleResult = query.getResultList();
 
-        T returnValue = null;
+        Optional<T> returnValue = Optional.empty();
         if (singleResult.size() > 0) {
-            returnValue = (T) singleResult.get(0);
+            returnValue = (Optional<T>) Optional.of(singleResult.get(0));
         }
+
         return returnValue;
     }
 

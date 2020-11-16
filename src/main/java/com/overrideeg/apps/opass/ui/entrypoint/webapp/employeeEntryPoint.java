@@ -10,11 +10,9 @@ import com.overrideeg.apps.opass.service.employeeService;
 import com.overrideeg.apps.opass.system.ApiUrls;
 import com.overrideeg.apps.opass.ui.entrypoint.RestEntryPoint;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletRequest;
-import java.lang.reflect.InvocationTargetException;
-import java.sql.SQLException;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
@@ -26,14 +24,9 @@ public class employeeEntryPoint extends RestEntryPoint<employee> {
     employeeService employeeService;
 
 
-    public employeeEntryPoint(final employeeService inService) {
+    public employeeEntryPoint ( final employeeService inService ) {
         setService(inService);
     }
 
-    @Override
-    public @ResponseBody
-    employee postOne(@RequestBody employee req, @RequestHeader Long tenantId, HttpServletRequest request) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, NoSuchFieldException, SQLException {
-        validateFields(req);
-        return employeeService.save(req, tenantId);
-    }
+
 }

@@ -10,14 +10,14 @@ import com.overrideeg.apps.opass.exceptions.CouldNotUpdateRecordException;
 import com.overrideeg.apps.opass.exceptions.NoRecordFoundException;
 import com.overrideeg.apps.opass.io.entities.system.OEntity;
 import com.overrideeg.apps.opass.io.repositories.customisation.JpaRepositoryCustomisations;
-import com.overrideeg.apps.opass.ui.sys.ErrorMessages;
 import com.overrideeg.apps.opass.ui.sys.RequestOperation;
 import com.overrideeg.apps.opass.ui.sys.ResponseModel;
 import com.overrideeg.apps.opass.ui.sys.ResponseStatus;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.lang.reflect.InvocationTargetException;
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -53,7 +53,8 @@ public abstract class AbstractService<E extends OEntity> {
      * @return Observable that will receive the saved entity, or exception if error occurs.
      * @p
      */
-    public E save(final E inEntity) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, NoSuchFieldException {
+    public E save(final E inEntity) {
+        inEntity.setCreatedAt(Date.from(Instant.now()));
         return mRepository.save(inEntity);
     }
 
@@ -63,7 +64,7 @@ public abstract class AbstractService<E extends OEntity> {
             try {
                 E saved = save(e);
                 entities.add(saved);
-            } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException | NoSuchFieldException ex) {
+            } catch (Exception ex) {
                 ex.printStackTrace();
             }
         });
@@ -77,7 +78,8 @@ public abstract class AbstractService<E extends OEntity> {
      * @return Observable that will receive the updated entity, or exception if error occurs.
      */
     @Transactional(readOnly = false)
-    public ResponseModel update(final E inEntity) throws NoSuchMethodException {
+    public ResponseModel update(final E inEntity) {
+        inEntity.setUpdatedAt(Date.from(Instant.now()));
         ResponseModel responseModel = null;
         try {
             E persist = mRepository.persist(inEntity);
@@ -85,16 +87,20 @@ public abstract class AbstractService<E extends OEntity> {
         } catch (Exception e) {
             e.printStackTrace();
             responseModel = new ResponseModel(inEntity, RequestOperation.UPDATE, ResponseStatus.ERROR);
+            throw new CouldNotUpdateRecordException(e.getMessage());
         }
 
         return responseModel;
 
     }
 
-    public List<ResponseModel> update(final List<E> inEntity) throws NoSuchMethodException {
+    public List<ResponseModel> update(final List<E> inEntity) {
+
         List<ResponseModel> out = new ArrayList<>();
         try {
             inEntity.forEach(e -> {
+                e.setUpdatedAt(Date.from(Instant.now()));
+
                 try {
                     mRepository.persist(e);
                     out.add(new ResponseModel(e, RequestOperation.UPDATE, ResponseStatus.SUCCESS));
@@ -104,9 +110,8 @@ public abstract class AbstractService<E extends OEntity> {
                 }
             });
         } catch (Exception e) {
-            throw new CouldNotUpdateRecordException(ErrorMessages.COULD_NOT_UPDATE_RECORD.getErrorMessage());
+            throw new CouldNotUpdateRecordException(e.getMessage());
         }
-
         return out;
     }
 
@@ -129,15 +134,19 @@ public abstract class AbstractService<E extends OEntity> {
     }
 
 
-    public E find(String by, Object value) {
+    public E find ( String by, Object value ) {
         return mRepository.findByField(by, value);
     }
 
-    public E find(List<String> names, List values) {
+    public List<E> findListBy ( String by, Object value ) {
+        return mRepository.findListByField(by, value);
+    }
+
+    public Optional<E> find ( List<String> names, List values ) {
         return mRepository.findBySomeFields(names, values);
     }
 
-    public List<E> findWhere(List<String> names, List values) {
+    public List<E> findWhere ( List<String> names, List values ) {
         return mRepository.findWhere(names, values);
     }
 
@@ -146,7 +155,7 @@ public abstract class AbstractService<E extends OEntity> {
      *
      * @return Observable that will receive a list of entities, or exception if error occurs.
      */
-    public List<E> findAll(int start, int limit) {
+    public List<E> findAll ( int start, int limit ) {
         List<E> theEntitiesList = null;
         try {
             theEntitiesList = mRepository.findAll(start, limit);
@@ -158,13 +167,17 @@ public abstract class AbstractService<E extends OEntity> {
 
     }
 
+    public List<E> findAll () {
+        return mRepository.findAll();
+    }
+
     /**
      * Deletes the entity having supplied id.
      *
      * @param inId Id of entity to delete.
      * @return Observable that will receive completion, or exception if error occurs.
      */
-    public ResponseModel delete(final Long inId) {
+    public ResponseModel delete ( final Long inId ) {
         ResponseModel responseModel = null;
 
         try {
@@ -174,7 +187,7 @@ public abstract class AbstractService<E extends OEntity> {
         } catch (final Exception e) {
             e.printStackTrace();
             responseModel = new ResponseModel(inId, RequestOperation.DELETE, ResponseStatus.ERROR);
-            throw new CouldNotDeleteRecordException(ErrorMessages.COULD_NOT_CREATE_RECORD.getErrorMessage());
+            throw new CouldNotDeleteRecordException(e.getMessage());
         }
         return responseModel;
     }

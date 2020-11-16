@@ -7,10 +7,12 @@ package com.overrideeg.apps.opass.utils;
 import java.sql.Time;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 /**
  * User: amr
@@ -48,23 +50,15 @@ public class DateUtils {
 
 
 
-    public boolean isBetweenTwoDate(Date startDate, Date stopDate, Date currentDate) {
-        //Start Date
-        Calendar StartDate = newCalender(startDate);
+    public boolean isBetweenTwoDates(Date fromDate, Date toDate, Date currentDate, Boolean orEqual) {
+        if(orEqual != null && orEqual){
 
-        //Current Date
-        Calendar CurrentDate = newCalender(currentDate);
+            return ((currentDate.before(toDate) || currentDate.equals(toDate)) && (currentDate.after(fromDate) || currentDate.equals(fromDate)));
+        }else {
 
-        //Stop Date
-        Calendar StopDate = newCalender(stopDate);
-
-        if (stopDate.compareTo(startDate) < 0) {
-            if (CurrentDate.compareTo(StopDate) < 0) {
-                CurrentDate.add(Calendar.DATE, 1);
-            }
-            StopDate.add(Calendar.DATE, 1);
+            return (currentDate.before(toDate) &&currentDate.after(fromDate));
         }
-        return CurrentDate.compareTo(StartDate) >= 0 && CurrentDate.compareTo(StopDate) < 0;
+
     }
 
     public boolean isBetweenTwoTimes(Time startTime, Time stopTime, Time currentTime) {
@@ -142,83 +136,12 @@ public class DateUtils {
 
 
 
-    public boolean dateBefore(Date date, Date currentDate, Boolean onlyHours, Boolean orEqual) {
-
-        Calendar startCalendar = newCalender(date);
-        Calendar currentTimeCalendar = newCalender(currentDate);
-
-        int timeStart;
-        int startHour = startCalendar.get(Calendar.HOUR_OF_DAY);
-
-        if (onlyHours != null && onlyHours) {
-
-            int startMin = startCalendar.get(Calendar.MINUTE);
-            timeStart = startHour * 60 + startMin;  //this
-
-        } else {
-            timeStart = startHour;
-        }
-
-        int timeCurrent;
-        int currentHour = currentTimeCalendar.get(Calendar.HOUR_OF_DAY);
-
-        if (onlyHours != null && onlyHours) {
-
-            int currentMin = currentTimeCalendar.get(Calendar.MINUTE);
-            timeCurrent = currentHour * 60 + currentMin;  //this
-
-        } else {
-            timeCurrent = currentHour;
-        }
-
-        if (orEqual != null && orEqual) {
-
-            return timeStart >= timeCurrent;
-
-        } else {
-
-            return timeStart > timeCurrent;
-
-        }
-
+    public boolean dateBefore(Date date, Date currentDate, Boolean orEqual) {
+        return (currentDate.before(date) || (orEqual != null && orEqual && currentDate.equals(date)));
     }
 
-    public boolean dateAfter(Date date, Date currentDate, Boolean onlyHours, Boolean orEqual) {
-
-        Calendar startCalendar = newCalender(date);
-        Calendar currentTimeCalendar = newCalender(currentDate);
-
-        int timeStart;
-        int startHour = startCalendar.get(Calendar.HOUR_OF_DAY);
-
-        if (onlyHours != null && onlyHours) {
-
-            int startMin = startCalendar.get(Calendar.MINUTE);
-            timeStart = startHour * 60 + startMin;  //this
-
-        } else {
-            timeStart = startHour;
-        }
-
-        int timeCurrent;
-        int currentHour = currentTimeCalendar.get(Calendar.HOUR_OF_DAY);
-
-        if (onlyHours != null && onlyHours) {
-
-            int currentMin = currentTimeCalendar.get(Calendar.MINUTE);
-            timeCurrent = currentHour * 60 + currentMin;  //this
-
-        } else {
-            timeCurrent = currentHour;
-        }
-        if (orEqual != null && orEqual) {
-
-            return timeStart <= timeCurrent;
-        } else {
-            return timeStart < timeCurrent;
-
-        }
-
+    public boolean dateAfter(Date date, Date currentDate, Boolean orEqual) {
+        return (currentDate.after(date) || (orEqual != null && orEqual && currentDate.equals(date)));
     }
 
     public boolean timeAfter(Time time, Time currentTime, Boolean orEqual) {
@@ -262,10 +185,43 @@ public class DateUtils {
     }
 
 
-    public LocalDate convertToLocalDateViaInstant(Date dateToConvert) {
+    public LocalDate convertToLocalDateViaInstant ( Date dateToConvert ) {
         return Instant.ofEpochMilli(dateToConvert.getTime())
                 .atZone(ZoneId.systemDefault())
                 .toLocalDate();
+    }
+
+    public LocalDateTime convertToLocalDateViaInstantAtStartOfDate ( Date dateToConvert ) {
+        LocalDate localDate = new java.sql.Date(dateToConvert.getTime()).toLocalDate();
+        return localDate.atStartOfDay();
+    }
+
+    public LocalDate convertToLocalDateViaInstant ( Date dateToConvert, TimeZone timeZone ) {
+        return Instant.ofEpochMilli(dateToConvert.getTime())
+                .atZone(timeZone.toZoneId())
+                .toLocalDate();
+    }
+
+    public LocalDateTime convertToLocalDateTimeViaInstant ( Date dateToConvert, TimeZone timeZone ) {
+        return Instant.ofEpochMilli(dateToConvert.getTime())
+                .atZone(timeZone != null ? timeZone.toZoneId() : TimeZone.getDefault().toZoneId())
+                .toLocalDateTime();
+    }
+
+    public Date convertLocalDateToDate(LocalDate dateToConvert) {
+        return java.sql.Date.valueOf(dateToConvert);
+    }
+
+    public Date convertToDateViaInstant(LocalDate dateToConvert, TimeZone timeZone) {
+        return java.util.Date.from(dateToConvert.atStartOfDay()
+                .atZone(timeZone.toZoneId())
+                .toInstant());
+    }
+
+    public Date convertToDateViaInstant(LocalDateTime dateToConvert, TimeZone timeZone) {
+        return java.util.Date.from(dateToConvert
+                .atZone(timeZone.toZoneId())
+                .toInstant());
     }
 
     public Long calculateDaysBetweenTwoDates(Date before, Date after) {
@@ -273,4 +229,19 @@ public class DateUtils {
         LocalDate dateAfter = convertToLocalDateViaInstant(after);
         return ChronoUnit.DAYS.between(dateBefore, dateAfter);
     }
+
+    public Date copyTimeToDate(Date date, Date time) {
+        Calendar t = Calendar.getInstance();
+        t.setTime(time);
+
+        Calendar c = Calendar.getInstance();
+        c.setTime(date);
+        c.set(Calendar.HOUR_OF_DAY, t.get(Calendar.HOUR_OF_DAY));
+        c.set(Calendar.MINUTE, t.get(Calendar.MINUTE));
+        c.set(Calendar.SECOND, t.get(Calendar.SECOND));
+        c.set(Calendar.MILLISECOND, t.get(Calendar.MILLISECOND));
+        return c.getTime();
+    }
+
+
 }

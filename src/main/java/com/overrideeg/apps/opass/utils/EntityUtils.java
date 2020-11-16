@@ -325,8 +325,23 @@ public class EntityUtils {
      * @param annotation  the annotation
      * @return the list
      */
-    public static List<Field> findAnnotatedFields(Class<?> sourceClass, Class<? extends Annotation> annotation) {
+    public static List<Field> findAnnotatedFields ( Class<?> sourceClass, Class<? extends Annotation> annotation ) {
         return Arrays.stream(sourceClass.getDeclaredFields())
                 .filter(field -> field.isAnnotationPresent(annotation)).collect(Collectors.toList());
+    }
+
+
+    /**
+     * @param value  value to round
+     * @param places places
+     * @return double rounded
+     */
+    public static double round ( Double value, Integer places ) {
+        if (places < 0) throw new IllegalArgumentException();
+
+        long factor = (long) Math.pow(10, places);
+        value = value * factor;
+        long tmp = Math.round(value);
+        return (double) tmp / factor;
     }
 }

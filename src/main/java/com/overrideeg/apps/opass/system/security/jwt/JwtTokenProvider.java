@@ -6,7 +6,10 @@ package com.overrideeg.apps.opass.system.security.jwt;
 
 import com.overrideeg.apps.opass.exceptions.AuthenticationException;
 import com.overrideeg.apps.opass.service.CustomUserDetailsService;
+import com.overrideeg.apps.opass.service.UserService;
+import com.overrideeg.apps.opass.system.Connection.ResolveTenant;
 import com.overrideeg.apps.opass.system.Connection.TenantContext;
+import com.overrideeg.apps.opass.system.Connection.TenantResolver;
 import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,42 +26,54 @@ import java.util.List;
 @Component
 public class JwtTokenProvider {
 
+
     @Autowired
     JwtProperties jwtProperties;
 
     @Autowired
     private CustomUserDetailsService userDetailsService;
 
+    @Autowired
+    UserService userService;
+
+    @Autowired
+    ResolveTenant resolveTenant;
+
+    @Autowired
+    TenantResolver tenantResolver;
 
     private String secretKey;
 
     @PostConstruct
-    protected void init() {
-        secretKey = Base64.getEncoder().encodeToString(jwtProperties.getSecretKey().getBytes());
+    protected void init () {
+        String secret = "com.overrideeg.apps.EWJ.system.security";
+        secretKey = Base64.getEncoder().encodeToString(secret.getBytes());
     }
 
-    public String createToken(String username, List<String> roles) {
+    public String createToken ( String username, List<String> roles ) {
 
         Claims claims = Jwts.claims().setSubject(username);
         claims.put("roles", roles);
 
-        Long yearInMs = 31556952000L;
-        jwtProperties.setValidityInMs(yearInMs);
+        long monthInMs = 2592000000L;
+        jwtProperties.setValidityInMs(monthInMs);
+
         Date now = new Date();
         Date validity = new Date(now.getTime() + jwtProperties.getValidityInMs());
-//        Date validity = new Date(now.getTime() +yearInMs);
 
         return Jwts.builder()//
                 .setClaims(claims)//
                 .setIssuedAt(now)//
                 .setExpiration(validity)//
-                .signWith(SignatureAlgorithm.HS256, secretKey)//
+                .signWith(SignatureAlgorithm.HS512, secretKey)//
                 .compact();
     }
 
     public Authentication getAuthentication(String token) {
         TenantContext.setCurrentTenant(null);
-        UserDetails userDetails = this.userDetailsService.loadUserByUsername(getUsername(token));
+        Long companyId = this.tenantResolver.findCompanyIdForUser(getUsername(token));
+        this.resolveTenant.resolve(companyId, null);
+        UserDetails userDetails = this.userService.findByUserName(getUsername(token));
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 

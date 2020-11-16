@@ -4,10 +4,14 @@
 
 package com.overrideeg.apps.opass.io.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.overrideeg.apps.opass.io.entities.system.OEntity;
+import com.overrideeg.apps.opass.io.valueObjects.attendanceRules;
 import com.overrideeg.apps.opass.io.valueObjects.translatedField;
+import org.hibernate.envers.Audited;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 
@@ -18,20 +22,24 @@ import javax.persistence.*;
         @AttributeOverride(name = "name.tr", column = @Column(name = "name_tr")),
 })
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@Audited
+@EntityListeners(AuditingEntityListener.class)
 public class branch extends OEntity {
     @Embedded
     @JsonProperty(required = true)
     private translatedField name;
     private String phoneNumber;
+    @JsonIgnore
+    public Long updateDateTime;
     @Embedded
-    private com.overrideeg.apps.opass.io.valueObjects.attendanceRules attendanceRules;
+    private attendanceRules attendanceRules;
 
     @Override
-    public boolean isValid() {
+    public boolean isValid () {
         return super.isValid();
     }
 
-    public translatedField getName() {
+    public translatedField getName () {
         return name;
     }
 
@@ -47,11 +55,11 @@ public class branch extends OEntity {
         this.phoneNumber = phoneNumber;
     }
 
-    public com.overrideeg.apps.opass.io.valueObjects.attendanceRules getAttendanceRules() {
+    public attendanceRules getAttendanceRules () {
         return attendanceRules;
     }
 
-    public void setAttendanceRules(com.overrideeg.apps.opass.io.valueObjects.attendanceRules attendanceRules) {
+    public void setAttendanceRules ( attendanceRules attendanceRules ) {
         this.attendanceRules = attendanceRules;
     }
 }

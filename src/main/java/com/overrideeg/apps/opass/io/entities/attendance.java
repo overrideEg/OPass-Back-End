@@ -6,7 +6,6 @@ package com.overrideeg.apps.opass.io.entities;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.OptBoolean;
 import com.overrideeg.apps.opass.enums.attStatus;
 import com.overrideeg.apps.opass.enums.attType;
 import com.overrideeg.apps.opass.io.entities.system.OEntity;
@@ -22,10 +21,10 @@ public class attendance extends OEntity {
     @ManyToOne
     private workShift workShift;
     @Temporal(TemporalType.DATE)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, lenient = OptBoolean.TRUE, timezone = "UTC")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, timezone = "Africa/Cairo")
     private Date scanDate;
-    @Temporal(TemporalType.TIMESTAMP)
-    @JsonFormat(pattern = "hh:mm:ss", lenient = OptBoolean.TRUE, shape = JsonFormat.Shape.STRING, timezone = "UTC")
+    @Temporal(TemporalType.TIME)
+    @JsonFormat(pattern = "hh:mm:ss", shape = JsonFormat.Shape.STRING, timezone = "Africa/Cairo")
     private Date scanTime;
     @Enumerated(EnumType.STRING)
     private attType attType;
@@ -35,6 +34,7 @@ public class attendance extends OEntity {
     public attendance() {
     }
 
+
     public attendance(com.overrideeg.apps.opass.io.entities.employee employee, com.overrideeg.apps.opass.io.entities.workShift workShift, Date scanDate, Date scanTime, com.overrideeg.apps.opass.enums.attType attType, com.overrideeg.apps.opass.enums.attStatus attStatus) {
         this.employee = employee;
         this.workShift = workShift;
@@ -43,6 +43,7 @@ public class attendance extends OEntity {
         this.attType = attType;
         this.attStatus = attStatus;
     }
+
 
     @Override
     public boolean isValid() {

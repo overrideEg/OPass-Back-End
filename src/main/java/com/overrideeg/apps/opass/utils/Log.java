@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2020. overrideeg.ocm.
+ */
+
 package com.overrideeg.apps.opass.utils;
 
 
@@ -11,9 +15,6 @@ public class Log {
 	public Log(Class Class, Exception e) {
 		final String space = "\n==============================================================\n\n";
 		String message = "ERROR IN " + Class.getName() + ": " + e.getMessage() + space;
-//		BackLogDTO backLog = new BackLogDTO(message, Class.getSimpleName(), e.getMessage(), stackTraceToString(e));
-//		BackLogDTO backLogDTO = new BackLogServiceImpl().create(backLog);
-//		System.err.println(message + ":" + backLogDTO.getValueDate() + ":" + backLogDTO.getHostAddress());
 		System.err.print(space);
 		e.printStackTrace();
 		System.err.print(space);
@@ -22,9 +23,6 @@ public class Log {
 	public Log(Class Class, Exception e, String note) {
 		final String space = "\n==============================================================\n\n";
 		String message = "ERROR IN " + Class.getName() + ", " + note + ":\n" + e.getMessage() + space;
-//		BackLogDTO backLog = new BackLogDTO(message, Class.getSimpleName(), e.getMessage(), stackTraceToString(e));
-//		BackLogDTO backLogDTO = new BackLogServiceImpl().create(backLog);
-//		System.err.println(message + ":" + backLogDTO.getValueDate() + ":" + backLogDTO.getHostAddress());
 		e.printStackTrace();
 		System.err.print(space);
 	}

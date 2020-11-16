@@ -11,7 +11,6 @@ import com.overrideeg.apps.opass.system.security.jwt.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -21,6 +20,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
@@ -49,12 +49,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and().authorizeRequests()
                 .antMatchers(ApiUrls.Auth_ep + "/login").permitAll()
                 .antMatchers(ApiUrls.Auth_ep + "/logout").authenticated()
-                .antMatchers(HttpMethod.POST, ApiUrls.Users_EP + "/**").anonymous()
-                .antMatchers("/v3/api-docs/**").anonymous()
-                .antMatchers(ApiUrls.reader_ep + "/**").anonymous()
+//                .antMatchers(HttpMethod.POST, ApiUrls.Users_EP + "/**").anonymous()
+//                .antMatchers("/v3/api-docs/**").anonymous()
+                .antMatchers("/opassWebSocket/**").anonymous()
                 .antMatchers(ApiUrls.subscriptionPlan_EP + "/**").authenticated()
                 .antMatchers(ApiUrls.subscription_EP + "/**").authenticated()
-                .antMatchers(HttpMethod.POST, ApiUrls.reportDefinition_EP + "/**").hasRole("systemAdmin")
+//                .antMatchers(HttpMethod.POST, ApiUrls.reportDefinition_EP + "/**").authenticated()
                 .anyRequest().authenticated()
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and().csrf().disable()
@@ -65,10 +65,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("*"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE","OPTIONS"));
+        configuration.setAllowedOrigins(Collections.singletonList("*"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowCredentials(true);
-        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setAllowedHeaders(Collections.singletonList("*"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**/**", configuration);
         source.registerCorsConfiguration("/**",configuration);

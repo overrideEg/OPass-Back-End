@@ -2,7 +2,7 @@
  * Copyright (c) 2020. overrideeg.ocm.
  */
 
-package com.overrideeg.apps.opass.ui.entrypoint.auth;
+package com.overrideeg.apps.opass.ui.entrypoint.auth.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,6 +23,7 @@ public class AuthenticationRequest implements Serializable {
     private String username;
     private String password;
     private String macAddress;
+    private String fcmToken;
 
     public String getUsername() {
         return username;
@@ -40,11 +41,19 @@ public class AuthenticationRequest implements Serializable {
         this.password = password;
     }
 
-    public String getMacAddress() {
+    public String getMacAddress () {
         return macAddress;
     }
 
-    public void setMacAddress(String macAddress) {
+    public void setMacAddress ( String macAddress ) {
         this.macAddress = macAddress;
+    }
+
+    public String getFcmToken () {
+        return fcmToken;
+    }
+
+    public void setFcmToken ( String fcmToken ) {
+        this.fcmToken = fcmToken;
     }
 }

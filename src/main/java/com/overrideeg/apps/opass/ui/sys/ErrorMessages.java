@@ -38,7 +38,8 @@ public enum ErrorMessages {
     DEPARTMENT_is_invalid("Department IS Invalid for Selected Machine"),
     EMPLOYEE_NOT_RELATED("Employee is not related to selected branch and department"),
     Branch_is_invalid("Branch IS Invalid for Selected Machine"),
-    REPORT_TYPE_INVALID("Report Type Is Invalid");
+    REPORT_TYPE_INVALID("Report Type Is Invalid"),
+    COULD_NOT_ATTEND("scan Time is not valid");
 
 
     private String errorMessage;

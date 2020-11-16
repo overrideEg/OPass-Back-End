@@ -10,6 +10,7 @@ import com.overrideeg.apps.opass.service.RestReportsService;
 import com.overrideeg.apps.opass.service.system.RestLogService;
 import com.overrideeg.apps.opass.system.ApiUrls;
 import com.overrideeg.apps.opass.system.Connection.TenantContext;
+import com.overrideeg.apps.opass.ui.entrypoint.reports.valueObjects.countAttendanceInDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,9 +35,10 @@ public class RestReports {
             @RequestParam(name = "pageSize") Integer pageSize,
             @RequestHeader Long tenantId, HttpServletRequest hsr, @PathVariable Long employeeId) {
 
+
         resolveTenant(tenantId, hsr);
 
-        return restReportsService.createAttendanceHistoryReport(employeeId, page, pageSize);
+        return restReportsService.createAttendanceHistoryReport(employeeId, tenantId, page, pageSize);
     }
 
     @GetMapping("absenceDays/{employeeId}")
@@ -47,6 +49,14 @@ public class RestReports {
         return restReportsService.findAbsenceDays(employeeId);
     }
 
+
+    @GetMapping("totalEmployeeAttendanceInMonth")
+    public @ResponseBody
+    List<countAttendanceInDate> findTotalEmployeeAttendanceFromFirstMonth(
+            @RequestHeader Long tenantId, HttpServletRequest hsr) {
+        resolveTenant(tenantId, hsr);
+        return restReportsService.findTotalEmployeeAttendanceFromFirstMonth();
+    }
 
     public void resolveTenant(Long tenantId, HttpServletRequest request) {
         if (tenantId == 0) {

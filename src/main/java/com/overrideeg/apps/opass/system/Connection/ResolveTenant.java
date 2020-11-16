@@ -5,6 +5,7 @@
 package com.overrideeg.apps.opass.system.Connection;
 
 import com.overrideeg.apps.opass.service.system.RestLogService;
+import com.overrideeg.apps.opass.system.Caching.OCacheManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,7 @@ public class ResolveTenant {
 
     public void resolve(Long tenantId, HttpServletRequest request) {
 
+        OCacheManager.getInstance().put("tenantId", tenantId);
         if (TenantContext.getCurrentTenant() != tenantId) {
             if (tenantId == 0) {
                 TenantContext.setCurrentTenant(null);

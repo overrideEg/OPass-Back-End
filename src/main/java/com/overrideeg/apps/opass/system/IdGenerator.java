@@ -17,7 +17,6 @@ import java.sql.Statement;
 public class IdGenerator implements IdentifierGenerator {
     /**
      * Generate a new identifier.
-     *
      * @param session The session from which the request originates
      * @param object  the entity or collection (idbag) for which the id is being generated
      * @return a new identifier

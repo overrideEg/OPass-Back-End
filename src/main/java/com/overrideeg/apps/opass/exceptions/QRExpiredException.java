@@ -3,7 +3,7 @@ package com.overrideeg.apps.opass.exceptions;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(value = HttpStatus.UNAUTHORIZED)
+@ResponseStatus(value = HttpStatus.CHECKPOINT)
 public class QRExpiredException extends RuntimeException {
 
 

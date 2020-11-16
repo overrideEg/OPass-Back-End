@@ -1,9 +1,6 @@
 package com.overrideeg.apps.opass.utils;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -28,9 +25,7 @@ public class ListUtils {
     }
 
 
-
-
-    public static <T> boolean listEqualsNoOrder(List<T> list1, List<T> list2) {
+    public static <T> boolean listEqualsNoOrder ( List<T> list1, List<T> list2 ) {
         return new HashSet<>(list1).equals(new HashSet<>(list2));
     }
 
@@ -39,11 +34,18 @@ public class ListUtils {
 //        return list.stream().allMatch(unRepeats::add);
 //    }
 
-    public static <T> boolean areUnique(final List<T> list,Function<? super T, ?>... keyExtractors) {
+    @SafeVarargs
+    public static <T> boolean areUnique ( final List<T> list, Function<? super T, ?>... keyExtractors ) {
 
         List<T> collect = list.stream().filter(distinctByKeys(keyExtractors)).collect(Collectors.toList());
 
         return collect.size() == list.size();
+    }
+
+
+    public static <T> Predicate<T> distinctByKey ( Function<? super T, ?> keyExtractor ) {
+        Set<Object> seen = ConcurrentHashMap.newKeySet();
+        return t -> seen.add(keyExtractor.apply(t));
     }
 
 
